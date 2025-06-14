@@ -9,6 +9,7 @@ dependencies = [
     "fastapi>=0.115.12",
     "line-bot-sdk>=3.17.1",
     "uvicorn>=0.34.3",
+    "openai>=1.86.0",
 ]
 
 [tool.poetry.dependencies]
