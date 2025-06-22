@@ -1,0 +1,88 @@
+{
+  "template": "memoir",
+  "fileName": "sample-memoir.pdf",
+  "data": {
+    "title": "私の人生の歩み",
+    "subtitle": "これまでの軌跡と想い出",
+    "author": "田中 花子",
+    "createdDate": "2024年1月作成",
+    "birthDate": "1985年3月15日",
+    "birthPlace": "東京都",
+    "occupation": "Webデザイナー",
+    "interests": ["写真撮影", "旅行", "料理", "読書"],
+    "motto": "一期一会を大切に、毎日を充実させて生きる",
+    "profileImage": "/images/profile.png",
+    "timeline": [
+      {
+        "year": 1985,
+        "title": "誕生",
+        "description": "東京都の病院で生まれました。両親は私の誕生を心から喜んでくれました。",
+        "image": "/images/birth.png",
+        "imageCaption": "生後1ヶ月の写真"
+      },
+      {
+        "year": 1991,
+        "title": "小学校入学",
+        "description": "地元の小学校に入学しました。新しい友達との出会いに胸を躍らせていました。",
+        "image": "/images/elemtentary.png",
+        "imageCaption": "入学式の記念写真"
+      },
+      {
+        "year": 1997,
+        "title": "中学校入学",
+        "description": "思春期の始まりとともに、自分の将来について考えるようになりました。",
+        "image": "/images/junior-high.png",
+        "imageCaption": "部活動での一枚"
+      },
+      {
+        "year": 2000,
+        "title": "高校入学",
+        "description": "デザインに興味を持ち始め、美術部に入部しました。",
+        "image": "/images/high-school.png",
+        "imageCaption": "美術部での作品制作"
+      },
+      {
+        "year": 2003,
+        "title": "大学入学",
+        "description": "デザイン学科に進学し、本格的にデザインを学び始めました。",
+        "image": "/images/high-school.png",
+        "imageCaption": "大学のキャンパス"
+      },
+      {
+        "year": 2007,
+        "title": "就職",
+        "description": "Webデザイン会社に就職し、プロのデザイナーとしての第一歩を踏み出しました。",
+        "image": "/images/work.png",
+        "imageCaption": "初めてのプロジェクト"
+      },
+      {
+        "year": 2010,
+        "title": "独立",
+        "description": "フリーランスとして独立し、自分のデザインスタイルを確立していきました。",
+        "image": "/images/work.png",
+        "imageCaption": "自宅の作業スペース"
+      },
+      {
+        "year": 2015,
+        "title": "結婚",
+        "description": "大切な人と出会い、結婚しました。新しい家族との生活が始まりました。",
+        "image": "/images/wedding.png",
+        "imageCaption": "結婚式の記念写真"
+      },
+      {
+        "year": 2018,
+        "title": "出産",
+        "description": "可愛い赤ちゃんが生まれ、母親としての新しい役割を担うことになりました。",
+        "image": "/images/baby.png",
+        "imageCaption": "生後3ヶ月の我が子"
+      },
+      {
+        "year": 2024,
+        "title": "現在",
+        "description": "仕事と子育ての両立をしながら、充実した毎日を送っています。これからも新しい挑戦を続けていきたいと思います。",
+        "image": "/images/current.png",
+        "imageCaption": "家族との一枚"
+      }
+    ]
+  }
+} 

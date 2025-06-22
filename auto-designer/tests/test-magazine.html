@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>技術雑誌サンプル</title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 20mm 15mm 25mm 15mm;
+      
+      /* ヘッダー・フッター */
+      @top-center {
+        content: "技術雑誌サンプル";
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-center {
+        content: counter(page);
+        font-size: 10pt;
+        color: #666;
+      }
+    }
+    
+    /* 表紙ページ */
+    @page :first {
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+    }
+    
+    /* 基本スタイル */
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    
+    /* 表紙 */
+    .cover {
+      page-break-after: always;
+      text-align: center;
+      padding: 40mm 20mm;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .cover h1 {
+      font-size: 48pt;
+      margin: 0 0 20mm 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .cover .subtitle {
+      font-size: 18pt;
+      margin: 10mm 0;
+      opacity: 0.9;
+    }
+    
+    .cover .date {
+      font-size: 14pt;
+      margin-top: 30mm;
+      opacity: 0.8;
+    }
+    
+    /* 目次 */
+    .toc {
+      page-break-after: always;
+      padding: 10mm 0;
+    }
+    
+    .toc h2 {
+      font-size: 24pt;
+      margin: 0 0 10mm 0;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 5mm;
+    }
+    
+    .toc ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .toc li {
+      margin: 3mm 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    
+    .toc a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14pt;
+    }
+    
+    .toc a::after {
+      content: leader('.') target-counter(attr(href), page);
+      color: #999;
+    }
+    
+    /* 記事コンテンツ */
+    .article {
+      page-break-before: always;
+      padding: 10mm 0;
+    }
+    
+    .article h1 {
+      font-size: 28pt;
+      color: #667eea;
+      margin: 0 0 10mm 0;
+      page-break-after: avoid;
+    }
+    
+    .article h2 {
+      font-size: 20pt;
+      color: #555;
+      margin: 8mm 0 5mm 0;
+      page-break-after: avoid;
+    }
+    
+    .article p {
+      margin: 3mm 0;
+      text-align: justify;
+      font-size: 12pt;
+    }
+    
+    /* 段組みレイアウト */
+    .two-column {
+      column-count: 2;
+      column-gap: 8mm;
+      margin: 5mm 0;
+    }
+    
+    .two-column p {
+      margin: 2mm 0;
+    }
+    
+    /* 引用 */
+    .quote {
+      border-left: 4px solid #667eea;
+      padding-left: 8mm;
+      margin: 8mm 0;
+      font-style: italic;
+      background: #f8f9fa;
+      padding: 5mm 8mm;
+      border-radius: 0 4px 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- 表紙 -->
+  <div class="cover">
+    <h1>技術雑誌サンプル</h1>
+    <div class="subtitle">最新のWeb技術と開発トレンド</div>
+    <div class="date">2024年1月号</div>
+  </div>
+  
+  <!-- 目次 -->
+  <div class="toc">
+    <h2>目次</h2>
+    <ul>
+      <li>
+        <a href="#article-0">React 18の新機能と実践的な活用方法</a>
+      </li>
+      <li>
+        <a href="#article-1">TypeScript 5.0の新機能とベストプラクティス</a>
+      </li>
+      <li>
+        <a href="#article-2">Next.js 13 App Routerの完全ガイド</a>
+      </li>
+    </ul>
+  </div>
+  
+  <!-- 記事コンテンツ -->
+  <article class="article" id="article-0">
+    <h1>React 18の新機能と実践的な活用方法</h1>
+    <h2>Concurrent FeaturesとSuspenseの完全ガイド</h2>
+    <p style="font-style: italic; color: #666; margin-bottom: 8mm;">
+      著者: 田中 太郎
+    </p>
+    
+    <div class="quote">
+      React 18で導入されたConcurrent Featuresは、ユーザーエクスペリエンスを大幅に向上させる可能性を秘めています。本記事では、実際のプロジェクトでの活用方法を詳しく解説します。
+    </div>
+    
+    <div class="two-column">
+      <p>React 18の最大の特徴は、Concurrent Featuresの導入です。これにより、レンダリングの中断と再開が可能になり、より滑らかなユーザーインターフェースを実現できます。</p>
+      
+      <p>Suspense for Data Fetchingは、データ取得の状態管理を簡素化し、ローディング状態の表示を統一的な方法で行えるようになります。また、Automatic Batchingにより、複数の状態更新を効率的に処理できるようになりました。</p>
+      
+      <p>実際のプロジェクトでは、これらの機能を組み合わせることで、パフォーマンスとユーザーエクスペリエンスの両方を向上させることができます。特に、大規模なアプリケーションでは、その効果が顕著に現れます。</p>
+    </div>
+  </article>
+  
+  <article class="article" id="article-1">
+    <h1>TypeScript 5.0の新機能とベストプラクティス</h1>
+    <h2>型安全性をさらに向上させる新機能の活用</h2>
+    <p style="font-style: italic; color: #666; margin-bottom: 8mm;">
+      著者: 佐藤 花子
+    </p>
+    
+    <div class="quote">
+      TypeScript 5.0では、型システムが大幅に強化され、より安全で保守性の高いコードを書けるようになりました。本記事では、新機能の詳細と実践的な活用方法を紹介します。
+    </div>
+    
+    <div class="two-column">
+      <p>TypeScript 5.0で導入された最も重要な新機能の一つが、Decoratorsの正式サポートです。これにより、メタプログラミングがより安全で型安全な方法で行えるようになりました。</p>
+      
+      <p>また、const type parametersにより、ジェネリック型の推論が改善され、より正確な型推論が可能になりました。これにより、型注針を減らしながらも、型安全性を維持できるようになります。</p>
+      
+      <p>実践的なベストプラクティスとして、新しい型機能を活用したユーティリティ型の作成や、より厳密な型定義の実現方法についても詳しく解説します。</p>
+    </div>
+  </article>
+  
+  <article class="article" id="article-2">
+    <h1>Next.js 13 App Routerの完全ガイド</h1>
+    <h2>新しいルーティングシステムとServer Components</h2>
+    <p style="font-style: italic; color: #666; margin-bottom: 8mm;">
+      著者: 山田 次郎
+    </p>
+    
+    <div class="quote">
+      Next.js 13で導入されたApp Routerは、React Server Componentsを活用した新しいルーティングシステムです。本記事では、従来のPages Routerとの違いと、新しい開発パターンを詳しく解説します。
+    </div>
+    
+    <div class="two-column">
+      <p>App Routerの最大の特徴は、React Server Componentsの活用です。これにより、サーバーサイドでのレンダリングがより効率的になり、クライアントサイドのJavaScriptバンドルサイズを削減できます。</p>
+      
+      <p>新しいファイルベースルーティングシステムでは、layout.tsxやloading.tsxなどの特殊ファイルを使用して、より宣言的なUI構造を定義できます。また、Server Actionsにより、フォーム処理やデータ更新がより簡単になります。</p>
+      
+      <p>実践的な開発では、これらの新機能を組み合わせることで、パフォーマンスと開発体験の両方を向上させることができます。特に、SEOが重要なアプリケーションでは、Server Componentsの活用が効果的です。</p>
+    </div>
+  </article>
+</body>
+</html> 

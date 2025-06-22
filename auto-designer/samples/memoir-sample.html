@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>自分史プレビュー</title>
+  <style>
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #667eea;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    .timeline-item {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      background: #f9f9f9;
+    }
+    
+    .timeline-item h3 {
+      margin-top: 0;
+      color: #667eea;
+    }
+    
+    .btn {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    
+    .btn:hover {
+      background: #5a6fd8;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .preview-container {
+      margin-top: 30px;
+      border-top: 2px solid #667eea;
+      padding-top: 30px;
+    }
+    
+    .preview-frame {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>自分史作成ツール</h1>
+    
+    <form id="memoirForm">
+      <div class="form-group">
+        <label for="title">タイトル</label>
+        <input type="text" id="title" name="title" value="私の人生の歩み" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="subtitle">サブタイトル</label>
+        <input type="text" id="subtitle" name="subtitle" value="これまでの軌跡と想い出">
+      </div>
+      
+      <div class="form-group">
+        <label for="author">著者名</label>
+        <input type="text" id="author" name="author" value="田中 花子" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="birthDate">生年月日</label>
+        <input type="text" id="birthDate" name="birthDate" value="1985年3月15日">
+      </div>
+      
+      <div class="form-group">
+        <label for="birthPlace">出身地</label>
+        <input type="text" id="birthPlace" name="birthPlace" value="東京都">
+      </div>
+      
+      <div class="form-group">
+        <label for="occupation">職業</label>
+        <input type="text" id="occupation" name="occupation" value="Webデザイナー">
+      </div>
+      
+      <div class="form-group">
+        <label for="interests">趣味（カンマ区切り）</label>
+        <input type="text" id="interests" name="interests" value="写真撮影, 旅行, 料理, 読書">
+      </div>
+      
+      <div class="form-group">
+        <label for="motto">座右の銘</label>
+        <input type="text" id="motto" name="motto" value="一期一会を大切に、毎日を充実させて生きる">
+      </div>
+      
+      <div class="form-group">
+        <label for="profileImage">プロフィール画像URL</label>
+        <input type="text" id="profileImage" name="profileImage" value="/images/profile.jpg">
+      </div>
+      
+      <h3>年表</h3>
+      <div id="timelineContainer">
+        <div class="timeline-item">
+          <h3>1985年 - 誕生</h3>
+          <div class="form-group">
+            <label>タイトル</label>
+            <input type="text" name="timeline[0][title]" value="誕生">
+          </div>
+          <div class="form-group">
+            <label>説明</label>
+            <textarea name="timeline[0][description]">東京都の病院で生まれました。両親は私の誕生を心から喜んでくれました。</textarea>
+          </div>
+          <div class="form-group">
+            <label>画像URL</label>
+            <input type="text" name="timeline[0][image]" value="/images/birth.jpg">
+          </div>
+          <div class="form-group">
+            <label>画像キャプション</label>
+            <input type="text" name="timeline[0][imageCaption]" value="生後1ヶ月の写真">
+          </div>
+        </div>
+      </div>
+      
+      <button type="button" class="btn" onclick="addTimelineItem()">年表項目を追加</button>
+      <button type="button" class="btn btn-secondary" onclick="previewMemoir()">プレビュー</button>
+      <button type="button" class="btn btn-secondary" onclick="generatePDF()">PDF生成</button>
+    </form>
+    
+    <div class="preview-container" id="previewContainer" style="display: none;">
+      <h2>プレビュー</h2>
+      <iframe id="previewFrame" class="preview-frame"></iframe>
+    </div>
+  </div>
+
+  <script>
+    let timelineIndex = 1;
+    
+    function addTimelineItem() {
+      const container = document.getElementById('timelineContainer');
+      const year = 1985 + timelineIndex * 5;
+      
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      item.innerHTML = `
+        <h3>${year}年 - 新しい出来事</h3>
+        <div class="form-group">
+          <label>タイトル</label>
+          <input type="text" name="timeline[${timelineIndex}][title]" value="新しい出来事">
+        </div>
+        <div class="form-group">
+          <label>説明</label>
+          <textarea name="timeline[${timelineIndex}][description]">ここに説明を入力してください。</textarea>
+        </div>
+        <div class="form-group">
+          <label>画像URL</label>
+          <input type="text" name="timeline[${timelineIndex}][image]" value="/images/event${timelineIndex}.jpg">
+        </div>
+        <div class="form-group">
+          <label>画像キャプション</label>
+          <input type="text" name="timeline[${timelineIndex}][imageCaption]" value="記念写真">
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="this.parentElement.remove()">削除</button>
+      `;
+      
+      container.appendChild(item);
+      timelineIndex++;
+    }
+    
+    function getFormData() {
+      const form = document.getElementById('memoirForm');
+      const formData = new FormData(form);
+      const data = {};
+      
+      // 基本情報
+      data.title = formData.get('title');
+      data.subtitle = formData.get('subtitle');
+      data.author = formData.get('author');
+      data.createdDate = '2024年1月作成';
+      data.birthDate = formData.get('birthDate');
+      data.birthPlace = formData.get('birthPlace');
+      data.occupation = formData.get('occupation');
+      data.interests = formData.get('interests').split(',').map(s => s.trim());
+      data.motto = formData.get('motto');
+      data.profileImage = formData.get('profileImage');
+      
+      // 年表データ
+      data.timeline = [];
+      let i = 0;
+      while (formData.get(`timeline[${i}][title]`)) {
+        data.timeline.push({
+          year: 1985 + i * 5,
+          title: formData.get(`timeline[${i}][title]`),
+          description: formData.get(`timeline[${i}][description]`),
+          image: formData.get(`timeline[${i}][image]`),
+          imageCaption: formData.get(`timeline[${i}][imageCaption]`)
+        });
+        i++;
+      }
+      
+      return data;
+    }
+    
+    async function previewMemoir() {
+      const data = getFormData();
+      
+      try {
+        const response = await fetch('/memoir/preview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data })
+        });
+        
+        if (response.ok) {
+          const html = await response.text();
+          const previewContainer = document.getElementById('previewContainer');
+          const previewFrame = document.getElementById('previewFrame');
+          
+          previewContainer.style.display = 'block';
+          previewFrame.srcdoc = html;
+        } else {
+          alert('プレビューの生成に失敗しました');
+        }
+      } catch (error) {
+        console.error('プレビューエラー:', error);
+        alert('プレビューの生成中にエラーが発生しました');
+      }
+    }
+    
+    async function generatePDF() {
+      const data = getFormData();
+      
+      try {
+        const response = await fetch('/pdf/cli', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            template: 'memoir',
+            data: data,
+            fileName: 'my-memoir-cli.pdf'
+          })
+        });
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'my-memoir-cli.pdf';
+          a.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          alert('PDFの生成に失敗しました');
+        }
+      } catch (error) {
+        console.error('PDF生成エラー:', error);
+        alert('PDFの生成中にエラーが発生しました');
+      }
+    }
+  </script>
+</body>
+</html> 
