@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 20mm 15mm 25mm 15mm;
+      
+      /* ヘッダー・フッター */
+      @top-center {
+        content: string(title);
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-center {
+        content: counter(page);
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-left {
+        content: "雑誌サンプル";
+        font-size: 8pt;
+        color: #999;
+      }
+    }
+    
+    /* 表紙ページ */
+    @page :first {
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+      @bottom-left { content: none; }
+    }
+    
+    /* 目次ページ */
+    @page :left {
+      @top-center { content: string(title); }
+    }
+    
+    @page :right {
+      @top-center { content: string(title); }
+    }
+    
+    /* 基本スタイル */
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    
+    /* 表紙 */
+    .cover {
+      page-break-after: always;
+      text-align: center;
+      padding: 40mm 20mm;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .cover h1 {
+      font-size: 48pt;
+      margin: 0 0 20mm 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .cover .subtitle {
+      font-size: 18pt;
+      margin: 10mm 0;
+      opacity: 0.9;
+    }
+    
+    .cover .date {
+      font-size: 14pt;
+      margin-top: 30mm;
+      opacity: 0.8;
+    }
+    
+    /* 目次 */
+    .toc {
+      page-break-after: always;
+      padding: 10mm 0;
+    }
+    
+    .toc h2 {
+      font-size: 24pt;
+      margin: 0 0 10mm 0;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 5mm;
+    }
+    
+    .toc ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .toc li {
+      margin: 3mm 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    
+    .toc a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14pt;
+    }
+    
+    .toc a::after {
+      content: leader('.') target-counter(attr(href), page);
+      color: #999;
+    }
+    
+    /* 記事コンテンツ */
+    .article {
+      page-break-before: always;
+      padding: 10mm 0;
+    }
+    
+    .article h1 {
+      font-size: 28pt;
+      color: #667eea;
+      margin: 0 0 10mm 0;
+      page-break-after: avoid;
+    }
+    
+    .article h2 {
+      font-size: 20pt;
+      color: #555;
+      margin: 8mm 0 5mm 0;
+      page-break-after: avoid;
+    }
+    
+    .article h3 {
+      font-size: 16pt;
+      color: #666;
+      margin: 6mm 0 3mm 0;
+      page-break-after: avoid;
+    }
+    
+    .article p {
+      margin: 3mm 0;
+      text-align: justify;
+      font-size: 12pt;
+    }
+    
+    /* 段組みレイアウト */
+    .two-column {
+      column-count: 2;
+      column-gap: 8mm;
+      margin: 5mm 0;
+    }
+    
+    .two-column p {
+      margin: 2mm 0;
+    }
+    
+    /* 画像 */
+    .article img {
+      max-width: 100%;
+      height: auto;
+      margin: 5mm 0;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* 引用 */
+    .quote {
+      border-left: 4px solid #667eea;
+      padding-left: 8mm;
+      margin: 8mm 0;
+      font-style: italic;
+      background: #f8f9fa;
+      padding: 5mm 8mm;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    /* ページ分割制御 */
+    .page-break {
+      page-break-before: always;
+    }
+    
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+    
+    /* 印刷用スタイル */
+    @media print {
+      .cover {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 表紙 -->
+  <div class="cover">
+    <h1><%= it.title %></h1>
+    <div class="subtitle"><%= it.subtitle %></div>
+    <div class="date"><%= it.publishDate %></div>
+  </div>
+  
+  <!-- 目次 -->
+  <div class="toc">
+    <h2>目次</h2>
+    <ul>
+      <% it.articles.forEach((article, index) => { %>
+        <li>
+          <a href="#article-<%= index %>"><%= article.title %></a>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+  
+  <!-- 記事コンテンツ -->
+  <% it.articles.forEach((article, index) => { %>
+    <article class="article" id="article-<%= index %>">
+      <h1><%= article.title %></h1>
+      
+      <% if (article.subtitle) { %>
+        <h2><%= article.subtitle %></h2>
+      <% } %>
+      
+      <% if (article.author) { %>
+        <p style="font-style: italic; color: #666; margin-bottom: 8mm;">
+          著者: <%= article.author %>
+        </p>
+      <% } %>
+      
+      <% if (article.lead) { %>
+        <div class="quote">
+          <%= article.lead %>
+        </div>
+      <% } %>
+      
+      <% if (article.content) { %>
+        <div class="two-column">
+          <% article.content.split('\n\n').forEach(paragraph => { %>
+            <p><%= paragraph %></p>
+          <% }); %>
+        </div>
+      <% } %>
+      
+      <% if (article.image) { %>
+        <img src="<%= article.image %>" alt="<%= article.title %>" />
+      <% } %>
+    </article>
+  <% }); %>
+  
+  <script>
+    // タイトルを文字列として設定（ヘッダー用）
+    document.documentElement.style.setProperty('--title', '<%= it.title %>');
+  </script>
+</body>
+</html> 

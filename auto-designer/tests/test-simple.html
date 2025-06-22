@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テスト請求書</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+    
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      font-size: 12pt;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 15mm;
+      padding-bottom: 10mm;
+      border-bottom: 2px solid #333;
+    }
+    
+    .header h1 {
+      font-size: 32pt;
+      margin: 0 0 5mm 0;
+      color: #2c3e50;
+    }
+    
+    .content {
+      margin: 10mm 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10mm 0;
+    }
+    
+    th, td {
+      border: 1px solid #ddd;
+      padding: 3mm;
+      text-align: left;
+    }
+    
+    th {
+      background: #f8f9fa;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>請求書</h1>
+    <p>株式会社サンプル商事</p>
+  </div>
+  
+  <div class="content">
+    <h2>お客様情報</h2>
+    <p><strong>宛先:</strong> 株式会社テスト商事</p>
+    <p><strong>住所:</strong> 〒100-0001 東京都千代田区千代田1-2-3</p>
+    
+    <h2>商品明細</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>商品名</th>
+          <th>数量</th>
+          <th>単価 (円)</th>
+          <th>小計 (円)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Webサイト制作</td>
+          <td>1</td>
+          <td>500,000</td>
+          <td>500,000</td>
+        </tr>
+        <tr>
+          <td>サーバー構築</td>
+          <td>1</td>
+          <td>300,000</td>
+          <td>300,000</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h2>合計金額</h2>
+    <p><strong>合計: 800,000 円</strong></p>
+  </div>
+</body>
+</html> 

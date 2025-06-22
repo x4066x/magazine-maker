@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>請求書 - <%= it.customerName %></title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 20mm;
+      
+      /* ヘッダー・フッター */
+      @top-center {
+        content: "請求書";
+        font-size: 10pt;
+        color: #666;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 2mm;
+      }
+      
+      @bottom-center {
+        content: counter(page);
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-left {
+        content: "発行日: " string(date);
+        font-size: 8pt;
+        color: #999;
+      }
+      
+      @bottom-right {
+        content: "ページ " counter(page) " / " counter(pages);
+        font-size: 8pt;
+        color: #999;
+      }
+    }
+    
+    /* 基本スタイル */
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      font-size: 12pt;
+    }
+    
+    /* ヘッダー */
+    .header {
+      text-align: center;
+      margin-bottom: 15mm;
+      padding-bottom: 10mm;
+      border-bottom: 2px solid #333;
+    }
+    
+    .header h1 {
+      font-size: 32pt;
+      margin: 0 0 5mm 0;
+      color: #2c3e50;
+    }
+    
+    .header .company-info {
+      font-size: 14pt;
+      color: #666;
+      margin: 3mm 0;
+    }
+    
+    /* 請求書情報 */
+    .invoice-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 10mm 0;
+      page-break-inside: avoid;
+    }
+    
+    .customer-info, .invoice-details {
+      flex: 1;
+    }
+    
+    .customer-info h3, .invoice-details h3 {
+      font-size: 16pt;
+      margin: 0 0 5mm 0;
+      color: #2c3e50;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 2mm;
+    }
+    
+    .customer-info p, .invoice-details p {
+      margin: 2mm 0;
+      font-size: 12pt;
+    }
+    
+    /* 商品テーブル */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10mm 0;
+      page-break-inside: avoid;
+    }
+    
+    .items-table th {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      padding: 3mm;
+      text-align: left;
+      font-weight: bold;
+      font-size: 11pt;
+    }
+    
+    .items-table td {
+      border: 1px solid #ddd;
+      padding: 3mm;
+      font-size: 11pt;
+    }
+    
+    .items-table .text-right {
+      text-align: right;
+    }
+    
+    .items-table .text-center {
+      text-align: center;
+    }
+    
+    /* 合計金額 */
+    .total-section {
+      margin-top: 10mm;
+      text-align: right;
+      page-break-inside: avoid;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2mm 0;
+      font-size: 12pt;
+    }
+    
+    .total-row.grand-total {
+      font-size: 16pt;
+      font-weight: bold;
+      border-top: 2px solid #333;
+      padding-top: 3mm;
+      margin-top: 5mm;
+    }
+    
+    .total-label {
+      min-width: 100px;
+    }
+    
+    .total-amount {
+      min-width: 120px;
+      text-align: right;
+    }
+    
+    /* 備考 */
+    .notes {
+      margin-top: 15mm;
+      padding: 5mm;
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+      page-break-inside: avoid;
+    }
+    
+    .notes h4 {
+      margin: 0 0 3mm 0;
+      color: #2c3e50;
+      font-size: 14pt;
+    }
+    
+    .notes p {
+      margin: 2mm 0;
+      font-size: 11pt;
+    }
+    
+    /* 印刷用スタイル */
+    @media print {
+      .page-break {
+        page-break-before: always;
+      }
+      
+      .avoid-break {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>請求書</h1>
+    <div class="company-info">
+      <p>株式会社サンプル商事</p>
+      <p>〒100-0001 東京都千代田区千代田1-1-1</p>
+      <p>TEL: 03-1234-5678 / FAX: 03-1234-5679</p>
+    </div>
+  </div>
+  
+  <div class="invoice-info">
+    <div class="customer-info">
+      <h3>お客様情報</h3>
+      <p><strong>宛先:</strong> <%= it.customerName %></p>
+      <% if (it.customerAddress) { %>
+        <p><strong>住所:</strong> <%= it.customerAddress %></p>
+      <% } %>
+      <% if (it.customerPhone) { %>
+        <p><strong>電話:</strong> <%= it.customerPhone %></p>
+      <% } %>
+    </div>
+    
+    <div class="invoice-details">
+      <h3>請求書詳細</h3>
+      <p><strong>請求書番号:</strong> <%= it.invoiceNumber || 'INV-' + Date.now() %></p>
+      <p><strong>発行日:</strong> <%= it.issueDate || new Date().toLocaleDateString('ja-JP') %></p>
+      <p><strong>支払期限:</strong> <%= it.dueDate || new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('ja-JP') %></p>
+    </div>
+  </div>
+  
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>商品名</th>
+        <th class="text-center">数量</th>
+        <th class="text-right">単価 (円)</th>
+        <th class="text-right">小計 (円)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% it.items.forEach(item => { %>
+        <tr>
+          <td><%= item.name %></td>
+          <td class="text-center"><%= item.quantity || 1 %></td>
+          <td class="text-right"><%= item.price.toLocaleString() %></td>
+          <td class="text-right"><%= ((item.quantity || 1) * item.price).toLocaleString() %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  
+  <div class="total-section">
+    <% 
+      const subtotal = it.items.reduce((sum, item) => sum + ((item.quantity || 1) * item.price), 0);
+      const taxRate = it.taxRate || 0.1;
+      const tax = Math.floor(subtotal * taxRate);
+      const total = subtotal + tax;
+    %>
+    
+    <div class="total-row">
+      <span class="total-label">小計:</span>
+      <span class="total-amount"><%= subtotal.toLocaleString() %> 円</span>
+    </div>
+    
+    <div class="total-row">
+      <span class="total-label">消費税 (<%= (taxRate * 100).toFixed(0) %>%):</span>
+      <span class="total-amount"><%= tax.toLocaleString() %> 円</span>
+    </div>
+    
+    <div class="total-row grand-total">
+      <span class="total-label">合計:</span>
+      <span class="total-amount"><%= total.toLocaleString() %> 円</span>
+    </div>
+  </div>
+  
+  <% if (it.notes) { %>
+    <div class="notes">
+      <h4>備考</h4>
+      <p><%= it.notes %></p>
+    </div>
+  <% } %>
+  
+  <script>
+    // 発行日を文字列として設定（フッター用）
+    document.documentElement.style.setProperty('--date', '<%= it.issueDate || new Date().toLocaleDateString('ja-JP') %>');
+  </script>
+</body>
+</html> 

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 20mm 15mm 25mm 15mm;
+      
+      /* ヘッダー・フッター */
+      @top-center {
+        content: string(title);
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-center {
+        content: counter(page);
+        font-size: 10pt;
+        color: #666;
+      }
+      
+      @bottom-left {
+        content: "自分史";
+        font-size: 8pt;
+        color: #999;
+      }
+    }
+    
+    /* 表紙ページ */
+    @page :first {
+      @top-center { content: none; }
+      @bottom-center { content: none; }
+      @bottom-left { content: none; }
+    }
+    
+    /* 基本スタイル */
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    
+    /* 表紙 */
+    .cover {
+      page-break-after: always;
+      text-align: center;
+      padding: 40mm 20mm;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .cover h1 {
+      font-size: 48pt;
+      margin: 0 0 20mm 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .cover .subtitle {
+      font-size: 18pt;
+      margin: 10mm 0;
+      opacity: 0.9;
+    }
+    
+    .cover .author {
+      font-size: 16pt;
+      margin: 10mm 0;
+      opacity: 0.8;
+    }
+    
+    .cover .date {
+      font-size: 14pt;
+      margin-top: 30mm;
+      opacity: 0.8;
+    }
+    
+    /* 目次 */
+    .toc {
+      page-break-after: always;
+      padding: 10mm 0;
+    }
+    
+    .toc h2 {
+      font-size: 24pt;
+      margin: 0 0 10mm 0;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 5mm;
+    }
+    
+    .toc ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .toc li {
+      margin: 3mm 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    
+    .toc a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14pt;
+    }
+    
+    .toc a::after {
+      content: leader('.') target-counter(attr(href), page);
+      color: #999;
+    }
+    
+    /* 年表レイアウト */
+    .timeline {
+      page-break-before: always;
+      padding: 10mm 0;
+    }
+    
+    .timeline h1 {
+      font-size: 28pt;
+      color: #667eea;
+      margin: 0 0 10mm 0;
+      page-break-after: avoid;
+    }
+    
+    .timeline-item {
+      margin: 8mm 0;
+      page-break-inside: avoid;
+    }
+    
+    .timeline-year {
+      font-size: 18pt;
+      font-weight: bold;
+      color: #667eea;
+      margin: 0 0 3mm 0;
+      border-left: 4px solid #667eea;
+      padding-left: 5mm;
+    }
+    
+    .timeline-content {
+      margin-left: 10mm;
+      padding: 5mm;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border-left: 2px solid #667eea;
+    }
+    
+    .timeline-title {
+      font-size: 16pt;
+      font-weight: bold;
+      color: #333;
+      margin: 0 0 3mm 0;
+    }
+    
+    .timeline-description {
+      font-size: 12pt;
+      margin: 3mm 0;
+      text-align: justify;
+    }
+    
+    /* 画像表示 */
+    .timeline-image {
+      margin: 5mm 0;
+      text-align: center;
+    }
+    
+    .timeline-image img {
+      max-width: 100%;
+      max-height: 60mm;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 2px solid #fff;
+    }
+    
+    .timeline-image .caption {
+      font-size: 10pt;
+      color: #666;
+      margin-top: 2mm;
+      font-style: italic;
+    }
+    
+    /* プロフィールセクション */
+    .profile {
+      page-break-before: always;
+      padding: 10mm 0;
+    }
+    
+    .profile h1 {
+      font-size: 28pt;
+      color: #667eea;
+      margin: 0 0 10mm 0;
+      page-break-after: avoid;
+    }
+    
+    .profile-content {
+      display: flex;
+      gap: 10mm;
+      margin: 5mm 0;
+    }
+    
+    .profile-image {
+      flex: 0 0 40mm;
+      text-align: center;
+    }
+    
+    .profile-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .profile-details {
+      flex: 1;
+    }
+    
+    .profile-details h3 {
+      font-size: 16pt;
+      color: #333;
+      margin: 0 0 3mm 0;
+    }
+    
+    .profile-details p {
+      font-size: 12pt;
+      margin: 2mm 0;
+    }
+    
+    /* 引用 */
+    .quote {
+      border-left: 4px solid #667eea;
+      padding-left: 8mm;
+      margin: 8mm 0;
+      font-style: italic;
+      background: #f8f9fa;
+      padding: 5mm 8mm;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    /* ページ分割制御 */
+    .page-break {
+      page-break-before: always;
+    }
+    
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+    
+    /* 印刷用スタイル */
+    @media print {
+      .cover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      
+      .timeline-content {
+        background: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 表紙 -->
+  <div class="cover">
+    <h1><%= it.title %></h1>
+    <div class="subtitle"><%= it.subtitle %></div>
+    <div class="author"><%= it.author %></div>
+    <div class="date"><%= it.createdDate %></div>
+  </div>
+  
+  <!-- 目次 -->
+  <div class="toc">
+    <h2>目次</h2>
+    <ul>
+      <li><a href="#profile">プロフィール</a></li>
+      <% it.timeline.forEach(function(item) { %>
+        <li><a href="#year-<%= item.year %>"><%= item.year %>年</a></li>
+      <% }); %>
+    </ul>
+  </div>
+  
+  <!-- プロフィール -->
+  <div class="profile" id="profile">
+    <h1>プロフィール</h1>
+    <div class="profile-content">
+      <% if (it.profileImage) { %>
+        <div class="profile-image">
+          <img src="<%= it.profileImage %>" alt="プロフィール画像">
+        </div>
+      <% } %>
+      <div class="profile-details">
+        <h3><%= it.author %></h3>
+        <p><strong>生年月日:</strong> <%= it.birthDate %></p>
+        <p><strong>出身地:</strong> <%= it.birthPlace %></p>
+        <% if (it.occupation) { %>
+          <p><strong>職業:</strong> <%= it.occupation %></p>
+        <% } %>
+        <% if (it.interests) { %>
+          <p><strong>趣味:</strong> <%= it.interests.join(', ') %></p>
+        <% } %>
+        <div class="quote">
+          "<%= it.motto %>"
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 年表 -->
+  <div class="timeline">
+    <h1>私の歩み</h1>
+    
+    <% it.timeline.forEach(function(item) { %>
+      <div class="timeline-item" id="year-<%= item.year %>">
+        <div class="timeline-year"><%= item.year %>年</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><%= item.title %></div>
+          <div class="timeline-description"><%= item.description %></div>
+          
+          <% if (item.image) { %>
+            <div class="timeline-image">
+              <img src="<%= item.image %>" alt="<%= item.title %>">
+              <% if (item.imageCaption) { %>
+                <div class="caption"><%= item.imageCaption %></div>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</body>
+</html> 
