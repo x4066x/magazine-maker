@@ -618,6 +618,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "line-bot-sdk" },
     { name = "openai" },
+    { name = "requests" },
     { name = "uvicorn" },
 ]
 
@@ -627,6 +628,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "line-bot-sdk", specifier = ">=3.17.1" },
     { name = "openai", specifier = ">=1.86.0" },
+    { name = "requests", specifier = ">=2.31.0" },
     { name = "uvicorn", specifier = ">=0.34.3" },
 ]
 
