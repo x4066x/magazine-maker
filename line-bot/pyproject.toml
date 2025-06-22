@@ -10,6 +10,7 @@ dependencies = [
     "line-bot-sdk>=3.17.1",
     "uvicorn>=0.34.3",
     "openai>=1.86.0",
+    "requests>=2.31.0",
 ]
 
 [tool.poetry.dependencies]
