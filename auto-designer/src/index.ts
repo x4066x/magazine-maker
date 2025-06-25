@@ -5,6 +5,7 @@ import Fastify from 'fastify';
 import { generatePdf, generateHtml } from './pdf';
 import { generatePdfWithCli } from './pdf-cli';
 import { ImageManager, ImageInfo } from './utils/image-manager';
+import { v2Routes } from './v2';
 import fs from 'fs';
 import path from 'path';
 import { GraphAI, agentInfoWrapper } from 'graphai';
@@ -672,6 +673,9 @@ fastify.setNotFoundHandler((request, reply) => {
   } as ErrorResponse);
 });
 
+// v2 APIルートを登録
+fastify.register(v2Routes);
+
 const start = async () => {
   try {
     const port = parseInt(process.env.PORT || '3000');
@@ -688,6 +692,11 @@ const start = async () => {
     console.log(`📖 自分史プレビュー: POST http://localhost:${port}/memoir/preview`);
     console.log(`💬 ChatGPT: POST http://localhost:${port}/chat`);
     console.log(`💬 チャットボット: POST http://localhost:${port}/chatbot`);
+    console.log(`\n🔗 v2 API エンドポイント:`);
+    console.log(`📋 v2 ヘルスチェック: http://localhost:${port}/v2/health`);
+    console.log(`📝 v2 テンプレート情報: http://localhost:${port}/v2/templates`);
+    console.log(`📄 v2 PDF生成: POST http://localhost:${port}/v2/pdf`);
+    console.log(`📋 v2 サンプルデータ: http://localhost:${port}/v2/samples/memoir`);
     
   } catch (err) {
     fastify.log.error('サーバー起動エラー:', err);
