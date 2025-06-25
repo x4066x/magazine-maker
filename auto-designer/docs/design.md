@@ -12,6 +12,8 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **画像アップロード機能** - Base64エンコード対応
 - **PDF生成機能** - Puppeteer + Paged.js（汎用）/ pagedjs-cli（自分史専用）
 - **GraphAI統合** - 最新API対応、ループ・マッピング機能実装
+- **エンドポイント別テスト** - 包括的なテストスクリプト実装
+- **v2 API** - memoirテンプレート専用の新しいAPI（2024年12月実装）
 
 ### ✅ 変更履歴（2025年1月22日）
 - **memoir生成をpagedjs-cli版に変更**: より軽量で安定した処理
@@ -19,6 +21,14 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **ファイル名を`my-memoir-cli.pdf`に変更**: 使用エンジンの明確化
 - **GraphAI最新API対応**: チュートリアルに基づく実装更新
 - **ループ・マッピング機能追加**: チャットボット・バッチ処理エンドポイント実装
+- **テスト構造の統一**: エンドポイント別テストスクリプトの実装
+
+### ✅ v2 API実装（2024年12月19日）
+- **memoirテンプレート専用API**: 型安全で使いやすい新しいAPI
+- **構造化されたデータ型**: MemoirDataインターフェースによる厳密なバリデーション
+- **画像埋め込みユーティリティ**: 再利用可能な画像処理機能
+- **包括的なテスト**: v2 API専用のテストスイート
+- **詳細なドキュメント**: APIガイドとサンプルコード
 
 ### ⚠️ 構造上の問題点
 - **PDF生成の二重実装**: `pdf.ts` と `pdf-cli.ts` の使い分け（用途別に最適化済み）
@@ -40,6 +50,7 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 * **Paged.js** を活用した高品質なページ分割と印刷レイアウト
 * **画像アップロード・管理機能** を提供
 * **自分史作成機能** を提供
+* **v2 API** による型安全で使いやすいAPIを提供
 * CI/CD・Docker など運用系は当面スコープ外とし、実装コードと API 仕様にフォーカス
 
 ---
@@ -52,6 +63,7 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 | **eta**            | 超軽量テンプレートエンジン (HTML をレンダリング)   |
 | **puppeteer-core** | Headless Chromium を操作し PDF を作成 |
 | **pagedjs**        | CSS Paged Media を適用し組版         |
+| **pagedjs-cli**    | コマンドライン版Paged.js（v2 APIで使用） |
 | **sharp**          | 画像処理・最適化ライブラリ               |
 | **typescript**     | 型安全に開発                         |
 
@@ -59,9 +71,201 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 
 ---
 
-## 3. テスト結果
+## 3. v2 API 仕様
 
-### 3.1 Memoir機能テスト結果
+### 3.1 概要
+v2 APIは、memoirテンプレートに特化した型安全で使いやすいAPIです。構造化されたデータ型と厳密なバリデーションにより、高品質な自分史PDFを生成できます。
+
+### 3.2 エンドポイント一覧
+
+#### GET `/v2/health`
+v2 APIのヘルスチェック
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "version": "2.0.0",
+  "timestamp": "2024-12-19T10:30:00.000Z",
+  "features": ["memoir-pdf-generation"]
+}
+```
+
+#### GET `/v2/templates`
+利用可能なテンプレート情報を取得
+
+**Response:**
+```json
+{
+  "templates": [
+    {
+      "id": "memoir",
+      "name": "自分史",
+      "description": "人生の歩みを時系列で記録する自分史テンプレート",
+      "version": "2.0.0",
+      "dataSchema": {
+        "title": "string (必須)",
+        "subtitle": "string (オプション)",
+        "author": "string (必須)",
+        "profile": {
+          "name": "string (必須)",
+          "birthDate": "string (オプション)",
+          "description": "string (オプション)"
+        },
+        "timeline": [
+          {
+            "year": "number (必須)",
+            "title": "string (必須)",
+            "description": "string (必須)"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+#### GET `/v2/samples/memoir`
+memoirテンプレート用のサンプルデータを取得
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "title": "私の人生の歩み",
+    "subtitle": "〜これまでの道のり〜",
+    "author": "田中太郎",
+    "profile": {
+      "name": "田中太郎",
+      "birthDate": "1985年3月15日",
+      "description": "IT業界で20年以上働くエンジニア"
+    },
+    "timeline": [
+      {
+        "year": 1985,
+        "title": "誕生",
+        "description": "東京都で生まれました"
+      }
+    ]
+  }
+}
+```
+
+#### POST `/v2/pdf`
+PDF生成エンドポイント
+
+**Request Body:**
+```json
+{
+  "template": "memoir",
+  "data": {
+    "title": "私の人生の歩み",
+    "author": "田中太郎",
+    "profile": {
+      "name": "田中太郎"
+    },
+    "timeline": [
+      {
+        "year": 1985,
+        "title": "誕生",
+        "description": "東京都で生まれました"
+      }
+    ]
+  },
+  "options": {
+    "format": "A4",
+    "margin": "20mm 15mm 25mm 15mm"
+  }
+}
+```
+
+**Success Response:**
+- Content-Type: `application/pdf`
+- Content-Disposition: `attachment; filename="memoir-1702987200000.pdf"`
+- レスポンスボディ: PDFファイルのバイナリデータ
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": {
+    "message": "データの形式が正しくありません",
+    "code": "INVALID_DATA_FORMAT",
+    "details": "authorは必須の文字列です"
+  }
+}
+```
+
+### 3.3 データ型定義
+
+#### MemoirData インターフェース
+```typescript
+interface MemoirData {
+  title: string;                    // 必須: 自分史のタイトル
+  subtitle?: string;                // オプション: サブタイトル
+  author: string;                   // 必須: 著者名
+  date?: string;                    // オプション: 作成日
+  profile: {                        // 必須: プロフィール情報
+    name: string;                   // 必須: 名前
+    birthDate?: string;             // オプション: 生年月日
+    birthPlace?: string;            // オプション: 出生地
+    currentLocation?: string;       // オプション: 現在の居住地
+    occupation?: string;            // オプション: 職業
+    hobbies?: string[];             // オプション: 趣味の配列
+    profileImage?: string;          // オプション: プロフィール画像
+    description?: string;           // オプション: 自己紹介
+  };
+  timeline: Array<{                 // 必須: 年表データ
+    year: number;                   // 必須: 年
+    title: string;                  // 必須: イベントタイトル
+    description: string;            // 必須: イベントの詳細説明
+    image?: string;                 // オプション: 画像
+    imageCaption?: string;          // オプション: 画像のキャプション
+    tags?: string[];                // オプション: タグの配列
+  }>;
+  chapters?: Array<{                // オプション: 章の配列
+    title: string;                  // 必須: 章のタイトル
+    content: string;                // 必須: 章の内容
+    pageBreak?: boolean;            // オプション: ページ区切り
+  }>;
+  metadata?: {                      // オプション: メタデータ
+    keywords?: string[];            // オプション: キーワード
+    category?: string;              // オプション: カテゴリ
+    version?: string;               // オプション: バージョン
+  };
+}
+```
+
+### 3.4 エラーコード一覧
+
+| コード | 説明 |
+|--------|------|
+| `MISSING_TEMPLATE` | テンプレート名が指定されていません |
+| `UNSUPPORTED_TEMPLATE` | サポートされていないテンプレートです |
+| `MISSING_DATA` | データが指定されていません |
+| `INVALID_DATA_FORMAT` | データの形式が正しくありません |
+| `PDF_GENERATION_ERROR` | PDF生成中にエラーが発生しました |
+
+### 3.5 実装ファイル構成
+
+```
+src/
+├── v2/
+│   └── index.ts                    # v2 APIルーター
+├── utils/
+│   └── image-embedder.ts           # 画像埋め込みユーティリティ
+├── tests/
+│   └── v2-api.test.ts             # v2 APIテスト
+└── docs/
+    └── v2-api-guide.md            # v2 APIガイド
+```
+
+---
+
+## 4. テスト結果
+
+### 4.1 Memoir機能テスト結果
 
 #### テスト日時
 2025年6月22日
@@ -102,7 +306,7 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 2. **画像読み込み待機**: PDF生成時に画像の読み込み完了を待つ処理を追加
 3. **リクエストインターセプト**: 画像リクエストの処理を改善
 
-### 3.2 Base64埋め込み機能実装とテスト結果
+### 4.2 Base64埋め込み機能実装とテスト結果
 
 #### 実装日時
 2025年6月22日
@@ -149,9 +353,42 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - `baby.png` - 出産時の写真
 - `current.png` - 現在の写真
 
+### 4.3 v2 APIテスト結果
+
+#### テスト日時
+2024年12月19日
+
+#### テスト内容
+- v2 APIエンドポイントの動作確認
+- データバリデーション機能
+- エラーハンドリング機能
+
+#### テスト結果
+✅ **ヘルスチェック**: 正常動作
+- APIバージョン情報が正しく返される
+- 機能一覧が正しく表示される
+
+✅ **テンプレート情報取得**: 正常動作
+- memoirテンプレートの情報が正しく取得される
+- データスキーマが正しく定義される
+
+✅ **サンプルデータ取得**: 正常動作
+- 完全なサンプルデータが返される
+- データ構造が正しく定義される
+
+✅ **PDF生成**: 正常動作
+- 有効なデータでPDFが生成される
+- バリデーションエラーが正しく処理される
+
+#### 技術的改善点
+1. **型安全性**: TypeScriptによる厳密な型チェック
+2. **バリデーション**: 構造化されたデータ検証
+3. **エラーハンドリング**: 詳細なエラー情報の提供
+4. **ドキュメント**: 包括的なAPIガイド
+
 ---
 
-## 4. API 仕様
+## 5. API 仕様（v1）
 
 ### GET `/health`
 ヘルスチェックエンドポイント
@@ -479,7 +716,7 @@ X-Processing-Time: 1500
 
 ---
 
-## 5. ディレクトリ構成
+## 6. ディレクトリ構成
 
 ```
 auto-designer/
@@ -524,9 +761,9 @@ auto-designer/
 
 ---
 
-## 6. テンプレート仕様
+## 7. テンプレート仕様
 
-### 6.1 請求書テンプレート (`invoice.eta`)
+### 7.1 請求書テンプレート (`invoice.eta`)
 
 **機能:**
 - ヘッダー・フッター（ページ番号、発行日）
@@ -556,7 +793,7 @@ auto-designer/
 }
 ```
 
-### 6.2 雑誌テンプレート (`magazine.eta`)
+### 7.2 雑誌テンプレート (`magazine.eta`)
 
 **機能:**
 - 表紙ページ（グラデーション背景）
@@ -583,7 +820,7 @@ auto-designer/
 }
 ```
 
-### 6.3 自分史テンプレート (`memoir.eta`)
+### 7.3 自分史テンプレート (`memoir.eta`)
 
 **機能:**
 - 表紙ページ（グラデーション背景、タイトル・著者名）
@@ -626,9 +863,9 @@ auto-designer/
 
 ---
 
-## 7. 画像管理機能
+## 8. 画像管理機能
 
-### 7.1 ImageManager クラス
+### 8.1 ImageManager クラス
 
 **機能:**
 - 画像アップロード（Base64エンコード対応）
@@ -643,7 +880,7 @@ auto-designer/
 - `listImages()`: 画像一覧取得
 - `deleteImage(path)`: 画像削除
 
-### 7.2 画像処理オプション
+### 8.2 画像処理オプション
 
 ```typescript
 interface ImageOptions {
@@ -656,16 +893,16 @@ interface ImageOptions {
 
 ---
 
-## 8. 自分史作成ツール
+## 9. 自分史作成ツール
 
-### 8.1 機能概要
+### 9.1 機能概要
 
 - WebブラウザベースのGUI
 - リアルタイムプレビュー
 - 年表項目の動的追加・編集
 - PDF出力機能
 
-### 8.2 使用方法
+### 9.2 使用方法
 
 1. サーバー起動: `npm run dev`
 2. ブラウザで `samples/memoir-sample.html` を開く
@@ -673,7 +910,7 @@ interface ImageOptions {
 4. プレビューで確認
 5. PDF生成・ダウンロード
 
-### 8.3 技術仕様
+### 9.3 技術仕様
 
 - 純粋なHTML/CSS/JavaScript
 - Fetch API を使用したサーバー通信
@@ -682,16 +919,16 @@ interface ImageOptions {
 
 ---
 
-## 9. Paged.js 活用機能
+## 10. Paged.js 活用機能
 
-### 9.1 CSS Paged Media 機能
+### 10.1 CSS Paged Media 機能
 
 - **@page ルール**: ページサイズ、マージン、ヘッダー・フッター設定
 - **ページ分割制御**: `page-break-before`, `page-break-after`, `page-break-inside`
 - **生成コンテンツ**: `content`, `counter()`, `string()` 関数
 - **段組みレイアウト**: `column-count`, `column-gap`
 
-### 9.2 実装の改善点
+### 10.2 実装の改善点
 
 - **エラーハンドリング**: 適切なtry-catch文とリソース管理
 - **パフォーマンス**: Puppeteerの最適化設定
@@ -700,9 +937,9 @@ interface ImageOptions {
 
 ---
 
-## 10. 構造整理の変更点
+## 11. 構造整理の変更点
 
-### 10.1 ディレクトリ構造の改善
+### 11.1 ディレクトリ構造の改善
 
 **変更前:**
 ```
@@ -733,7 +970,7 @@ auto-designer/
 └── samples/              # サンプルデータ
 ```
 
-### 10.2 新規追加ファイル
+### 11.2 新規追加ファイル
 
 - **src/types/index.ts**: 雑誌・請求書データの型定義
 - **src/utils/file-utils.ts**: ファイル操作ユーティリティ
@@ -742,14 +979,14 @@ auto-designer/
 - **.gitignore**: Git除外ファイル設定
 - **docs/structure.md**: 構造説明ドキュメント
 
-### 10.3 package.json の改善
+### 11.3 package.json の改善
 
 - スクリプトの整理と追加
 - メインファイルパスの修正
 - テストスクリプトの改善
 - クリーンアップスクリプトの追加
 
-### 10.4 開発フローの改善
+### 11.4 開発フローの改善
 
 1. **型安全性の向上**: TypeScript型定義の追加
 2. **ユーティリティの分離**: 再利用可能な関数の整理
@@ -759,7 +996,7 @@ auto-designer/
 
 ---
 
-## 11. 今後の改善予定
+## 12. 今後の改善予定
 
 - **テストフレームワーク**: Jest または Vitest の導入
 - **ESLint/Prettier**: コード品質の向上
@@ -769,9 +1006,9 @@ auto-designer/
 
 ---
 
-## 12. GraphAI統合機能
+## 13. GraphAI統合機能
 
-### 12.1 実装概要
+### 13.1 実装概要
 
 GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html）に基づいて、以下の機能を実装：
 
@@ -780,7 +1017,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - **マッピング機能**: バッチ処理での並列実行
 - **エージェント関数**: カスタムエージェントの実装
 
-### 12.2 主要エージェント
+### 13.2 主要エージェント
 
 #### openAIAgent
 - OpenAI APIとの統合
@@ -811,7 +1048,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - データコピー処理
 - 結果の整形
 
-### 12.3 技術的改善点
+### 13.3 技術的改善点
 
 1. **型安全性**: TypeScript型定義の追加
 2. **エラーハンドリング**: 適切な例外処理
@@ -821,7 +1058,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 
 ---
 
-## 13. 今後の改善予定
+## 14. 今後の改善予定
 
 - **テストフレームワーク**: Jest または Vitest の導入
 - **ESLint/Prettier**: コード品質の向上
@@ -829,3 +1066,109 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - **GraphAI機能拡張**: より高度なフロー制御
 - **ストリーミング対応**: リアルタイムレスポンス
 - **認証機能**: API キー管理の改善
+- **自動テスト**: CI/CDパイプラインでの自動実行
+
+---
+
+## 15. テスト構成（2025年1月22日更新）
+
+### 15.1 テストスクリプト構成
+
+**新しいテストスクリプト**: `scripts/test-endpoints.sh`
+
+**特徴:**
+- エンドポイントごとの個別テスト実行
+- 色付きログ出力（成功・エラー・警告・情報）
+- 処理時間の計測
+- ファイルサイズの確認
+- 包括的なエラーテスト
+
+### 15.2 利用可能なテスト
+
+| テスト名 | エンドポイント | 説明 |
+|---------|---------------|------|
+| `health` | `GET /health` | ヘルスチェック |
+| `templates` | `GET /templates` | テンプレート一覧取得 |
+| `upload` | `POST /upload/image` | 画像アップロード |
+| `images` | `GET /images` | 画像一覧取得 |
+| `preview` | `POST /memoir/preview` | 自分史プレビュー |
+| `pdf` | `POST /pdf` | PDF生成（puppeteer版） |
+| `pdf-cli` | `POST /pdf/cli` | PDF生成（pagedjs-cli版） |
+| `chat` | `POST /chat` | ChatGPT |
+| `chatbot` | `POST /chatbot` | チャットボット |
+| `errors` | 各種エラー | エラーハンドリング |
+| `files` | - | 生成ファイル確認 |
+| `all` | 全エンドポイント | 全テスト実行 |
+
+### 15.3 使用方法
+
+```bash
+# 全テスト実行
+./scripts/test-endpoints.sh
+
+# 特定のエンドポイントテスト
+./scripts/test-endpoints.sh health
+./scripts/test-endpoints.sh pdf
+./scripts/test-endpoints.sh chat
+
+# ヘルプ表示
+./scripts/test-endpoints.sh help
+```
+
+### 15.4 テスト出力例
+
+```
+🚀 Paged.js PDF WebAPI エンドポイント別テスト開始
+==========================================
+ベースURL: http://localhost:3000
+出力ディレクトリ: ./test-output
+
+==========================================
+📋 ヘルスチェックテスト
+==========================================
+🔵 GET /health
+✅ ヘルスチェック成功 (HTTP 200)
+{
+  "status": "ok",
+  "timestamp": "2025-01-22T10:30:00.000Z"
+}
+
+==========================================
+📋 PDF生成テスト（puppeteer版）
+==========================================
+🔵 POST /pdf
+✅ PDF生成成功（puppeteer版） (HTTP 200)
+🔵 処理時間: 2.34秒
+🔵 ファイルサイズ: 123456 bytes
+```
+
+### 15.5 技術的特徴
+
+1. **モジュラー設計**: 各テストが独立して実行可能
+2. **詳細なログ**: 処理時間、ファイルサイズ、HTTPステータスを記録
+3. **エラーハンドリング**: 適切なエラー検出と報告
+4. **クロスプラットフォーム**: macOS/Linux両対応
+5. **JSON解析**: jqコマンドによるレスポンス解析
+
+### 15.6 古いテストスクリプトの整理
+
+**削除されたファイル:**
+- `scripts/test.sh` - 旧テストスクリプト
+- `scripts/test-fixed.sh` - 旧テストスクリプト（修正版）
+
+**理由:**
+- 機能の重複を排除
+- メンテナンス性の向上
+- テスト構造の統一
+
+---
+
+## 16. 今後の改善予定
+
+- **テストフレームワーク**: Jest または Vitest の導入
+- **ESLint/Prettier**: コード品質の向上
+- **Docker**: コンテナ化対応
+- **GraphAI機能拡張**: より高度なフロー制御
+- **ストリーミング対応**: リアルタイムレスポンス
+- **認証機能**: API キー管理の改善
+- **自動テスト**: CI/CDパイプラインでの自動実行
