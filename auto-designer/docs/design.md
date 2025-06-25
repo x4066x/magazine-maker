@@ -11,11 +11,14 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **Fastify HTTPサーバー** - エントリーポイント
 - **画像アップロード機能** - Base64エンコード対応
 - **PDF生成機能** - Puppeteer + Paged.js（汎用）/ pagedjs-cli（自分史専用）
+- **GraphAI統合** - 最新API対応、ループ・マッピング機能実装
 
 ### ✅ 変更履歴（2025年1月22日）
 - **memoir生成をpagedjs-cli版に変更**: より軽量で安定した処理
 - **pagedjs-cli版にBase64画像埋め込み機能を追加**: Puppeteer版と同等の機能
 - **ファイル名を`my-memoir-cli.pdf`に変更**: 使用エンジンの明確化
+- **GraphAI最新API対応**: チュートリアルに基づく実装更新
+- **ループ・マッピング機能追加**: チャットボット・バッチ処理エンドポイント実装
 
 ### ⚠️ 構造上の問題点
 - **PDF生成の二重実装**: `pdf.ts` と `pdf-cli.ts` の使い分け（用途別に最適化済み）
@@ -347,6 +350,133 @@ X-Processing-Time: 1500
 - **自分史**: `/pdf/cli` エンドポイント（pagedjs-cli版）を使用
 - CLI版は自分史に特化した最適化が施されており、より軽量で安定した処理が可能
 
+### POST `/chat` **（GraphAI ChatGPT統合）**
+
+| 項目               | 内容                             |
+| ---------------- | ------------------------------ |
+| **概要**           | GraphAIを使用したChatGPT API統合 |
+| **特徴**           | 最新API対応、プロンプト・メッセージ両対応 |
+| **Content‑Type** | `application/json`             |
+| **Accept**       | `application/json`             |
+
+#### Request Body
+
+```jsonc
+{
+  "messages": [                    // 任意: メッセージ配列
+    {
+      "role": "user",
+      "content": "こんにちは"
+    }
+  ],
+  "prompt": "こんにちは",            // 任意: 単一プロンプト
+  "model": "gpt-3.5-turbo"         // 任意: モデル指定
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "result": {
+    "text": "こんにちは！何かお手伝いできることはありますか？",
+    "message": {
+      "role": "assistant",
+      "content": "こんにちは！何かお手伝いできることはありますか？"
+    },
+    "usage": {
+      "prompt_tokens": 10,
+      "completion_tokens": 20,
+      "total_tokens": 30
+    },
+    "model": "gpt-3.5-turbo"
+  }
+}
+```
+
+### POST `/chatbot` **（GraphAI ループ機能使用）**
+
+| 項目               | 内容                             |
+| ---------------- | ------------------------------ |
+| **概要**           | ループ機能を使用したチャットボット |
+| **特徴**           | 複数ターンの会話、状態管理 |
+| **Content‑Type** | `application/json`             |
+| **Accept**       | `application/json`             |
+
+#### Request Body
+
+```jsonc
+{
+  "initialPrompt": "こんにちは、今日の天気について教えてください",
+  "maxTurns": 10                   // 任意: 最大会話ターン数
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "conversation": [
+    {
+      "role": "system",
+      "content": "あなたは親切で役立つアシスタントです。"
+    },
+    {
+      "role": "user",
+      "content": "こんにちは、今日の天気について教えてください"
+    },
+    {
+      "role": "assistant",
+      "content": "申し訳ございませんが、私はリアルタイムの天気情報にアクセスできません..."
+    }
+  ]
+}
+```
+
+### POST `/batch-process` **（GraphAI マッピング機能使用）**
+
+| 項目               | 内容                             |
+| ---------------- | ------------------------------ |
+| **概要**           | マッピング機能を使用したバッチ処理 |
+| **特徴**           | 並列処理、大量データ対応 |
+| **Content‑Type** | `application/json`             |
+| **Accept**       | `application/json`             |
+
+#### Request Body
+
+```jsonc
+{
+  "items": [                       // 必須: 処理対象アイテム配列
+    "りんご",
+    "レモン",
+    "バナナ"
+  ],
+  "promptTemplate": "What is the typical color of ${:row}? Just answer the color.",
+  "model": "gpt-3.5-turbo"         // 任意: モデル指定
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "item": "赤"
+    },
+    {
+      "item": "黄色"
+    },
+    {
+      "item": "黄色"
+    }
+  ]
+}
+```
+
 ---
 
 ## 5. ディレクトリ構成
@@ -636,3 +766,66 @@ auto-designer/
 - **Docker**: コンテナ化対応
 - **CI/CD**: GitHub Actions の導入
 - **API ドキュメント**: OpenAPI/Swagger の追加
+
+---
+
+## 12. GraphAI統合機能
+
+### 12.1 実装概要
+
+GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html）に基づいて、以下の機能を実装：
+
+- **最新API対応**: GraphAI 2.0.8の最新API仕様に対応
+- **ループ機能**: チャットボットでの複数ターン会話
+- **マッピング機能**: バッチ処理での並列実行
+- **エージェント関数**: カスタムエージェントの実装
+
+### 12.2 主要エージェント
+
+#### openAIAgent
+- OpenAI APIとの統合
+- プロンプト・メッセージ両対応
+- 統一されたレスポンス形式
+
+#### textInputAgent
+- ユーザー入力の処理
+- チャットボットでの入力待機
+
+#### compareAgent
+- 条件比較処理
+- ループ制御での使用
+
+#### stringTemplateAgent
+- 文字列テンプレート処理
+- コンソール出力対応
+
+#### pushAgent
+- 配列操作
+- メッセージ履歴の管理
+
+#### mapAgent
+- マッピング処理
+- サブグラフの実行
+
+#### copyAgent
+- データコピー処理
+- 結果の整形
+
+### 12.3 技術的改善点
+
+1. **型安全性**: TypeScript型定義の追加
+2. **エラーハンドリング**: 適切な例外処理
+3. **レスポンス統一**: 一貫したAPIレスポンス形式
+4. **パフォーマンス**: 並列処理の最適化
+5. **拡張性**: 新しいエージェントの追加が容易
+
+---
+
+## 13. 今後の改善予定
+
+- **テストフレームワーク**: Jest または Vitest の導入
+- **ESLint/Prettier**: コード品質の向上
+- **Docker**: コンテナ化対応
+- **GraphAI機能拡張**: より高度なフロー制御
+- **ストリーミング対応**: リアルタイムレスポンス
+- **認証機能**: API キー管理の改善

@@ -1,9 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import Fastify from 'fastify';
 import { generatePdf, generateHtml } from './pdf';
 import { generatePdfWithCli } from './pdf-cli';
 import { ImageManager, ImageInfo } from './utils/image-manager';
 import fs from 'fs';
 import path from 'path';
+import { GraphAI, agentInfoWrapper } from 'graphai';
 
 // リクエストボディの型定義
 interface PdfRequest {
@@ -445,6 +449,210 @@ fastify.post('/pdf/cli', async (request, reply) => {
   }
 });
 
+// OpenAI APIを直接呼び出すエージェント関数
+const openAIAgent = agentInfoWrapper(async ({ namedInputs }: any) => {
+  const { prompt, messages, model, apiKey } = namedInputs;
+  
+  // メッセージの構築
+  let finalMessages = messages || [];
+  
+  // プロンプトが指定されている場合は追加
+  if (prompt) {
+    finalMessages.push({
+      role: 'user',
+      content: prompt
+    });
+  }
+  
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: model || 'gpt-3.5-turbo',
+      messages: finalMessages,
+      max_tokens: 1000,
+      temperature: 0.7
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenAI API error: ${response.status} ${error}`);
+  }
+
+  const data = await response.json();
+  
+  // GraphAIの期待する形式でレスポンスを返す
+  return {
+    text: data.choices[0]?.message?.content || '',
+    message: data.choices[0]?.message || {},
+    usage: data.usage || {},
+    model: data.model || model
+  };
+});
+
+// ChatGPTエンドポイント
+fastify.post('/chat', async (request, reply) => {
+  try {
+    const { messages, prompt, model } = request.body as {
+      messages?: Array<{ role: string; content: string }>,
+      prompt?: string,
+      model?: string
+    };
+    
+    // プロンプトまたはメッセージのいずれかが必要
+    if ((!messages || !Array.isArray(messages)) && !prompt) {
+      return reply.status(400).send({
+        error: 'messages配列またはpromptが必要です',
+        timestamp: new Date().toISOString()
+      } as ErrorResponse);
+    }
+    
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return reply.status(500).send({
+        error: 'OPENAI_API_KEYが設定されていません',
+        timestamp: new Date().toISOString()
+      } as ErrorResponse);
+    } 
+    
+    // Dataflow Graph定義（最新のチュートリアル形式）
+    const graph = {
+      version: 0.5,
+      nodes: {
+        userInput: {
+          value: {
+            messages: messages || [],
+            prompt: prompt || '',
+            model: model || 'gpt-3.5-turbo'
+          }
+        },
+        chat: {
+          agent: 'openAIAgent',
+          inputs: {
+            messages: ':userInput.messages',
+            prompt: ':userInput.prompt',
+            model: ':userInput.model',
+            apiKey: apiKey
+          },
+          isResult: true
+        }
+      }
+    };
+    
+    // Agent関数辞書
+    const agents = {
+      openAIAgent
+    };
+    
+    // 実行
+    const engine = new GraphAI(graph, agents);
+    const result = await engine.run();
+    
+    // レスポンス形式を統一
+    const chatResult = result.chat as any;
+    return {
+      success: true,
+      result: {
+        text: chatResult?.text || '',
+        message: chatResult?.message || {},
+        usage: chatResult?.usage || {},
+        model: chatResult?.model || model
+      }
+    };
+    
+  } catch (error) {
+    fastify.log.error('ChatGPTエンドポイントエラー:', error);
+    reply.status(500).send({
+      error: 'ChatGPT呼び出し中にエラーが発生しました',
+      details: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    } as ErrorResponse);
+  }
+});
+
+// チャットボットエンドポイント（ループ機能使用）
+fastify.post('/chatbot', async (request, reply) => {
+  try {
+    const { initialPrompt, maxTurns = 10 } = request.body as {
+      initialPrompt?: string,
+      maxTurns?: number
+    };
+    
+    if (!initialPrompt) {
+      return reply.status(400).send({
+        error: 'initialPromptが必要です',
+        timestamp: new Date().toISOString()
+      } as ErrorResponse);
+    }
+    
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return reply.status(500).send({
+        error: 'OPENAI_API_KEYが設定されていません',
+        timestamp: new Date().toISOString()
+      } as ErrorResponse);
+    }
+    
+    // 簡素化されたチャットボット
+    const messages = [
+      {
+        role: 'system',
+        content: 'あなたは親切で役立つアシスタントです。'
+      },
+      {
+        role: 'user',
+        content: initialPrompt
+      }
+    ];
+    
+    const graph = {
+      version: 0.5,
+      nodes: {
+        llm: {
+          agent: 'openAIAgent',
+          params: {
+            model: 'gpt-3.5-turbo'
+          },
+          inputs: {
+            messages: messages,
+            apiKey: apiKey
+          },
+          isResult: true
+        }
+      }
+    };
+    
+    const agents = { openAIAgent };
+    const engine = new GraphAI(graph, agents);
+    const result = await engine.run();
+    
+    const response = (result.llm as any)?.text || '';
+    
+    return {
+      success: true,
+      conversation: [
+        ...messages,
+        {
+          role: 'assistant',
+          content: response
+        }
+      ]
+    };
+    
+  } catch (error) {
+    fastify.log.error('チャットボットエンドポイントエラー:', error);
+    reply.status(500).send({
+      error: 'チャットボット実行中にエラーが発生しました',
+      details: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    } as ErrorResponse);
+  }
+});
+
 // エラーハンドラー
 fastify.setErrorHandler((error, request, reply) => {
   fastify.log.error('未処理エラー:', error);
@@ -478,6 +686,8 @@ const start = async () => {
     console.log(`🖼️ 画像アップロード: POST http://localhost:${port}/upload/image`);
     console.log(`🖼️ 画像一覧: GET http://localhost:${port}/images`);
     console.log(`📖 自分史プレビュー: POST http://localhost:${port}/memoir/preview`);
+    console.log(`💬 ChatGPT: POST http://localhost:${port}/chat`);
+    console.log(`💬 チャットボット: POST http://localhost:${port}/chatbot`);
     
   } catch (err) {
     fastify.log.error('サーバー起動エラー:', err);
