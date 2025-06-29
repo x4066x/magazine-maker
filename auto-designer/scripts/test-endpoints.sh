@@ -274,22 +274,51 @@ test_v2_pdf() {
     log_section "v2 PDF生成テスト"
     log_info "POST /v2/pdf"
     
-    # 最小限の有効なmemoirデータを作成
+    # v2 APIの期待する形式で自分史データを作成
     memoir_data='{
       "template": "memoir",
       "data": {
-        "title": "テスト自分史",
-        "author": "テスト太郎",
+        "title": "私の歩み",
+        "subtitle": "人生の記録",
+        "author": "田中花子",
+        "date": "2024年12月",
         "profile": {
-          "name": "テスト太郎",
-          "birthDate": "1990年1月1日",
-          "description": "テスト用の自分史です"
+          "name": "田中花子",
+          "birthDate": "1985年3月15日",
+          "birthPlace": "東京都",
+          "occupation": "会社員",
+          "hobbies": ["読書", "旅行", "料理"],
+          "description": "一期一会を大切に",
+          "profileImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNjY3ZWVhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7jgqPjgqTjgqPjgqTjgqM8L3RleHQ+PC9zdmc+"
         },
         "timeline": [
           {
-            "year": 1990,
+            "year": 1985,
             "title": "誕生",
-            "description": "テスト用の誕生イベントです"
+            "description": "春の暖かい日に生まれました。両親は私の誕生を心から喜んでくれました。",
+            "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuODk+ODqOODs+ODiDwvdGV4dD48L3N2Zz4=",
+            "imageCaption": "誕生時の記念写真"
+          },
+          {
+            "year": 2003,
+            "title": "高校卒業",
+            "description": "地元の高校を卒業し、大学進学を決意しました。友達との別れは寂しかったですが、新しい出会いへの期待もありました。",
+            "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuWkp+WtpueUn+W6lzwvdGV4dD48L3N2Zz4=",
+            "imageCaption": "卒業式の記念写真"
+          },
+          {
+            "year": 2007,
+            "title": "就職",
+            "description": "事務職として働き始め、社会人としての第一歩を踏み出しました。責任の重さを実感し、同時にやりがいも感じました。",
+            "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuWQjuWPsOaKseWKqDwvdGV4dD48L3N2Zz4=",
+            "imageCaption": "入社式の様子"
+          },
+          {
+            "year": 2012,
+            "title": "結婚",
+            "description": "夫と出会い、新しい家族との生活が始まりました。二人で支え合いながら、幸せな家庭を築いていきたいと思います。",
+            "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuWkqOWkqDwvdGV4dD48L3N2Zz4=",
+            "imageCaption": "結婚式の記念写真"
           }
         ]
       }
