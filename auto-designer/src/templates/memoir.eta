@@ -277,7 +277,7 @@
     <h1><%= it.title %></h1>
     <div class="subtitle"><%= it.subtitle %></div>
     <div class="author"><%= it.author %></div>
-    <div class="date"><%= it.createdDate %></div>
+    <div class="date"><%= it.date %></div>
   </div>
   
   <!-- 目次 -->
@@ -295,24 +295,30 @@
   <div class="profile" id="profile">
     <h1>プロフィール</h1>
     <div class="profile-content">
-      <% if (it.profileImage) { %>
+      <% if (it.profile && it.profile.profileImage) { %>
         <div class="profile-image">
-          <img src="<%= it.profileImage %>" alt="プロフィール画像">
+          <img src="<%= it.profile.profileImage %>" alt="プロフィール画像">
         </div>
       <% } %>
       <div class="profile-details">
-        <h3><%= it.author %></h3>
-        <p><strong>生年月日:</strong> <%= it.birthDate %></p>
-        <p><strong>出身地:</strong> <%= it.birthPlace %></p>
-        <% if (it.occupation) { %>
-          <p><strong>職業:</strong> <%= it.occupation %></p>
+        <h3><%= it.profile ? it.profile.name : it.author %></h3>
+        <% if (it.profile && it.profile.birthDate) { %>
+          <p><strong>生年月日:</strong> <%= it.profile.birthDate %></p>
         <% } %>
-        <% if (it.interests) { %>
-          <p><strong>趣味:</strong> <%= it.interests.join(', ') %></p>
+        <% if (it.profile && it.profile.birthPlace) { %>
+          <p><strong>出身地:</strong> <%= it.profile.birthPlace %></p>
         <% } %>
-        <div class="quote">
-          "<%= it.motto %>"
-        </div>
+        <% if (it.profile && it.profile.occupation) { %>
+          <p><strong>職業:</strong> <%= it.profile.occupation %></p>
+        <% } %>
+        <% if (it.profile && it.profile.hobbies && it.profile.hobbies.length > 0) { %>
+          <p><strong>趣味:</strong> <%= it.profile.hobbies.join(', ') %></p>
+        <% } %>
+        <% if (it.profile && it.profile.description) { %>
+          <div class="quote">
+            "<%= it.profile.description %>"
+          </div>
+        <% } %>
       </div>
     </div>
   </div>
