@@ -50,11 +50,7 @@ export async function generatePdfWithCli(
     ];
 
     if (options.format) {
-      cliArgs.push('--format', options.format);
-    }
-
-    if (options.margin) {
-      cliArgs.push('--margin', options.margin);
+      cliArgs.push('--page-size', options.format);
     }
 
     const command = `npx pagedjs-cli ${cliArgs.join(' ')}`;
@@ -83,23 +79,20 @@ export async function generatePdfWithCli(
       throw new Error('PDFファイルが空です');
     }
 
+    // HTMLファイルのみ即座に削除（PDFファイルは保持）
+    try {
+      if (fs.existsSync(htmlFilePath)) {
+        fs.unlinkSync(htmlFilePath);
+      }
+    } catch (cleanupError) {
+      console.warn('HTMLファイルのクリーンアップに失敗:', cleanupError);
+    }
+
     return pdfBuffer;
 
   } catch (error) {
     console.error('pagedjs-cli実行エラー:', error);
     throw new Error(`pagedjs-cliでのPDF生成に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  } finally {
-    // 一時ファイルをクリーンアップ
-    try {
-      if (fs.existsSync(htmlFilePath)) {
-        fs.unlinkSync(htmlFilePath);
-      }
-      if (!options.output && fs.existsSync(outputPath)) {
-        fs.unlinkSync(outputPath);
-      }
-    } catch (cleanupError) {
-      console.warn('一時ファイルのクリーンアップに失敗:', cleanupError);
-    }
   }
 }
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Futura&display=swap" rel="stylesheet">
+  <style>
+    @page :first {
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Futura', sans-serif;
+    }
+
+    .cover-split {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+    .cover-split .left {
+      flex: 1;
+      background: url('<%= it.coverImage || it.artworkImage || it.mainImage || it.backgroundImage || "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjM2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1BR0FASU5FPC90ZXh0Pjwvc3ZnPg==" %>') center/cover;
+    }
+    .cover-split .right {
+      flex: 1;
+      background-color: #fafafa;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20mm;
+    }
+    .cover-split .right .masthead {
+      font-size: 48pt;
+      font-family: 'Futura', sans-serif;
+      font-weight: bold;
+      line-height: 1.1;
+    }
+    .cover-split .right .tagline {
+      margin-top: 10mm;
+      font-size: 18pt;
+      color: #333;
+      line-height: 1.4;
+    }
+    .cover-split .right .date {
+      margin-top: 15mm;
+      font-size: 14pt;
+      color: #666;
+    }
+    .cover-split .right .features {
+      margin-top: 15mm;
+      font-size: 12pt;
+      color: #555;
+    }
+    .cover-split .right .features li {
+      margin-bottom: 5mm;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover-split">
+    <div class="left"></div>
+    <div class="right">
+      <div class="masthead"><%= it.title %></div>
+      <div class="tagline"><%= it.subtitle %></div>
+      <% if (it.date) { %>
+      <div class="date"><%= it.date %></div>
+      <% } %>
+      <% if (it.features && it.features.length > 0) { %>
+      <ul class="features">
+        <% it.features.forEach(function(feature) { %>
+        <li><%= feature %></li>
+        <% }); %>
+      </ul>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

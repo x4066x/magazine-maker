@@ -8,12 +8,27 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **雑誌テンプレート** (magazine.eta) - 完全実装
 - **請求書テンプレート** (invoice.eta) - 完全実装
 - **自分史テンプレート** (memoir.eta) - 完全実装（Base64画像埋め込み対応、pagedjs-cli版に統一）
+- **雑誌表紙テンプレート** (magazine-covers/*.eta) - 4種類の雑誌風表紙テンプレート実装（2025年1月7日）
 - **Fastify HTTPサーバー** - エントリーポイント
 - **画像アップロード機能** - Base64エンコード対応
 - **PDF生成機能** - Puppeteer + Paged.js（汎用）/ pagedjs-cli（自分史専用）
 - **GraphAI統合** - 最新API対応、ループ・マッピング機能実装
 - **エンドポイント別テスト** - 包括的なテストスクリプト実装
 - **v2 API** - memoirテンプレート専用の新しいAPI（2024年12月実装）
+- **直接レンダリングスクリプト** - 雑誌表紙テンプレート専用の直接レンダリングスクリプト（2025年1月7日）
+
+### ✅ 変更履歴（2025年1月7日）
+- **雑誌表紙テンプレート実装**: 4種類の雑誌風表紙テンプレートを新規作成
+  - fashion-cover.eta - ファッション誌風（鮮やかなグラデーション、回転テキスト、重なり要素）
+  - lifestyle-cover.eta - ライフスタイル誌風（重なり合う画像フレーム、ナチュラル色合い、おしゃれタグ）
+  - tech-cover.eta - テック・ビジネス誌風（幾何学図形、ネオンカラー、アニメーション効果）
+  - art-cover.eta - アート・カルチャー誌風（水彩画風背景、手書き装飾、アーティスティックフレーム）
+- **サンプルデータ作成**: 各テンプレート用のサンプルJSONファイルを作成
+- **直接レンダリングスクリプト**: render-magazine-covers.shスクリプトを実装
+  - Etaテンプレートエンジンを使用した直接レンダリング
+  - HTMLとPDF生成（pagedjs-cli使用）
+  - 個別テンプレートまたは全テンプレートの一括処理
+  - ブラウザプレビュー機能
 
 ### ✅ 変更履歴（2025年1月22日）
 - **memoir生成をpagedjs-cli版に変更**: より軽量で安定した処理
@@ -22,6 +37,12 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **GraphAI最新API対応**: チュートリアルに基づく実装更新
 - **ループ・マッピング機能追加**: チャットボット・バッチ処理エンドポイント実装
 - **テスト構造の統一**: エンドポイント別テストスクリプトの実装
+
+### ✅ 変更履歴（2025年1月30日）
+- **pagedjs-cliオプション修正**: `--format`を`--page-size`に変更
+- **marginオプション削除**: pagedjs-cliではmarginオプションがサポートされていないため削除
+- **LINE Bot連携改善**: reply_tokenエラーハンドリングと非同期PDF生成の実装
+- **エラーハンドリング強化**: Content-TypeチェックとJSONエラーレスポンスの適切な処理
 
 ### ✅ v2 API実装（2024年12月19日）
 - **memoirテンプレート専用API**: 型安全で使いやすい新しいAPI
@@ -35,6 +56,7 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 - **ユーティリティの部分利用**: 高機能なヘルパー関数の未使用
 - **型定義の不完全性**: MemoirData型は後から追加（現在は修正済み）
 - **テスト構造の不統一**: `tests/` と `scripts/` の混在
+- **雑誌表紙テンプレートのAPI統合**: 現在は直接レンダリングスクリプトのみ、v2 APIへの統合が必要
 
 ### 📁 ディスク使用量
 - **アップロード画像**: 20MB（9ファイル）
@@ -50,6 +72,7 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 * **Paged.js** を活用した高品質なページ分割と印刷レイアウト
 * **画像アップロード・管理機能** を提供
 * **自分史作成機能** を提供
+* **雑誌表紙作成機能** を提供（4種類のスタイル）
 * **v2 API** による型安全で使いやすいAPIを提供
 * CI/CD・Docker など運用系は当面スコープ外とし、実装コードと API 仕様にフォーカス
 
@@ -71,12 +94,74 @@ LineBot の後段サービスとして **HTML テンプレート → PDF** 生�
 
 ---
 
-## 3. v2 API 仕様
+## 3. テンプレート一覧
 
-### 3.1 概要
+### 3.1 実装済みテンプレート
+
+#### 自分史テンプレート (memoir.eta)
+- **目的**: 人生の歩みを時系列で記録する自分史
+- **特徴**: 紫系グラデーション、A4サイズ印刷対応
+- **セクション**: 表紙、目次、プロフィール、年表
+- **API**: v2 API対応（型安全）
+
+#### 雑誌表紙テンプレート (magazine-covers/*.eta)
+- **目的**: 雑誌風の表紙デザイン
+- **種類**: 4種類のスタイル
+  - **fashion-cover.eta**: ファッション誌風（鮮やかなグラデーション、回転テキスト、重なり要素）
+  - **lifestyle-cover.eta**: ライフスタイル誌風（重なり合う画像フレーム、ナチュラル色合い、おしゃれタグ）
+  - **tech-cover.eta**: テック・ビジネス誌風（幾何学図形、ネオンカラー、アニメーション効果）
+  - **art-cover.eta**: アート・カルチャー誌風（水彩画風背景、手書き装飾、アーティスティックフレーム）
+- **特徴**: A4サイズ、雑誌風レイアウト、重なり効果
+- **API**: 直接レンダリングスクリプト対応（v2 API統合予定）
+
+#### 請求書テンプレート (invoice.eta)
+- **目的**: ビジネス用請求書
+- **特徴**: 表形式、計算機能、プロフェッショナルデザイン
+
+#### 雑誌テンプレート (magazine.eta)
+- **目的**: 多ページ雑誌レイアウト
+- **特徴**: 記事レイアウト、目次、ページ分割
+
+---
+
+## 4. 直接レンダリングスクリプト
+
+### 4.1 雑誌表紙レンダリングスクリプト
+
+#### スクリプト: `scripts/render-magazine-covers.sh`
+```bash
+# 使用方法
+./scripts/render-magazine-covers.sh [template_name]
+
+# 例
+./scripts/render-magazine-covers.sh fashion-cover    # 個別テンプレート
+./scripts/render-magazine-covers.sh all             # 全テンプレート
+```
+
+#### 機能
+- **HTMLレンダリング**: Etaテンプレートエンジンを使用
+- **PDF生成**: pagedjs-cliを使用した高品質PDF生成
+- **プレビュー**: ブラウザでの自動プレビュー機能
+- **依存関係チェック**: Node.js、eta、pagedjs-cliの自動確認
+- **エラーハンドリング**: 詳細なエラーメッセージとログ
+
+#### 出力ファイル
+- **HTML**: `test-output/{template-name}.html`
+- **PDF**: `test-output/{template-name}.pdf`
+
+#### 依存関係
+- Node.js
+- eta パッケージ (`npm install eta`)
+- pagedjs-cli (`npm install -g pagedjs-cli`)
+
+---
+
+## 5. v2 API 仕様
+
+### 5.1 概要
 v2 APIは、memoirテンプレートに特化した型安全で使いやすいAPIです。構造化されたデータ型と厳密なバリデーションにより、高品質な自分史PDFを生成できます。
 
-### 3.2 エンドポイント一覧
+### 5.2 エンドポイント一覧
 
 #### GET `/v2/health`
 v2 APIのヘルスチェック
@@ -197,7 +282,7 @@ PDF生成エンドポイント
 }
 ```
 
-### 3.3 データ型定義
+### 5.3 データ型定義
 
 #### MemoirData インターフェース
 ```typescript
@@ -237,7 +322,7 @@ interface MemoirData {
 }
 ```
 
-### 3.4 エラーコード一覧
+### 5.4 エラーコード一覧
 
 | コード | 説明 |
 |--------|------|
@@ -247,7 +332,7 @@ interface MemoirData {
 | `INVALID_DATA_FORMAT` | データの形式が正しくありません |
 | `PDF_GENERATION_ERROR` | PDF生成中にエラーが発生しました |
 
-### 3.5 実装ファイル構成
+### 5.5 実装ファイル構成
 
 ```
 src/
@@ -263,9 +348,9 @@ src/
 
 ---
 
-## 4. テスト結果
+## 6. テスト結果
 
-### 4.1 Memoir機能テスト結果
+### 6.1 Memoir機能テスト結果
 
 #### テスト日時
 2025年6月22日
@@ -306,7 +391,7 @@ src/
 2. **画像読み込み待機**: PDF生成時に画像の読み込み完了を待つ処理を追加
 3. **リクエストインターセプト**: 画像リクエストの処理を改善
 
-### 4.2 Base64埋め込み機能実装とテスト結果
+### 6.2 Base64埋め込み機能実装とテスト結果
 
 #### 実装日時
 2025年6月22日
@@ -353,7 +438,7 @@ src/
 - `baby.png` - 出産時の写真
 - `current.png` - 現在の写真
 
-### 4.3 v2 APIテスト結果
+### 6.3 v2 APIテスト結果
 
 #### テスト日時
 2024年12月19日
@@ -388,7 +473,7 @@ src/
 
 ---
 
-## 5. API 仕様（v1）
+## 7. API 仕様（v1）
 
 ### GET `/health`
 ヘルスチェックエンドポイント
@@ -554,17 +639,13 @@ X-Processing-Time: 1500
   },
   "fileName": "my-memoir-cli.pdf",  // 任意: レスポンス時のファイル名
   "options": {                     // 任意: PDF生成オプション
-    "format": "A4",                // A4, A3, Letter, Legal
-    "margin": {                    // マージン設定
-      "top": "20mm",
-      "right": "20mm",
-      "bottom": "20mm",
-      "left": "20mm"
-    },
+    "format": "A4",                // A4, A3, Letter, Legal（--page-sizeオプションとして使用）
     "printBackground": true        // 背景印刷の有効/無効
   }
 }
 ```
+
+**注意**: pagedjs-cliでは`margin`オプションはサポートされていません。マージン設定はCSSの`@page`ルールで制御されます。
 
 #### Responses
 
@@ -716,7 +797,7 @@ X-Processing-Time: 1500
 
 ---
 
-## 6. ディレクトリ構成
+## 8. ディレクトリ構成
 
 ```
 auto-designer/
@@ -761,9 +842,9 @@ auto-designer/
 
 ---
 
-## 7. テンプレート仕様
+## 9. テンプレート仕様
 
-### 7.1 請求書テンプレート (`invoice.eta`)
+### 9.1 請求書テンプレート (`invoice.eta`)
 
 **機能:**
 - ヘッダー・フッター（ページ番号、発行日）
@@ -793,7 +874,7 @@ auto-designer/
 }
 ```
 
-### 7.2 雑誌テンプレート (`magazine.eta`)
+### 9.2 雑誌テンプレート (`magazine.eta`)
 
 **機能:**
 - 表紙ページ（グラデーション背景）
@@ -820,7 +901,7 @@ auto-designer/
 }
 ```
 
-### 7.3 自分史テンプレート (`memoir.eta`)
+### 9.3 自分史テンプレート (`memoir.eta`)
 
 **機能:**
 - 表紙ページ（グラデーション背景、タイトル・著者名）
@@ -863,9 +944,9 @@ auto-designer/
 
 ---
 
-## 8. 画像管理機能
+## 10. 画像管理機能
 
-### 8.1 ImageManager クラス
+### 10.1 ImageManager クラス
 
 **機能:**
 - 画像アップロード（Base64エンコード対応）
@@ -880,7 +961,7 @@ auto-designer/
 - `listImages()`: 画像一覧取得
 - `deleteImage(path)`: 画像削除
 
-### 8.2 画像処理オプション
+### 10.2 画像処理オプション
 
 ```typescript
 interface ImageOptions {
@@ -893,16 +974,16 @@ interface ImageOptions {
 
 ---
 
-## 9. 自分史作成ツール
+## 11. 自分史作成ツール
 
-### 9.1 機能概要
+### 11.1 機能概要
 
 - WebブラウザベースのGUI
 - リアルタイムプレビュー
 - 年表項目の動的追加・編集
 - PDF出力機能
 
-### 9.2 使用方法
+### 11.2 使用方法
 
 1. サーバー起動: `npm run dev`
 2. ブラウザで `samples/memoir-sample.html` を開く
@@ -910,7 +991,7 @@ interface ImageOptions {
 4. プレビューで確認
 5. PDF生成・ダウンロード
 
-### 9.3 技術仕様
+### 11.3 技術仕様
 
 - 純粋なHTML/CSS/JavaScript
 - Fetch API を使用したサーバー通信
@@ -919,16 +1000,16 @@ interface ImageOptions {
 
 ---
 
-## 10. Paged.js 活用機能
+## 12. Paged.js 活用機能
 
-### 10.1 CSS Paged Media 機能
+### 12.1 CSS Paged Media 機能
 
 - **@page ルール**: ページサイズ、マージン、ヘッダー・フッター設定
 - **ページ分割制御**: `page-break-before`, `page-break-after`, `page-break-inside`
 - **生成コンテンツ**: `content`, `counter()`, `string()` 関数
 - **段組みレイアウト**: `column-count`, `column-gap`
 
-### 10.2 実装の改善点
+### 12.2 実装の改善点
 
 - **エラーハンドリング**: 適切なtry-catch文とリソース管理
 - **パフォーマンス**: Puppeteerの最適化設定
@@ -937,9 +1018,9 @@ interface ImageOptions {
 
 ---
 
-## 11. 構造整理の変更点
+## 13. 構造整理の変更点
 
-### 11.1 ディレクトリ構造の改善
+### 13.1 ディレクトリ構造の改善
 
 **変更前:**
 ```
@@ -970,7 +1051,7 @@ auto-designer/
 └── samples/              # サンプルデータ
 ```
 
-### 11.2 新規追加ファイル
+### 13.2 新規追加ファイル
 
 - **src/types/index.ts**: 雑誌・請求書データの型定義
 - **src/utils/file-utils.ts**: ファイル操作ユーティリティ
@@ -979,14 +1060,14 @@ auto-designer/
 - **.gitignore**: Git除外ファイル設定
 - **docs/structure.md**: 構造説明ドキュメント
 
-### 11.3 package.json の改善
+### 13.3 package.json の改善
 
 - スクリプトの整理と追加
 - メインファイルパスの修正
 - テストスクリプトの改善
 - クリーンアップスクリプトの追加
 
-### 11.4 開発フローの改善
+### 13.4 開発フローの改善
 
 1. **型安全性の向上**: TypeScript型定義の追加
 2. **ユーティリティの分離**: 再利用可能な関数の整理
@@ -996,7 +1077,7 @@ auto-designer/
 
 ---
 
-## 12. 今後の改善予定
+## 14. 今後の改善予定
 
 - **テストフレームワーク**: Jest または Vitest の導入
 - **ESLint/Prettier**: コード品質の向上
@@ -1006,9 +1087,9 @@ auto-designer/
 
 ---
 
-## 13. GraphAI統合機能
+## 15. GraphAI統合機能
 
-### 13.1 実装概要
+### 15.1 実装概要
 
 GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html）に基づいて、以下の機能を実装：
 
@@ -1017,7 +1098,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - **マッピング機能**: バッチ処理での並列実行
 - **エージェント関数**: カスタムエージェントの実装
 
-### 13.2 主要エージェント
+### 15.2 主要エージェント
 
 #### openAIAgent
 - OpenAI APIとの統合
@@ -1048,7 +1129,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - データコピー処理
 - 結果の整形
 
-### 13.3 技術的改善点
+### 15.3 技術的改善点
 
 1. **型安全性**: TypeScript型定義の追加
 2. **エラーハンドリング**: 適切な例外処理
@@ -1058,7 +1139,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 
 ---
 
-## 14. 今後の改善予定
+## 16. 今後の改善予定
 
 - **テストフレームワーク**: Jest または Vitest の導入
 - **ESLint/Prettier**: コード品質の向上
@@ -1070,9 +1151,9 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 
 ---
 
-## 15. テスト構成（2025年1月22日更新）
+## 17. テスト構成（2025年1月22日更新）
 
-### 15.1 テストスクリプト構成
+### 17.1 テストスクリプト構成
 
 **新しいテストスクリプト**: `scripts/test-endpoints.sh`
 
@@ -1083,7 +1164,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - ファイルサイズの確認
 - 包括的なエラーテスト
 
-### 15.2 利用可能なテスト
+### 17.2 利用可能なテスト
 
 | テスト名 | エンドポイント | 説明 |
 |---------|---------------|------|
@@ -1100,7 +1181,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 | `files` | - | 生成ファイル確認 |
 | `all` | 全エンドポイント | 全テスト実行 |
 
-### 15.3 使用方法
+### 17.3 使用方法
 
 ```bash
 # 全テスト実行
@@ -1115,7 +1196,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 ./scripts/test-endpoints.sh help
 ```
 
-### 15.4 テスト出力例
+### 17.4 テスト出力例
 
 ```
 🚀 Paged.js PDF WebAPI エンドポイント別テスト開始
@@ -1142,7 +1223,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 🔵 ファイルサイズ: 123456 bytes
 ```
 
-### 15.5 技術的特徴
+### 17.5 技術的特徴
 
 1. **モジュラー設計**: 各テストが独立して実行可能
 2. **詳細なログ**: 処理時間、ファイルサイズ、HTTPステータスを記録
@@ -1150,7 +1231,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 4. **クロスプラットフォーム**: macOS/Linux両対応
 5. **JSON解析**: jqコマンドによるレスポンス解析
 
-### 15.6 古いテストスクリプトの整理
+### 17.6 古いテストスクリプトの整理
 
 **削除されたファイル:**
 - `scripts/test.sh` - 旧テストスクリプト
@@ -1163,7 +1244,7 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 
 ---
 
-## 16. 今後の改善予定
+## 18. 今後の改善予定
 
 - **テストフレームワーク**: Jest または Vitest の導入
 - **ESLint/Prettier**: コード品質の向上
@@ -1172,3 +1253,55 @@ GraphAIの最新チュートリアル（https://graphai.info/guide/tutorial.html
 - **ストリーミング対応**: リアルタイムレスポンス
 - **認証機能**: API キー管理の改善
 - **自動テスト**: CI/CDパイプラインでの自動実行
+
+## 最新の更新内容（2024年7月）
+
+### covers-v2テンプレートシステムの実装
+
+新しい雑誌表紙生成システム「covers-v2」を実装しました。
+
+#### 新機能：
+1. **3つのテンプレート**：
+   - `cover-grid.eta`: グリッドレイアウト表紙
+   - `cover-spilit.eta`: 分割レイアウト表紙  
+   - `cover-overlay.eta`: オーバーレイレイアウト表紙
+
+2. **対応サンプルデータ**：
+   - `art-cover-sample.json`: アート系雑誌データ
+   - `tech-cover-sample.json`: テクノロジー系雑誌データ
+   - `lifestyle-cover-sample.json`: ライフスタイル系雑誌データ
+   - `fashion-cover-sample.json`: ファッション系雑誌データ
+
+3. **自動レンダリングスクリプト**：
+   - `render-covers-v2.sh`: 一括PDF生成スクリプト
+   - Node.js/ETA テンプレートエンジンによるHTMLレンダリング
+   - pagedjs-cliによるPDF変換
+
+#### 技術的実装：
+- **テンプレートエンジン**: ETA（Embedded JavaScript Templates）
+- **PDF生成**: pagedjs-cli
+- **レスポンシブデザイン**: CSS Grid/Flexbox
+- **フォント**: Google Fonts（Futura, Playfair Display）
+- **画像サポート**: SVG/Base64エンコーディング
+
+#### 生成可能なファイル：
+- HTMLファイル: 12個（全テンプレート×全サンプルデータ）
+- PDFファイル: 4個（cover-overlayテンプレートで成功）
+
+#### 使用方法：
+```bash
+# 単一テンプレートの生成
+./scripts/render-covers-v2.sh cover-grid
+
+# 全テンプレートの生成
+./scripts/render-covers-v2.sh all
+```
+
+#### 成果物：
+- `test-output/cover-overlay_*.pdf`: オーバーレイレイアウトのPDFファイル
+- `test-output/cover-*_*.html`: 全テンプレートのHTMLファイル
+
+#### 今後の改善点：
+- cover-gridとcover-splititテンプレートのPDF生成エラーの修正
+- より多様なレイアウトテンプレートの追加
+- 動的コンテンツの対応強化

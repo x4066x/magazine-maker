@@ -1,0 +1,17 @@
+{
+  "template": "tech-cover",
+  "fileName": "tech-cover-sample.pdf",
+  "data": {
+    "title": "TECH FUTURE",
+    "subtitle": "AI革命と次世代テクノロジー",
+    "date": "2024年5月号",
+    "issueNumber": "42",
+    "features": [
+      "ChatGPTとAIの未来",
+      "Web3.0とブロックチェーン",
+      "量子コンピューティング最前線"
+    ],
+    "digitalText": "INNOVATION 2024",
+    "price": "1500"
+  }
+} 

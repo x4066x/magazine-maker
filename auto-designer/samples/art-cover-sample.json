@@ -1,0 +1,18 @@
+{
+  "template": "art-cover",
+  "fileName": "art-cover-sample.pdf",
+  "data": {
+    "title": "ART CULTURE",
+    "subtitle": "現代アートの新しい潮流",
+    "date": "2024年6月号",
+    "issueNumber": "127",
+    "artworkImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48Y2lyY2xlIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjgwIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFSVDwvdGV4dD48L3N2Zz4=",
+    "features": [
+      "現代美術の巨匠たち",
+      "デジタルアートの可能性",
+      "アートと社会の関係性"
+    ],
+    "artistQuote": "アートは時代を映す鏡であり、未来への扉でもある。",
+    "price": "1800"
+  }
+} 

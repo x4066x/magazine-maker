@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Futura&display=swap" rel="stylesheet">
+  <style>
+    @page :first {
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Futura', sans-serif;
+    }
+
+    .cover-grid {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40mm;
+      background: linear-gradient(180deg, #fff 0%, #f2f2f2 100%);
+    }
+    .cover-grid .masthead {
+      font-size: 60pt;
+      font-weight: bold;
+      line-height: 1.1;
+    }
+    .cover-grid .subtitle {
+      font-size: 18pt;
+      color: #666;
+      margin-top: 5mm;
+      line-height: 1.4;
+    }
+    .cover-grid .date {
+      font-size: 14pt;
+      color: #888;
+      margin-top: 3mm;
+    }
+    .cover-grid .image-container {
+      margin-top: 20mm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4mm;
+    }
+    .cover-grid .image-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      min-height: 150px;
+      object-fit: cover;
+    }
+    .cover-grid .features {
+      margin-top: 15mm;
+      font-size: 12pt;
+      color: #555;
+      line-height: 1.5;
+    }
+    .cover-grid .features li {
+      margin-bottom: 3mm;
+    }
+    .cover-grid .quote {
+      margin-top: 15mm;
+      font-size: 14pt;
+      color: #666;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .cover-grid .price {
+      position: absolute;
+      bottom: 20mm;
+      right: 20mm;
+      font-size: 16pt;
+      color: #333;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover-grid">
+    <div class="masthead"><%= it.title %></div>
+    <div class="subtitle"><%= it.subtitle %></div>
+    <% if (it.date) { %>
+    <div class="date"><%= it.date %></div>
+    <% } %>
+    <div class="image-container">
+      <% if (it.gridImages && it.gridImages.length > 0) { %>
+        <% it.gridImages.forEach(function(img) { %>
+          <img src="<%= img %>" alt="cover image">
+        <% }); %>
+      <% } else { %>
+        <% if (it.artworkImage) { %>
+          <img src="<%= it.artworkImage %>" alt="artwork">
+        <% } %>
+        <% if (it.mainImage) { %>
+          <img src="<%= it.mainImage %>" alt="main image">
+        <% } %>
+        <% if (it.subImage) { %>
+          <img src="<%= it.subImage %>" alt="sub image">
+        <% } %>
+        <% if (it.backgroundImage) { %>
+          <img src="<%= it.backgroundImage %>" alt="background image">
+        <% } %>
+        <% if (!it.artworkImage && !it.mainImage && !it.subImage && !it.backgroundImage) { %>
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1BR0FASU5FPC90ZXh0Pjwvc3ZnPg==" alt="default image">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQyIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojYThlZGVhO3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZlZDZlMztzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQyKSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Q09WRVJVPC90ZXh0Pjwvc3ZnPg==" alt="default image">
+        <% } %>
+      <% } %>
+    </div>
+    <% if (it.features && it.features.length > 0) { %>
+    <ul class="features">
+      <% it.features.forEach(function(feature) { %>
+      <li><%= feature %></li>
+      <% }); %>
+    </ul>
+    <% } %>
+    <% if (it.quote || it.artistQuote) { %>
+    <div class="quote">"<%= it.quote || it.artistQuote %>"</div>
+    <% } %>
+    <% if (it.price) { %>
+    <div class="price">¥<%= it.price %></div>
+    <% } %>
+  </div>
+</body>
+</html>
