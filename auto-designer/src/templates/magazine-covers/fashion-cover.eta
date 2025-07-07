@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      height: 297mm;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 表紙コンテナ */
+    .cover {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 50%, #ff1493 100%);
+    }
+    
+    /* 背景画像 */
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.8;
+      z-index: 1;
+    }
+    
+    /* オーバーレイ */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        45deg,
+        rgba(255, 107, 107, 0.3) 0%,
+        rgba(255, 165, 0, 0.2) 50%,
+        rgba(255, 20, 147, 0.4) 100%
+      );
+      z-index: 2;
+    }
+    
+    /* メインタイトル */
+    .main-title {
+      position: absolute;
+      top: 15mm;
+      left: 15mm;
+      right: 15mm;
+      z-index: 10;
+      font-size: 72pt;
+      font-weight: 900;
+      color: white;
+      text-shadow: 
+        3px 3px 0px rgba(0,0,0,0.8),
+        -1px -1px 0px rgba(255,255,255,0.3);
+      line-height: 0.9;
+      letter-spacing: -2px;
+      transform: rotate(-2deg);
+    }
+    
+    /* サブタイトル */
+    .subtitle {
+      position: absolute;
+      top: 60mm;
+      right: 20mm;
+      z-index: 9;
+      font-size: 18pt;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.7);
+      padding: 5mm 8mm;
+      border-radius: 20px;
+      transform: rotate(5deg);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    /* 特集記事 */
+    .feature-articles {
+      position: absolute;
+      bottom: 80mm;
+      left: 15mm;
+      right: 15mm;
+      z-index: 8;
+    }
+    
+    .feature-item {
+      background: rgba(255,255,255,0.95);
+      margin: 3mm 0;
+      padding: 4mm 6mm;
+      border-radius: 15px;
+      font-size: 14pt;
+      font-weight: 600;
+      color: #333;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      transform: skew(-2deg);
+      border-left: 4px solid #ff6b6b;
+    }
+    
+    .feature-item:nth-child(2) {
+      margin-left: 20mm;
+      border-left-color: #ffa500;
+      transform: skew(1deg);
+    }
+    
+    .feature-item:nth-child(3) {
+      margin-left: 10mm;
+      border-left-color: #ff1493;
+      transform: skew(-1deg);
+    }
+    
+    /* 日付・号数 */
+    .issue-info {
+      position: absolute;
+      top: 20mm;
+      right: 15mm;
+      z-index: 11;
+      text-align: right;
+    }
+    
+    .date {
+      font-size: 12pt;
+      color: white;
+      font-weight: 600;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    }
+    
+    .issue-number {
+      font-size: 24pt;
+      font-weight: 900;
+      color: #ffff00;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      margin-top: 2mm;
+    }
+    
+    /* 価格 */
+    .price {
+      position: absolute;
+      bottom: 15mm;
+      right: 15mm;
+      z-index: 12;
+      background: #ffff00;
+      color: #333;
+      font-size: 18pt;
+      font-weight: 900;
+      padding: 3mm 6mm;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: rotate(-5deg);
+    }
+    
+    /* 装飾要素 */
+    .decoration {
+      position: absolute;
+      z-index: 3;
+    }
+    
+    .decoration-1 {
+      top: 100mm;
+      left: -10mm;
+      width: 40mm;
+      height: 40mm;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    
+    .decoration-2 {
+      bottom: 50mm;
+      right: -15mm;
+      width: 60mm;
+      height: 60mm;
+      background: radial-gradient(circle, rgba(255,20,147,0.4) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    
+    /* バーコード領域 */
+    .barcode-area {
+      position: absolute;
+      bottom: 10mm;
+      left: 15mm;
+      z-index: 11;
+      background: white;
+      padding: 2mm;
+      border-radius: 3px;
+      font-size: 8pt;
+      color: #333;
+    }
+    
+    /* 印刷用スタイル */
+    @media print {
+      .cover {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 50%, #ff1493 100%) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      
+      .overlay {
+        background: linear-gradient(
+          45deg,
+          rgba(255, 107, 107, 0.3) 0%,
+          rgba(255, 165, 0, 0.2) 50%,
+          rgba(255, 20, 147, 0.4) 100%
+        ) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <!-- 背景画像 -->
+    <% if (it.backgroundImage) { %>
+      <div class="background-image" style="background-image: url('<%= it.backgroundImage %>');"></div>
+    <% } %>
+    
+    <!-- オーバーレイ -->
+    <div class="overlay"></div>
+    
+    <!-- 装飾要素 -->
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+    
+    <!-- メインタイトル -->
+    <div class="main-title">
+      <%= it.title %>
+    </div>
+    
+    <!-- サブタイトル -->
+    <% if (it.subtitle) { %>
+      <div class="subtitle">
+        <%= it.subtitle %>
+      </div>
+    <% } %>
+    
+    <!-- 日付・号数 -->
+    <div class="issue-info">
+      <div class="date"><%= it.date || new Date().toLocaleDateString('ja-JP') %></div>
+      <% if (it.issueNumber) { %>
+        <div class="issue-number">No.<%= it.issueNumber %></div>
+      <% } %>
+    </div>
+    
+    <!-- 特集記事 -->
+    <% if (it.features && it.features.length > 0) { %>
+      <div class="feature-articles">
+        <% it.features.forEach(function(feature) { %>
+          <div class="feature-item">
+            <%= feature %>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+    
+    <!-- 価格 -->
+    <% if (it.price) { %>
+      <div class="price">
+        ¥<%= it.price %>
+      </div>
+    <% } %>
+    
+    <!-- バーコード領域 -->
+    <div class="barcode-area">
+      JAN: 1234567890123
+    </div>
+  </div>
+</body>
+</html> 

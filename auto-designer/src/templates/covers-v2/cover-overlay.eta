@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    @page :first {
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .cover-overlay {
+      height: 100vh;
+      position: relative;
+      background: url('<%= it.coverImage || it.artworkImage || it.mainImage || it.backgroundImage || "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjM2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1BR0FASU5FPC90ZXh0Pjwvc3ZnPg==" %>') center/cover no-repeat;
+    }
+    .cover-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .cover-overlay .title {
+      position: absolute;
+      bottom: 40mm;
+      left: 20mm;
+      right: 20mm;
+      font-size: 64pt;
+      color: white;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      line-height: 1.1;
+      z-index: 1;
+    }
+    .cover-overlay .subtitle {
+      position: absolute;
+      bottom: 25mm;
+      left: 20mm;
+      right: 20mm;
+      font-size: 18pt;
+      color: #ddd;
+      z-index: 1;
+    }
+    .cover-overlay .date {
+      position: absolute;
+      bottom: 20mm;
+      left: 20mm;
+      font-size: 14pt;
+      color: #ddd;
+      z-index: 1;
+    }
+    .cover-overlay .price {
+      position: absolute;
+      bottom: 20mm;
+      right: 20mm;
+      font-size: 14pt;
+      color: #ddd;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover-overlay">
+    <div class="title"><%= it.title %></div>
+    <% if (it.subtitle) { %>
+    <div class="subtitle"><%= it.subtitle %></div>
+    <% } %>
+    <% if (it.date) { %>
+    <div class="date"><%= it.date %></div>
+    <% } %>
+    <% if (it.price) { %>
+    <div class="price">¥<%= it.price %></div>
+    <% } %>
+  </div>
+</body>
+</html>

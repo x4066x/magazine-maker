@@ -4,6 +4,7 @@ from linebot.v3.messaging import (
     MessagingApi,
     MessagingApiBlob,
     ReplyMessageRequest,
+    PushMessageRequest,
     TextMessage,
     ImageMessage,
     VideoMessage,
@@ -22,8 +23,12 @@ import os
 from dotenv import load_dotenv
 from openai_service import get_chatgpt_response
 from file_service import file_service
+from memoir_service import memoir_service
 from typing import Dict, Any
 from pathlib import Path
+import json
+import requests
+from datetime import datetime
 
 # 環境変数を読み込む
 load_dotenv()
@@ -105,6 +110,56 @@ def send_file_message(reply_token: str, file_metadata: Dict[str, Any]) -> None:
         # ファイル送信に失敗した場合はテキストメッセージで通知
         send_text_message(reply_token, f"ファイルの送信に失敗しました: {str(e)}")
 
+def send_push_message(user_id: str, text: str) -> None:
+    """プッシュメッセージを送信（reply_tokenが期限切れの場合に使用）"""
+    try:
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            
+            push_message = TextMessage(text=text)
+            
+            response = messaging_api.push_message(
+                PushMessageRequest(
+                    to=user_id,
+                    messages=[push_message]
+                )
+            )
+            
+            print(f'Push message sent successfully: {response}')
+            
+    except Exception as e:
+        print(f'Error sending push message: {e}')
+
+def send_text_message_with_fallback(reply_token: str, user_id: str, text: str) -> None:
+    """テキストメッセージを送信（reply_tokenが失敗した場合はpush messageを使用）"""
+    try:
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            
+            reply_message = TextMessage(text=text)
+            
+            response = messaging_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=reply_token,
+                    messages=[reply_message]
+                )
+            )
+            
+            print(f'Text message sent successfully: {response}')
+            
+    except Exception as e:
+        error_message = str(e)
+        if "Invalid reply token" in error_message or "400" in error_message:
+            print(f'Reply token expired, sending push message instead: {e}')
+            send_push_message(user_id, text)
+        else:
+            print(f'Error sending text message: {e}')
+            # 最後の手段としてpush messageを試行
+            try:
+                send_push_message(user_id, text)
+            except Exception as push_error:
+                print(f'Error sending push message as fallback: {push_error}')
+
 def send_text_message(reply_token: str, text: str) -> None:
     """テキストメッセージを送信"""
     try:
@@ -154,13 +209,119 @@ def handle_text_message(event: MessageEvent):
     print(f'Message text: {event.message.text}')
     print(f'Reply token: {event.reply_token}')
     
-    user_message = event.message.text.lower()
+    user_message = event.message.text
+    user_id = event.source.user_id
+    
+    # 自分史セッションの状態を確認
+    session = memoir_service.get_or_create_session(user_id)
+    
+    # 自分史作成リクエストかどうかを判定
+    if memoir_service.is_memoir_request(user_message):
+        try:
+            # 自分史作成処理
+            response = memoir_service.process_message(user_id, user_message)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            
+            # 生成状態の場合はPDF生成を実行
+            session = memoir_service.get_or_create_session(user_id)
+            if session.state == "generating":
+                # 非同期でPDF生成を実行
+                import threading
+                
+                def generate_pdf_async():
+                    try:
+                        # PDF生成
+                        pdf_result = memoir_service.generate_memoir_pdf(user_id)
+                        
+                        # PDFファイルを保存
+                        file_metadata = file_service.save_file(
+                            pdf_result["pdf_buffer"],
+                            pdf_result["filename"],
+                            "application/pdf"
+                        )
+                        
+                        # 成功メッセージとファイルURLを送信
+                        success_message = (
+                            f"自分史PDFが完成しました！\n"
+                            f"ファイル名：{pdf_result['filename']}\n"
+                            f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
+                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], BASE_URL)}"
+                        )
+                        send_push_message(user_id, success_message)
+                        
+                        # セッションをクリア
+                        memoir_service.cancel_session(user_id)
+                        
+                    except Exception as e:
+                        error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
+                        send_push_message(user_id, error_message)
+                        memoir_service.cancel_session(user_id)
+                
+                # 非同期スレッドを開始
+                pdf_thread = threading.Thread(target=generate_pdf_async)
+                pdf_thread.start()
+            
+        except Exception as e:
+            error_message = f"自分史作成中にエラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            memoir_service.cancel_session(user_id)
+    
+    # 自分史セッション中の場合、すべてのメッセージを自分史作成処理に回す
+    elif session.state != "idle":
+        try:
+            # 自分史作成処理
+            response = memoir_service.process_message(user_id, user_message)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            
+            # 生成状態の場合はPDF生成を実行
+            session = memoir_service.get_or_create_session(user_id)
+            if session.state == "generating":
+                # 非同期でPDF生成を実行
+                import threading
+                
+                def generate_pdf_async():
+                    try:
+                        # PDF生成
+                        pdf_result = memoir_service.generate_memoir_pdf(user_id)
+                        
+                        # PDFファイルを保存
+                        file_metadata = file_service.save_file(
+                            pdf_result["pdf_buffer"],
+                            pdf_result["filename"],
+                            "application/pdf"
+                        )
+                        
+                        # 成功メッセージとファイルURLを送信
+                        success_message = (
+                            f"自分史PDFが完成しました！\n"
+                            f"ファイル名：{pdf_result['filename']}\n"
+                            f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
+                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], BASE_URL)}"
+                        )
+                        send_push_message(user_id, success_message)
+                        
+                        # セッションをクリア
+                        memoir_service.cancel_session(user_id)
+                        
+                    except Exception as e:
+                        error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
+                        send_push_message(user_id, error_message)
+                        memoir_service.cancel_session(user_id)
+                
+                # 非同期スレッドを開始
+                pdf_thread = threading.Thread(target=generate_pdf_async)
+                pdf_thread.start()
+            
+        except Exception as e:
+            error_message = f"自分史作成中にエラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            memoir_service.cancel_session(user_id)
     
     # 特定のコマンドでファイル一覧表示
-    if user_message.startswith('ファイル一覧') or user_message.startswith('files'):
+    elif user_message.lower().startswith('ファイル一覧') or user_message.lower().startswith('files'):
         handle_file_list_command(event.reply_token)
     # サンプル確認コマンド
-    elif user_message == 'サンプル確認':
+    elif user_message.lower() == 'サンプル確認':
         handle_sample_command(event.reply_token)
     else:
         # 通常のChatGPT応答
@@ -224,12 +385,31 @@ def handle_image_message(event: MessageEvent):
             file_metadata['message_type']
         )
         
-        # レスポンスメッセージを送信
-        response_text = (
-            f"画像を受信しました！\n"
-            f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
-            f"画像URL: {file_url}"
-        )
+        user_id = event.source.user_id
+        
+        # 自分史作成中の場合、画像を年表に追加
+        if memoir_service.get_or_create_session(user_id).state == "collecting_timeline":
+            success = memoir_service.add_image_to_timeline(user_id, file_url, "アップロードされた画像")
+            if success:
+                response_text = (
+                    f"画像を年表に追加しました！\n"
+                    f"次の出来事を教えてください。\n"
+                    f"（例：1991年：小学校入学）"
+                )
+            else:
+                response_text = (
+                    f"画像を受信しました！\n"
+                    f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
+                    f"画像URL: {file_url}"
+                )
+        else:
+            # 通常の画像受信処理
+            response_text = (
+                f"画像を受信しました！\n"
+                f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
+                f"画像URL: {file_url}"
+            )
+        
         send_text_message(event.reply_token, response_text)
         
     except Exception as e:

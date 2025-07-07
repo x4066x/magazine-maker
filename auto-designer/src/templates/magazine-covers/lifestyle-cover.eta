@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= it.title %></title>
+  <style>
+    /* ページ設定 */
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      height: 297mm;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 表紙コンテナ */
+    .cover {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    /* 背景パターン */
+    .background-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3) 2px, transparent 2px),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.2) 1px, transparent 1px);
+      background-size: 20px 20px, 15px 15px;
+      z-index: 1;
+    }
+    
+    /* メイン画像フレーム */
+    .main-image-frame {
+      position: absolute;
+      top: 40mm;
+      left: 20mm;
+      width: 120mm;
+      height: 160mm;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      z-index: 4;
+      transform: rotate(-1deg);
+      overflow: hidden;
+    }
+    
+    .main-image {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+    }
+    
+    /* サブ画像フレーム */
+    .sub-image-frame {
+      position: absolute;
+      top: 60mm;
+      right: 15mm;
+      width: 60mm;
+      height: 80mm;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      z-index: 5;
+      transform: rotate(3deg);
+      overflow: hidden;
+    }
+    
+    .sub-image {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+    }
+    
+    /* タイトル */
+    .main-title {
+      position: absolute;
+      top: 15mm;
+      left: 15mm;
+      right: 15mm;
+      z-index: 10;
+      font-size: 48pt;
+      font-weight: 300;
+      color: #2c3e50;
+      line-height: 1.1;
+      letter-spacing: 1px;
+    }
+    
+    .title-accent {
+      color: #e74c3c;
+      font-weight: 700;
+    }
+    
+    /* サブタイトル */
+    .subtitle {
+      position: absolute;
+      top: 220mm;
+      left: 25mm;
+      right: 25mm;
+      z-index: 9;
+      font-size: 16pt;
+      font-weight: 400;
+      color: #34495e;
+      background: rgba(255,255,255,0.9);
+      padding: 8mm 10mm;
+      border-radius: 25px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transform: rotate(-0.5deg);
+    }
+    
+    /* 特集記事タグ */
+    .feature-tags {
+      position: absolute;
+      bottom: 60mm;
+      right: 20mm;
+      z-index: 8;
+      width: 80mm;
+    }
+    
+    .feature-tag {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      font-size: 11pt;
+      font-weight: 600;
+      padding: 3mm 6mm;
+      margin: 2mm;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transform: rotate(-1deg);
+    }
+    
+    .feature-tag:nth-child(2) {
+      background: #e67e22;
+      transform: rotate(1deg);
+    }
+    
+    .feature-tag:nth-child(3) {
+      background: #9b59b6;
+      transform: rotate(-2deg);
+    }
+    
+    .feature-tag:nth-child(4) {
+      background: #1abc9c;
+      transform: rotate(0.5deg);
+    }
+    
+    /* 日付・号数 */
+    .issue-info {
+      position: absolute;
+      top: 20mm;
+      right: 15mm;
+      z-index: 11;
+      text-align: right;
+      background: rgba(255,255,255,0.8);
+      padding: 4mm 6mm;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .date {
+      font-size: 11pt;
+      color: #7f8c8d;
+      font-weight: 500;
+    }
+    
+    .issue-number {
+      font-size: 20pt;
+      font-weight: 700;
+      color: #e74c3c;
+      margin-top: 1mm;
+    }
+    
+    /* 価格 */
+    .price {
+      position: absolute;
+      bottom: 15mm;
+      right: 15mm;
+      z-index: 12;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 16pt;
+      font-weight: 700;
+      padding: 4mm 8mm;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: rotate(-3deg);
+    }
+    
+    /* 装飾フレーム */
+    .decorative-frame {
+      position: absolute;
+      z-index: 3;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(3px);
+    }
+    
+    .frame-1 {
+      top: 100mm;
+      left: 10mm;
+      width: 40mm;
+      height: 30mm;
+      transform: rotate(-5deg);
+    }
+    
+    .frame-2 {
+      bottom: 80mm;
+      left: 150mm;
+      width: 35mm;
+      height: 25mm;
+      transform: rotate(8deg);
+    }
+    
+    /* 引用テキスト */
+    .quote-text {
+      position: absolute;
+      bottom: 100mm;
+      left: 20mm;
+      z-index: 6;
+      font-size: 14pt;
+      font-style: italic;
+      color: #2c3e50;
+      background: rgba(255,255,255,0.9);
+      padding: 6mm 8mm;
+      border-radius: 15px;
+      max-width: 100mm;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      transform: rotate(1deg);
+      border-left: 4px solid #e74c3c;
+    }
+    
+    /* バーコード領域 */
+    .barcode-area {
+      position: absolute;
+      bottom: 10mm;
+      left: 15mm;
+      z-index: 11;
+      background: white;
+      padding: 2mm;
+      border-radius: 5px;
+      font-size: 8pt;
+      color: #333;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    /* 印刷用スタイル */
+    @media print {
+      .cover {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      
+      .feature-tag {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      
+      .price {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <!-- 背景パターン -->
+    <div class="background-pattern"></div>
+    
+    <!-- 装飾フレーム -->
+    <div class="decorative-frame frame-1"></div>
+    <div class="decorative-frame frame-2"></div>
+    
+    <!-- メイン画像フレーム -->
+    <div class="main-image-frame">
+      <% if (it.mainImage) { %>
+        <div class="main-image" style="background-image: url('<%= it.mainImage %>');"></div>
+      <% } else { %>
+        <div class="main-image" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);"></div>
+      <% } %>
+    </div>
+    
+    <!-- サブ画像フレーム -->
+    <div class="sub-image-frame">
+      <% if (it.subImage) { %>
+        <div class="sub-image" style="background-image: url('<%= it.subImage %>');"></div>
+      <% } else { %>
+        <div class="sub-image" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+      <% } %>
+    </div>
+    
+    <!-- タイトル -->
+    <div class="main-title">
+      <%= it.title.split(' ').map(function(word, index) {
+        return index === 0 ? '<span class="title-accent">' + word + '</span>' : word;
+      }).join(' ') %>
+    </div>
+    
+    <!-- 日付・号数 -->
+    <div class="issue-info">
+      <div class="date"><%= it.date || new Date().toLocaleDateString('ja-JP') %></div>
+      <% if (it.issueNumber) { %>
+        <div class="issue-number">Vol.<%= it.issueNumber %></div>
+      <% } %>
+    </div>
+    
+    <!-- サブタイトル -->
+    <% if (it.subtitle) { %>
+      <div class="subtitle">
+        <%= it.subtitle %>
+      </div>
+    <% } %>
+    
+    <!-- 特集記事タグ -->
+    <% if (it.features && it.features.length > 0) { %>
+      <div class="feature-tags">
+        <% it.features.forEach(function(feature) { %>
+          <span class="feature-tag"><%= feature %></span>
+        <% }); %>
+      </div>
+    <% } %>
+    
+    <!-- 引用テキスト -->
+    <% if (it.quote) { %>
+      <div class="quote-text">
+        "<%= it.quote %>"
+      </div>
+    <% } %>
+    
+    <!-- 価格 -->
+    <% if (it.price) { %>
+      <div class="price">
+        ¥<%= it.price %>
+      </div>
+    <% } %>
+    
+    <!-- バーコード領域 -->
+    <div class="barcode-area">
+      JAN: 1234567890123
+    </div>
+  </div>
+</body>
+</html> 
