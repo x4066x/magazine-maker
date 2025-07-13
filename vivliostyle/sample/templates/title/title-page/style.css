@@ -1,0 +1,84 @@
+/* タイトルページ専用スタイル */
+.title-page {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin-bottom: 2rem;
+    line-height: 1.2;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.author {
+    font-size: 1.2rem;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    border-top: 2px solid rgba(255,255,255,0.3);
+    padding-top: 1rem;
+    opacity: 0.8;
+}
+
+.decoration {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 100px;
+    height: 100px;
+    border: 3px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+
+/* 印刷用設定 */
+@media print {
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+    
+    .title-page {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 0;
+    }
+} 

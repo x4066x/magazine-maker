@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* 基本スタイル */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS PMincho", serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+        
+        {{ css_content }}
+    </style>
+</head>
+<body>
+    <div class="spread-container">
+        <!-- 左ページ -->
+        <div class="left-page">
+            {% if images and images[0] %}
+            <div class="image-container">
+                <img src="{{ images[0] }}" alt="メイン画像" class="main-image">
+            </div>
+            {% endif %}
+            
+            <div class="quote-container">
+                {% if quote %}
+                <blockquote class="quote">
+                    "{{ quote }}"
+                </blockquote>
+                {% endif %}
+                
+                {% if quote_author %}
+                <cite class="quote-author">— {{ quote_author }}</cite>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 右ページ（空白） -->
+        <div class="right-page">
+            <div class="page-number">1</div>
+        </div>
+    </div>
+</body>
+</html> 

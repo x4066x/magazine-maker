@@ -1,0 +1,113 @@
+/* 全体のスタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%; /* 画面全体をカバー */
+    font-family: "ヒラギノ明朝 Pro", "Hiragino Mincho Pro", "ＭＳ Ｐ明朝", "MS PMincho", serif; /* 明朝体を指定 */
+    overflow: hidden; /* 画面全体に画像を表示するためにスクロールを隠します */
+}
+
+/* @pageルールを使用してページ全体の余白をゼロに設定 */
+@page {
+    margin: 1.5cm;
+}
+
+.content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+    /*text-orientation: upright; /* 文字の向きを通常に保つ */
+}
+
+.top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    overflow: hidden;
+}
+
+.mid {
+    position: absolute;
+    top: 25%;
+    left: 0;
+    width: 100%;
+    height: 46%;
+    overflow: hidden;
+}
+
+.bottom {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 25%;
+    overflow: hidden;
+}
+
+.image1 {
+    width: 100%; 
+    height: 90%; 
+    overflow: hidden;
+    top: 0;
+    right: 0;
+    transform: translate(0, 0);
+    position: absolute;
+}
+
+/* テキストブロック1のスタイル */
+.text-block1 {
+    position: absolute; /* 位置を絶対にして自由に配置可能に */
+    top: 0; /* 画面の上から5%の位置に配置 */
+    right: 0; /* 画面の左から85%の位置に配置 */
+    transform: translate(0, 0); /* 位置を微調整 */
+    font-size: 10pt; /* 文字サイズを調整 */
+    pointer-events: auto; /* テキストのクリックを有効にする */
+    width: 5%;
+    height: 100%;
+    font-weight: bold;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+    border-left: 1px solid black; /* 下に1ピクセルの黒い線を引く */
+    padding-left: 0px; 
+    margin-left: 0px; /* 段落間のマージン */
+}
+
+.text-block2 {
+    position: absolute; /* 位置を絶対にして自由に配置可能に */
+    top: 0; /* 画面の上から5%の位置に配置 */
+    right: 10%; /* 画面の左から85%の位置に配置 */
+    transform: translate(0, 0); /* 位置を微調整 */
+    font-size: 10pt; /* 文字サイズを調整 */
+    pointer-events: auto; /* テキストのクリックを有効にする */
+    width: 100%;
+    height: 100%;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.text-block3 {
+    position: absolute;
+    bottom: 0;
+    left: 0%; 
+    transform: translate(0, 0); 
+    font-size: 10pt; 
+    pointer-events: auto;
+    width: 100%;
+    height: 5%;
+    writing-mode: horizontal-tb;
+}
+
+.text-block4 {
+    position: absolute; /* 位置を絶対にして自由に配置可能に */
+    bottom: 0; /* 画面の上から5%の位置に配置 */
+    right: 0; /* 画面の左から85%の位置に配置 */
+    transform: translate(0, 0); /* 位置を微調整 */
+    font-size: 10pt; /* 文字サイズを調整 */
+    pointer-events: auto; /* テキストのクリックを有効にする */
+    width: 100%;
+    height: 100%;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
