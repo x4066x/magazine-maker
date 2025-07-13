@@ -1,0 +1,169 @@
+/* 全体のスタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "ヒラギノ明朝 Pro", "Hiragino Mincho Pro", "MS Ｐ明朝", "MS PMincho", serif;
+    overflow: hidden;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+.content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.page {
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0% ;
+}
+
+.top {
+    position: absolute;
+    width: 100%;
+    height: 40%;
+    overflow: hidden;
+    right: 0;
+    margin: 0%;
+    top: 0%;
+}
+
+.bottom {
+    position: absolute;
+    width: 90%;
+    height: 50%;
+    right: 0;
+    bottom: 0%;
+    overflow: hidden;
+    margin: 5%;
+}
+
+.bottom-right {
+    position: absolute;
+    width: 20%;
+    height: 100%;
+    right: 0;
+    top: 0%;
+    overflow: hidden;
+}
+
+.bottom-left {
+    position: absolute;
+    width: 80%;
+    height: 100%;
+    left: 0;
+    bottom: 0%;
+    overflow: hidden;
+}
+
+.bottom-left-top {
+    position: absolute;
+    width: 100%;
+    height: 47.5%;
+    right: 0;
+    top: 0%;
+    overflow: hidden;
+}
+
+.bottom-left-bottom {
+    position: absolute;
+    width: 100%;
+    height: 47.5%;
+    right: 0;
+    bottom: 0%;
+    overflow: hidden;
+}
+
+.image1 {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    position: absolute;
+    transform: translate(0, 0);
+    right: 0;
+}
+
+.image2 {
+    width: 100%;
+    height: 30%;
+    overflow: hidden;
+    top: 35%;
+    position: absolute;
+    transform: translate(0, 0);
+    right: 0;
+}
+
+.image3 {
+    width: 100%;
+    height: 30%;
+    overflow: hidden;
+    top: 70%;
+    position: absolute;
+    transform: translate(0, 0);
+    right: 0;
+}
+
+.text-block1 {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    font-size: 10pt;
+    width: 40%;
+    height: 5%;
+    color: white;
+    writing-mode: horizontal-tb;
+    pointer-events: auto;
+    margin: 0;
+}
+
+.text-block2 {
+    position: absolute;
+    top: 0;
+    right: 10%;
+    font-size: 18pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    font-weight: bold;
+    /*font-family: "MS Gothic", "ＭＳ ゴシック", monospace;*/
+    font-family: "Yu Gothic", "游ゴシック体", sans-serif;
+    pointer-events: auto;
+    margin: 0;
+}
+
+.text-block3 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    margin: 0;
+}
+
+.text-block4 {
+    position: absolute;
+    top: 0;
+    right: 0%;
+    font-size: 12pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    margin: 0;
+}
+

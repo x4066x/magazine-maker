@@ -1,0 +1,79 @@
+/* 全体のスタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "ヒラギノ明朝 Pro", "Hiragino Mincho Pro", "MS Ｐ明朝", "MS PMincho", serif;
+    overflow: hidden;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+/* @pageルールを使用してページ全体の余白をゼロに設定 */
+@page {
+    size: A2 landscape; /* A2横長 */
+    margin: 0cm;
+}
+
+.content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.image1 {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    position: absolute;
+    transform: translate(0, 0);
+    right: 0;
+}
+
+.text {
+    width: 15%;
+    height: 70%;
+    overflow: hidden;
+    top: 5%;
+    right: 5%;
+    position: absolute;
+    transform: translate(0, 0);
+}
+
+.text-block1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 36pt;
+    width: 60%;
+    height: 100%;
+    color: black;
+    font-weight: bold;
+    /*font-family: "MS Gothic", "ＭＳ ゴシック", monospace;*/
+    font-family: "Yu Gothic", "游ゴシック体", sans-serif;
+    pointer-events: auto;
+    text-align: start;
+}
+
+.text-block2 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 36pt;
+    width: 30%;
+    height: 100%;
+    color: black;
+    font-weight: bold;
+    /*font-family: "MS Gothic", "ＭＳ ゴシック", monospace;*/
+    font-family: "Yu Gothic", "游ゴシック体", sans-serif;
+    pointer-events: auto;
+    text-align: end;
+}

@@ -1,0 +1,264 @@
+/* 全体のスタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "ヒラギノ明朝 Pro", "Hiragino Mincho Pro", "MS Ｐ明朝", "MS PMincho", serif;
+    overflow: hidden;
+}
+
+/* @pageルールを使用してページ全体の余白をゼロに設定 */
+@page {
+    size: A2 landscape; /* A2横長 */
+    margin: 0%;
+}
+
+.content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.page-6 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 90%;
+    overflow: hidden;
+    margin: 5%;
+}
+
+.page-7 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 90%;
+    overflow: hidden;
+    margin: 5%;
+}
+
+.page-6-top {
+    position: absolute;
+    top: 0%;
+    right: 0;
+    width: 100%;
+    height: 40%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-6-bottom {
+    position: absolute;
+    top: 45%;
+    right: 0;
+    width: 100%;
+    height: 55%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-6-bottom-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-6-bottom-left {
+    position: absolute;
+    top: 0;
+    right: 35%;
+    width: 65%;
+    height: 100%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-6-bottom-right-top {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 60%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-6-bottom-right-bottom {
+    position: absolute;
+    top: 65%;
+    right: 0;
+    width: 100%;
+    height: 35%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-7-top {
+    position: absolute;
+    top: 0%;
+    right: 0;
+    width: 100%;
+    height: 22.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-7-middle {
+    position: absolute;
+    top: 27.5%;
+    right: 0%;
+    width: 100%;
+    height: 45%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.page-7-bottom {
+    position: absolute;
+    top: 77.5%;
+    right: 0;
+    width: 100%;
+    height: 22.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+
+.image1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.image2 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 47.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.image3 {
+    position: absolute;
+    top: 52.5%;
+    right: 0;
+    width: 100%;
+    height: 47.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.image4 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 47.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.image5 {
+    position: absolute;
+    top: 52.5%;
+    right: 0;
+    width: 100%;
+    height: 47.5%;
+    overflow: hidden;
+    transform: translate(0, 0);
+}
+
+.text-block1 {
+    position: absolute;
+    top: 0%;
+    right: 0;
+    font-size: 9pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    text-orientation: upright;    
+}
+
+.text-block2 {
+    position: absolute;
+    top: 0;
+    right: 0%;
+    font-size: 14pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    text-align: start;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.text-block3 {
+    position: absolute;
+    top: 0;
+    right: 5%;
+    width: 30%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    text-align: start;
+    font-size: 30pt;
+    font-weight: bold;
+    /*font-family: "MS Gothic", "ＭＳ ゴシック", monospace;*/
+    font-family: "Yu Gothic", "游ゴシック体", sans-serif;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.text-block4 {
+    position: absolute;
+    top: 0%;
+    right: 35%;
+    font-size: 14pt;
+    width: 65%;
+    height: 47.5%;
+    color: black;
+    pointer-events: auto;
+    text-align: start;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.text-block5 {
+    position: absolute;
+    top: 52.5%;
+    right: 35%;
+    width: 65%;
+    height: 47.5%;
+    color: black;
+    pointer-events: auto;
+    text-align: start;
+    font-size: 14pt;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}
+
+.text-block6 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 14pt;
+    width: 100%;
+    height: 100%;
+    color: black;
+    pointer-events: auto;
+    text-align: start;
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+}

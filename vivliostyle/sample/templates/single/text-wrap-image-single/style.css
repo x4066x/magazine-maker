@@ -1,0 +1,132 @@
+/* 片面ページ基本スタイル */
+.single-page {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin: 0;
+}
+
+/* ヘッダー */
+.page-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    font-weight: normal;
+}
+
+/* メインコンテンツ */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.top-text, .bottom-text {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.center-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.center-image {
+  max-width: 80%;
+  height: auto;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.paragraph {
+  text-align: justify;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  color: #34495e;
+  text-indent: 1em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* 文字数制限と回り込み */
+.paragraph {
+    max-height: calc(100vh - 200px);
+    overflow: hidden;
+    position: relative;
+}
+
+.paragraph::after {
+    content: "...";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(transparent, #fff);
+    padding-left: 1rem;
+    font-size: 1.2rem;
+    color: #34495e;
+}
+
+/* フッター */
+.page-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #ecf0f1;
+    margin-top: auto;
+}
+
+.author {
+    font-size: 0.9rem;
+    color: #95a5a6;
+}
+
+.page-number {
+    font-size: 0.9rem;
+    color: #95a5a6;
+}
+
+/* 印刷用設定 */
+@media print {
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+    
+    .single-page {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 20mm;
+    }
+    
+    .fixed-image {
+        max-height: 250px;
+    }
+} 

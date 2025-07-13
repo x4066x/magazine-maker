@@ -1,0 +1,74 @@
+/* 全体のスタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%; /* 画面全体をカバー */
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* 画面全体に画像を表示するためにスクロールを隠します */
+}
+
+/* @pageルールを使用してページ全体の余白をゼロに設定 */
+@page {
+    margin: 0;
+}
+
+/* .content要素に対するスタイル */
+.content {
+    position: absolute; /* 位置を絶対にして画像とテキストを重ねる */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 画像の上にテキストを配置するためにクリックを無効化 */
+}
+
+/* 画像のスタイル */
+.image-container {
+    position: absolute; /* 画像を絶対位置に配置 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* コンテナのオーバーフローを隠す */
+}
+
+.image-container img {
+    width: 100vw; /* 画像の幅をビューポートの幅に設定 */
+    height: 100vh; /* 画像の高さをビューポートの高さに設定 */
+    object-fit: cover; /* 画像を画面いっぱいに表示し、縦横比を維持します */
+}
+
+/* 縦書きテキストのスタイル（共通） */
+p {
+    writing-mode: vertical-rl; /* 縦書きに設定 */
+    text-orientation: upright; /* 文字の向きを通常に保つ */
+    background: rgba(255, 255, 255, 0); /* 背景を透明にして読みやすく */
+    padding: 1em; /* 読みやすさのためにパディングを追加 */
+    margin: 0.5em 0; /* テキストブロック間に余白を追加 */
+    font-size: 2em; /* 文字サイズを設定 */
+}
+
+/* テキストブロック1のスタイル */
+.text-block1 {
+    position: absolute; /* 位置を絶対にして自由に配置可能に */
+    top: 5%; /* 画面の上から5%の位置に配置 */
+    left: 75%; /* 画面の左から85%の位置に配置 */
+    transform: translate(0, 0); /* 位置を微調整 */
+    font-size: 2.5em; /* 文字サイズを調整 */
+    pointer-events: auto; /* テキストのクリックを有効にする */
+}
+
+/* テキストブロック2のスタイル */
+.text-block2 {
+    position: absolute; /* 位置を絶対にして自由に配置可能に */
+    /* フォントサイズが違うと同じ%でも位置が違う。 */
+    top: 0%; /* 画面の上から10%の位置に配置 */
+    left: 55%; /* 画面の左から65%の位置に配置 */
+    transform: translate(0, 0); /* 位置を微調整 */
+    font-size: 5.5em; /* 文字サイズを調整 */
+    pointer-events: auto; /* テキストのクリックを有効にする */
+    font-weight: bold; /* 太字に設定 */
+    /* 半角スペースのサイズが決定できない */
+    word-spacing: 0.1em; /* 半角スペースの幅を調整 */
+}
