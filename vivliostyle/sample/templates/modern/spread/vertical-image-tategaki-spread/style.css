@@ -1,0 +1,282 @@
+/* A3見開きページ（A4×2枚） */
+@page {
+    size: A3 landscape; /* A3横向き = 420mm x 297mm */
+    margin: 0;
+    marks: crop cross; /* 印刷マークを追加 */
+}
+
+/* 見開きページ用の設定 */
+@page :first {
+    size: A3 landscape;
+    margin: 0;
+    marks: crop cross;
+}
+
+/* Vivliostyle用の見開き設定 */
+html {
+    orphans: 1;
+    widows: 1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Mincho Pro', 'Yu Mincho', '游明朝', serif;
+    line-height: 1.8;
+    color: #2d3748;
+    background: #fff;
+}
+
+.spread {
+    width: 420mm;
+    height: 297mm;
+    display: flex;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* 左ページ - 縦画像全面表示 */
+.left-page {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    background: transparent;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.image-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.main-vertical-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* object-fit: contain; */
+    object-position: center;
+}
+
+/* 右ページ - 縦書き４段組み */
+.right-page {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm 15mm;
+    position: relative;
+    background: #fff;
+    /* box-shadow: -2px 0 20px rgba(0, 0, 0, 0.05); // PDF出力時の画像への影響を防ぐため削除 */
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.page-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 縦書き自動段組みコンテナ */
+.tategaki-container {
+    height: 100%;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    column-count: 4;
+    column-gap: 10mm;
+    column-fill: auto;
+    overflow: hidden;
+}
+
+/* コンテンツフロー（タイトルと本文を含む） */
+.content-flow {
+    height: 100%;
+}
+
+/* 各段落 - 段組み内で自動流動 */
+.tategaki-section {
+    /* 段組み用のクラスは不要だが、互換性のため残す */
+    break-inside: avoid;
+}
+
+/* 記事タイトル */
+.article-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2d3748;
+    line-height: 2.0;
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin: 0 0 2em 0;
+    padding: 1em 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    break-inside: avoid-column;
+}
+
+/* 連続テキストブロック */
+.continuous-text {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #4a5568;
+    text-align: justify;
+    letter-spacing: 0.05em;
+    white-space: pre-line; /* 改行と空白を保持 */
+    orphans: 2; /* 段の末尾に残す最小行数 */
+    widows: 2; /* 段の先頭に残す最小行数 */
+    overflow-wrap: break-word; /* 長い単語の改行を許可 */
+}
+
+/* フッター */
+.page-footer {
+    position: absolute;
+    bottom: -10mm;
+    right: 0;
+    writing-mode: horizontal-tb;
+    margin-bottom: 5mm;
+}
+
+.page-number {
+    font-size: 12px;
+    color: #a0aec0;
+    font-weight: 500;
+}
+
+/* 装飾要素 */
+.right-page::before {
+    content: '';
+    position: absolute;
+    top: 15mm;
+    left: 10mm;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    opacity: 0.03;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.right-page::after {
+    content: '';
+    position: absolute;
+    bottom: 15mm;
+    right: 60mm;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    opacity: 0.05;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* 縦書き用の句読点調整 */
+.continuous-text {
+    hanging-punctuation: allow-end;
+}
+
+/* 縦書き時の数字とアルファベット調整 */
+.tategaki-section {
+    text-combine-upright: digits 2; /* 2桁の数字を正立させる */
+}
+
+/* 左ページの画像にオーバーレイ効果（オプション） - 削除済み */
+/* .left-page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 100%);
+    pointer-events: none;
+} */
+
+/* 印刷対応 - A3見開き */
+@media print {
+    @page {
+        size: A3 landscape; /* A3横向き見開き */
+        margin: 0;
+        marks: crop cross;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        width: 420mm;
+        height: 297mm;
+    }
+    
+    .spread {
+        width: 420mm !important;
+        height: 297mm !important;
+        display: flex !important;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .left-page {
+        width: 210mm !important; /* A4幅 */
+        height: 297mm !important; /* A4高さ */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .right-page {
+        width: 210mm !important; /* A4幅 */
+        height: 297mm !important; /* A4高さ */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .main-vertical-image {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    /* 印刷時のスケール調整を防ぐ */
+    * {
+        box-sizing: border-box !important;
+    }
+}
+
+/* 高解像度ディスプレイ対応 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .main-vertical-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* レスポンシブ対応（プレビュー時） */
+@media screen and (max-width: 1200px) {
+    .spread {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .spread {
+        transform: scale(0.6);
+        transform-origin: top left;
+    }
+    
+    .tategaki-container {
+        column-gap: 10mm;
+    }
+    
+    .article-title {
+        font-size: 14px;
+    }
+    
+    .continuous-text {
+        font-size: 12px;
+    }
+}

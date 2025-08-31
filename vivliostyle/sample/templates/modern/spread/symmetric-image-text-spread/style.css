@@ -1,0 +1,314 @@
+/* A3見開きページ（A4×2枚） - 対称構成 */
+@page {
+    size: A3 landscape; /* A3横向き = 420mm x 297mm */
+    margin: 0;
+    marks: crop cross; /* 印刷マークを追加 */
+}
+
+/* 見開きページ用の設定 */
+@page :first {
+    size: A3 landscape;
+    margin: 0;
+    marks: crop cross;
+}
+
+/* Vivliostyle用の見開き設定 */
+html {
+    orphans: 1;
+    widows: 1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Mincho Pro', 'Yu Mincho', '游明朝', serif;
+    line-height: 1.8;
+    color: #2d3748;
+    background: #fff;
+}
+
+.spread {
+    width: 420mm;
+    height: 297mm;
+    display: flex;
+    gap: 2mm; /* 左右ページ間に隙間を作成 */
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* 左ページ - 上部画像、下部縦書き */
+.left-page {
+    width: calc(210mm - 1mm); /* gapの分を調整 */
+    height: 297mm;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* 右ページ - 上部画像、下部縦書き */
+.right-page {
+    width: calc(210mm - 1mm); /* gapの分を調整 */
+    height: 297mm;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* ページ全体のコンテンツコンテナ */
+.page-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15mm 15mm 15mm 15mm; /* 全ての方向に余白を設定 */
+}
+
+/* 左ページ用のコンテンツ */
+.left-page .page-content {
+    padding: 15mm 5mm 15mm 15mm; /* 左ページは右側に少し余白 */
+}
+
+/* 右ページ用のコンテンツ */
+.right-page .page-content {
+    padding: 15mm 15mm 15mm 5mm; /* 右ページは左側に少し余白 */
+}
+
+/* 画像コンテナ - 上部40% */
+.image-container {
+    width: 100%;
+    height: 40%;
+    position: relative;
+    margin-bottom: 10mm;
+    margin-right: 0; /* 右側余白を明示的に0に */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.page-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 画像全体が映るように変更 */
+    object-position: center;
+    background-color: #f7fafc; /* 画像の周りの余白を薄いグレーに */
+}
+
+/* テキストコンテナ - 下部60% */
+.text-container {
+    flex: 1;
+    height: auto;
+    min-height: 50%;
+    position: relative;
+    margin: 0; /* margin削除 */
+    padding: 0; /* padding削除 */
+}
+
+/* 縦書きコンテナ */
+.tategaki-container {
+    width: 100%; /* 幅を明示的に100%に */
+    height: 100%;
+    writing-mode: vertical-rl;
+    text-orientation: upright; /* 英語を縦向きに表示 */
+    column-count: 1;
+    column-gap: 8mm;
+    column-fill: auto;
+    overflow: hidden;
+    padding: 0; /* paddingを削除して右端まで文字を配置 */
+    margin: 0; /* marginも明示的に0に */
+    text-combine-upright: digits 4; /* 4桁までの数字を正立させる */
+}
+
+/* コンテンツフロー（タイトルと本文を含む） */
+.content-flow {
+    height: 100%;
+}
+
+/* セクションタイトル */
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    line-height: 2.2;
+    letter-spacing: 0.1em;
+    text-align: start; /* 縦書きで右端（開始位置）に揃える */
+    margin: 0 0 1em 0; /* 下マージンを少し小さく */
+    padding: 0; /* パディングを削除してテキストと揃える */
+    writing-mode: vertical-rl;
+    text-orientation: upright; /* 英語を縦向きに表示 */
+    break-inside: avoid-column;
+    text-combine-upright: digits 4; /* 4桁までの数字を正立させる */
+}
+
+/* セクションタイトル下の装飾は削除 */
+
+/* 連続テキストブロック */
+.continuous-text {
+    font-size: 15px;
+    line-height: 1.9;
+    color: #4a5568;
+    text-align: justify;
+    letter-spacing: 0.05em;
+    white-space: pre-line; /* 改行と空白を保持 */
+    orphans: 2; /* 段の末尾に残す最小行数 */
+    widows: 2; /* 段の先頭に残す最小行数 */
+    overflow-wrap: break-word; /* 長い単語の改行を許可 */
+    text-justify: inter-ideograph;
+    text-orientation: upright; /* 英語を縦向きに表示 */
+    text-combine-upright: digits 4; /* 4桁までの数字を正立させる */
+}
+
+/* フッター */
+.page-footer {
+    position: absolute;
+    bottom: 10mm;
+    right: 0; /* 完全に右端に配置 */
+    writing-mode: horizontal-tb;
+    z-index: 10;
+}
+
+.page-number {
+    font-size: 12px;
+    color: #a0aec0;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* 装飾要素は削除 */
+
+/* 縦書き用の句読点調整 */
+.continuous-text {
+    hanging-punctuation: allow-end;
+}
+
+/* 縦書き時の数字とアルファベット調整は上記の.tategaki-containerで設定済み */
+
+/* 印刷対応 - A3見開き */
+@media print {
+    @page {
+        size: A3 landscape; /* A3横向き見開き */
+        margin: 0;
+        marks: crop cross;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        width: 420mm;
+        height: 297mm;
+    }
+    
+    .spread {
+        width: 420mm !important;
+        height: 297mm !important;
+        display: flex !important;
+        gap: 2mm !important; /* 印刷時も隙間を維持 */
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .left-page {
+        width: calc(210mm - 1mm) !important; /* gapの分を調整 */
+        height: 297mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .right-page {
+        width: calc(210mm - 1mm) !important; /* gapの分を調整 */
+        height: 297mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .page-image {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    /* 印刷時はbox-shadowを無効化 */
+    .image-container {
+        box-shadow: none !important;
+    }
+    
+    /* 印刷時のページコンテンツ余白設定 */
+    .left-page .page-content {
+        padding: 15mm 5mm 15mm 15mm !important;
+    }
+    
+    .right-page .page-content {
+        padding: 15mm 15mm 15mm 5mm !important;
+    }
+    
+    /* 印刷時のスケール調整を防ぐ */
+    * {
+        box-sizing: border-box !important;
+    }
+}
+
+/* 高解像度ディスプレイ対応 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .page-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* レスポンシブ対応（プレビュー時） */
+@media screen and (max-width: 1200px) {
+    .spread {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .spread {
+        transform: scale(0.6);
+        transform-origin: top left;
+    }
+    
+    .tategaki-container {
+        column-count: 2;
+        column-gap: 6mm;
+    }
+    
+    .section-title {
+        font-size: 18px;
+    }
+    
+    .continuous-text {
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .spread {
+        transform: scale(0.4);
+        transform-origin: top left;
+        flex-direction: column;
+    }
+    
+    .left-page, .right-page {
+        width: 100% !important;
+        height: 50% !important;
+    }
+    
+    .tategaki-container {
+        column-count: 1;
+    }
+    
+    .image-container {
+        height: 30%;
+    }
+}

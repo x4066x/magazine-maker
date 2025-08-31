@@ -1,0 +1,209 @@
+/* モダンバランス見開きページ */
+@page {
+    size: A4 landscape;
+    margin: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #2d3748;
+    background: #fff;
+}
+
+.spread {
+    width: 420mm;
+    height: 297mm;
+    display: flex;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+}
+
+/* 左ページ */
+.left-page {
+    width: 210mm;
+    height: 297mm;
+    padding: 35mm 25mm;
+    position: relative;
+    background: #fff;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+}
+
+/* 右ページ */
+.right-page {
+    width: 210mm;
+    height: 297mm;
+    padding: 35mm 25mm;
+    position: relative;
+    background: #fff;
+}
+
+.page-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ヘッダー */
+.page-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: #1a202c;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #718096;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* 画像セクション */
+.image-section {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.main-image {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 15px;
+    border: 2px solid #f8f9fa;
+}
+
+.image-caption {
+    font-size: 12px;
+    color: #718096;
+    font-style: italic;
+    text-align: center;
+}
+
+/* テキストセクション */
+.text-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+    padding-left: 15px;
+}
+
+.paragraph {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #4a5568;
+    text-align: justify;
+    hyphens: auto;
+    margin-bottom: 15px;
+    text-indent: 1em;
+}
+
+/* 引用セクション */
+.quote-section {
+    margin-top: auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+}
+
+.quote {
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.quote-author {
+    font-size: 12px;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+/* フッター */
+.page-footer {
+    position: absolute;
+    bottom: 35mm;
+    right: 25mm;
+}
+
+.page-number {
+    font-size: 12px;
+    color: #a0aec0;
+    font-weight: 500;
+}
+
+/* 装飾要素 */
+.left-page::before {
+    content: '';
+    position: absolute;
+    top: 20mm;
+    right: 20mm;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    opacity: 0.1;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.right-page::after {
+    content: '';
+    position: absolute;
+    bottom: 20mm;
+    left: 20mm;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    opacity: 0.1;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* 左ページの特別な装飾 */
+.left-page::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 15mm;
+    width: 3px;
+    height: 100px;
+    background: linear-gradient(180deg, #667eea, #764ba2);
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+
+/* 印刷対応 */
+@media print {
+    .spread {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .left-page, .right-page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

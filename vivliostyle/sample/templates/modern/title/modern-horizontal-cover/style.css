@@ -1,0 +1,121 @@
+/* 横書き表紙テンプレート */
+@page {
+    size: A4;
+    margin: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    line-height: 1.8;
+    color: #1a202c;
+    background: #000;
+    overflow: hidden;
+}
+
+.cover-page {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 背景画像 */
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* 横書きテキストエリア */
+.text-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    z-index: 2;
+    padding: 20mm 20mm 0 20mm;
+    display: flex;
+    writing-mode: horizontal-tb;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* 著者名セクション */
+.author-section {
+    width: 100%;
+    height: 140px;
+    position: relative;
+}
+
+.author-name {
+    font-size: 120px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 
+        1px 1px 0 #888888,
+        -1px 1px 0 #888888,
+        1px -1px 0 #888888,
+        -1px -1px 0 #888888,
+        0 1px 0 #888888,
+        0 -1px 0 #888888,
+        1px 0 0 #888888,
+        -1px 0 0 #888888;
+    writing-mode: horizontal-tb;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    margin: 0;
+}
+
+.char {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+}
+
+.char:nth-child(1) { left: 12.5%; }  /* 鈴 */
+.char:nth-child(2) { left: 37.5%; }  /* 木 */
+.char:nth-child(3) { left: 62.5%; }  /* 一 */
+.char:nth-child(4) { left: 87.5%; }  /* 郎 */
+
+/* 印刷対応 */
+@media print {
+    .cover-page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .cover-image {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* レスポンシブ対応（プレビュー用） */
+@media screen and (max-width: 768px) {
+    .text-area {
+        height: 35%;
+        padding: 15mm 20mm 0 20mm;
+    }
+    
+    .author-name {
+        font-size: 90px;
+    }
+}

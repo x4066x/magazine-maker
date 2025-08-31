@@ -1,0 +1,46 @@
+{
+  "name": "vivliostyle-modern-templates",
+  "version": "1.0.0",
+  "description": "モダンなデザインテンプレート集 - Vivliostyle対応",
+  "main": "vivliostyle.config.js",
+  "scripts": {
+    "build": "vivliostyle build vivliostyle.config.js",
+    "build:title": "vivliostyle build sample/templates/title/modern-title-page/index.html -o output/title-page.pdf",
+    "build:single": "vivliostyle build sample/templates/single/modern-minimal-single/index.html -o output/single-page.pdf",
+    "build:spread": "vivliostyle build sample/templates/spread/modern-balanced-spread/index.html -o output/spread-page.pdf",
+    "build:all": "npm run build:title && npm run build:single && npm run build:spread && npm run build",
+    "test": "python test-modern-templates.py",
+    "preview": "vivliostyle preview vivliostyle.config.js",
+    "pdf": "node generate-pdf.js",
+    "pdf:title": "node generate-pdf.js title",
+    "pdf:single": "node generate-pdf.js single",
+    "pdf:spread": "node generate-pdf.js spread"
+  },
+  "keywords": [
+    "vivliostyle",
+    "pdf",
+    "design",
+    "templates",
+    "magazine",
+    "typography"
+  ],
+  "author": "デザイン研究家",
+  "license": "MIT",
+  "devDependencies": {
+    "@vivliostyle/cli": "^5.8.1"
+  },
+  "dependencies": {
+    "puppeteer": "^24.16.2"
+  },
+  "engines": {
+    "node": ">=16.0.0 <19.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/vivliostyle-modern-templates.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/vivliostyle-modern-templates/issues"
+  },
+  "homepage": "https://github.com/your-username/vivliostyle-modern-templates#readme"
+}
