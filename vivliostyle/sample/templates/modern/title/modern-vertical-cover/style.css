@@ -1,0 +1,116 @@
+/* 縦書き表紙テンプレート */
+@page {
+    size: A4;
+    margin: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    line-height: 1.8;
+    color: #1a202c;
+    background: #000;
+    overflow: hidden;
+}
+
+.cover-page {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 背景画像 */
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+
+/* 縦書きテキストエリア */
+.text-area {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100mm;
+    height: 100%;
+    z-index: 2;
+    padding: 20mm 10mm 0 0;
+    display: flex;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+/* 著者名セクション */
+.author-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.author-name {
+    font-size: 120px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 30px;
+    text-shadow: 
+        1px 1px 0 #888888,
+        -1px 1px 0 #888888,
+        1px -1px 0 #888888,
+        -1px -1px 0 #888888,
+        0 1px 0 #888888,
+        0 -1px 0 #888888,
+        1px 0 0 #888888,
+        -1px 0 0 #888888;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+
+
+
+/* 印刷対応 */
+@media print {
+    .cover-page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .cover-image {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+
+}
+
+/* レスポンシブ対応（プレビュー用） */
+@media screen and (max-width: 768px) {
+    .text-area {
+        width: 65%;
+        padding: 15mm 8mm 0 0;
+    }
+    
+    .author-name {
+        font-size: 90px;
+        letter-spacing: 20px;
+    }
+}

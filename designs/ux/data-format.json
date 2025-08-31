@@ -1,0 +1,109 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/schemas/media-profile.json",
+    "title": "MediaProfile",
+    "description": "メディア掲載用に最適化したパーソナル・プロフィール",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "object",
+        "description": "公開用の氏名情報",
+        "properties": {
+          "first":       { "type": "string" },
+          "last":        { "type": "string" },
+          "preferred":   { "type": "string", "description": "呼称（ニックネーム等）" },
+          "phonetic":    { "type": "string", "description": "発音表記（ふりがな・ローマ字など）" }
+        }
+      },
+  
+      "pronouns":         { "type": "string", "description": "例: he/him, she/her, they/them" },
+  
+      "ageOrBirth": {
+        "type": "object",
+        "description": "年齢または生年月日（どちらか一方で可）",
+        "properties": {
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "age":         { "type": "integer" }
+        }
+      },
+  
+      "location": {
+        "type": "object",
+        "description": "公開して差し支えない範囲の居住地",
+        "properties": {
+          "city":    { "type": "string" },
+          "country": { "type": "string" }
+        }
+      },
+  
+      "language":         { "type": "string", "description": "主な使用言語 ISO 639-1" },
+  
+      "job": {
+        "type": "object",
+        "description": "肩書き・所属先",
+        "properties": {
+          "title":    { "type": "string", "description": "職位・役職" },
+          "company":  { "type": "string", "description": "会社・組織名" },
+          "industry": { "type": "string" }
+        }
+      },
+  
+      "biography":        { "type": "string", "description": "短めの自己紹介文（200〜400字推奨）" },
+      "tagline":          { "type": "string", "description": "キャッチコピー／一言紹介" },
+      "storyOutline":     { "type": "string", "description": "ブランド・人生ストーリーの概要" },
+  
+      "quotes": {
+        "type": "array",
+        "description": "記事や動画に挿入できる本人のキーフレーズ",
+        "items": { "type": "string" }
+      },
+  
+      "media": {
+        "type": "object",
+        "description": "メディアアセット（公開素材）",
+        "properties": {
+          "profileImage":   { "type": "string", "format": "uri" },
+          "galleryImages":  { "type": "array", "items": { "type": "string", "format": "uri" } },
+          "videoInterviews":{ "type": "array", "items": { "type": "string", "format": "uri" } },
+          "audioClips":     { "type": "array", "items": { "type": "string", "format": "uri" } }
+        }
+      },
+  
+      "socialProfiles": {
+        "type": "array",
+        "description": "リンク掲載可能な SNS / Web プロフィール",
+        "items": {
+          "type": "object",
+          "properties": {
+            "network":  { "type": "string", "description": "例: LinkedIn, X, Instagram" },
+            "url":      { "type": "string", "format": "uri" },
+            "username": { "type": "string" }
+          }
+        }
+      },
+  
+      "consent": {
+        "type": "object",
+        "description": "メディア使用許諾",
+        "properties": {
+          "mediaUseApproved": { "type": "boolean" },
+          "timestamp":        { "type": "string", "format": "date-time" }
+        }
+      },
+  
+      "tags": {
+        "type": "array",
+        "description": "検索・分類用タグ（ジャンル、専門分野など）",
+        "items": { "type": "string" }
+      }
+    },
+  
+    "required": [
+      "name",
+      "biography",
+      "media",
+      "consent"
+    ],
+    "additionalProperties": false
+  }
+  

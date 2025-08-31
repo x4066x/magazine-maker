@@ -1,1 +1,50 @@
+# Python関連
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 .venv/
+.env
+.env.*
+*.egg-info/
+dist/
+build/
+
+# Node.js関連
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# 出力ファイル・一時ファイル
+output/
+temp/
+*.log
+
+# 生成されたPDFファイル（tempフォルダ内）
+temp/**/*.pdf
+# 個別の生成ファイル
+magazine_*.pdf
+
+# システムファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS固有
+.AppleDouble
+.LSOverride

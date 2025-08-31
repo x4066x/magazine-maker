@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/print-media.schema.json",
+    "title": "PrintMediaPackage",
+    "type": "object",
+    "required": ["publication", "issue", "articles"],
+    "properties": {
+      "publication": {
+        "description": "媒体そのもののメタデータ",
+        "type": "object",
+        "required": ["name", "mediumType"],
+        "properties": {
+          "name":        { "type": "string",  "description": "媒体名（例：週刊○○）" },
+          "mediumType":  { "enum": ["magazine", "newspaper", "newsletter", "brochure", "catalog"] },
+          "publisher":   { "type": "string" },
+          "ISSN":        { "type": "string",  "pattern": "^[0-9]{4}-[0-9]{3}[0-9Xx]$" },
+          "language":    { "type": "string",  "description": "ISO 639-1 コード" }
+        }
+      },
+  
+      "issue": {
+        "description": "号（edition／issue）ごとの情報",
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "volume":      { "type": "integer", "minimum": 0 },
+          "number":      { "type": "integer", "minimum": 0 },
+          "date":        { "type": "string",  "format": "date" },
+          "coverImage":  { "$ref": "#/definitions/Image" },
+          "printRun":    { "type": "integer", "minimum": 0, "description": "発行部数" }
+        }
+      },
+  
+      "articles": {
+        "description": "誌面に掲載される記事の配列（ページ順で並べることを推奨）",
+        "type": "array",
+        "items": { "$ref": "#/definitions/Article" }
+      }
+    },
+  
+    "definitions": {
+      "Article": {
+        "type": "object",
+        "required": ["id", "title", "bodyText"],
+        "properties": {
+          "id":          { "type": "string",  "description": "号内一意 ID" },
+          "title":       { "type": "string" },
+          "subtitle":    { "type": "string" },
+          "authors":     { "type": "array", "items": { "type": "string" } },
+          "section":     { "type": "string", "description": "面名・コーナー名など" },
+          "pageStart":   { "type": "integer", "minimum": 1 },
+          "pageEnd":     { "type": "integer", "minimum": 1 },
+          "bodyText":    { "type": "string" },
+          "images":      { "type": "array", "items": { "$ref": "#/definitions/Image" } },
+          "pullQuotes":  { "type": "array", "items": { "type": "string" } },
+          "sidebars":    { "type": "array", "items": { "$ref": "#/definitions/Sidebar" } },
+          "tags":        { "type": "array", "items": { "type": "string" } },
+          "references":  { "type": "array", "items": { "type": "string" } }, 
+          "status":      { "enum": ["draft", "proof", "approved", "published"] }
+        }
+      },
+  
+      "Image": {
+        "type": "object",
+        "required": ["id", "fileName"],
+        "properties": {
+          "id":           { "type": "string" },
+          "fileName":     { "type": "string" },
+          "caption":      { "type": "string" },
+          "altText":      { "type": "string" },
+          "photographer": { "type": "string" },
+          "source":       { "type": "string" },
+          "rights":       { "type": "string", "description": "例：© 2025 Example Co. Licensed for print only." },
+          "placement":    { "enum": ["inline", "full-bleed", "spot", "background"] },
+          "resolutionDPI":{ "type": "integer", "minimum": 72 }
+        }
+      },
+  
+      "Sidebar": {
+        "type": "object",
+        "properties": {
+          "title":       { "type": "string" },
+          "content":     { "type": "string" },
+          "page":        { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+  
