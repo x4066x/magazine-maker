@@ -1,4 +1,4 @@
-export interface Message {
+export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
@@ -6,7 +6,7 @@ export interface Message {
 }
 
 export interface ChatState {
-  messages: Message[];
+  messages: ChatMessage[];
   isLoading: boolean;
   error: string | null;
 }

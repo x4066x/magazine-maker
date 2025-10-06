@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import type { ChatState, ChatContextType, Message } from '../../types/chat';
+import type { ChatState, ChatContextType, ChatMessage } from '../../types/chat';
 import { sendMessage as sendOpenAIMessage } from '../../services/llm/openai';
 
 const initialState: ChatState = {
@@ -11,7 +11,7 @@ const initialState: ChatState = {
 
 type ChatAction =
   | { type: 'SEND_MESSAGE_START' }
-  | { type: 'SEND_MESSAGE_SUCCESS'; payload: Message }
+  | { type: 'SEND_MESSAGE_SUCCESS'; payload: ChatMessage }
   | { type: 'SEND_MESSAGE_ERROR'; payload: string }
   | { type: 'CLEAR_MESSAGES' };
 
@@ -43,7 +43,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       dispatch({ type: 'SEND_MESSAGE_START' });
       
-      const userMessage: Message = {
+      const userMessage: ChatMessage = {
         id: Date.now().toString(),
         role: 'user',
         content,

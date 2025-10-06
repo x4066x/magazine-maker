@@ -8,16 +8,16 @@ const ChatInterface: React.FC = () => {
   const { messages, isLoading, error } = state;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <MessageList messages={messages} />
       </div>
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div className="mx-4 mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           <span className="block sm:inline">{error}</span>
         </div>
       )}
-      <div className="border-t p-4">
+      <div className="border-t p-4 bg-white">
         <MessageInput onSendMessage={sendMessage} isLoading={isLoading} />
       </div>
     </div>

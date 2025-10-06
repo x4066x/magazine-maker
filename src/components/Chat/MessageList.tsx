@@ -7,10 +7,10 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   return (
-    <div className="space-y-4">
-      {messages.map((message, index) => (
+    <div className="w-full space-y-4">
+      {messages.map((message) => (
         <div
-          key={index}
+          key={message.id}
           className={`flex ${
             message.role === 'user' ? 'justify-end' : 'justify-start'
           }`}
@@ -22,7 +22,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                 : 'bg-gray-100 text-gray-800'
             }`}
           >
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            <p className="whitespace-pre-wrap break-words">{message.content}</p>
           </div>
         </div>
       ))}
