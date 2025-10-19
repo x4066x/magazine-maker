@@ -60,11 +60,7 @@ body {
 /* テキストコンテナ - 下部約30%に固定 */
 .text-container {
     height: 30%; /* 約30%に調整 */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
     padding-top: 4mm; /* 上余白を調整 */
-    gap: 3mm;
     overflow: hidden; /* はみ出しを防ぐ */
 }
 
@@ -72,7 +68,7 @@ body {
 .vertical-text {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    direction: rtl;
+    padding-right: 0; /* 右側（縦書きの上）の余白 */
 }
 
 /* セクションタイトル - 最小限のスタイル */
@@ -94,9 +90,9 @@ body {
     padding-bottom: 0;
     padding-left: 2mm;
     margin-bottom: 0;
-    margin-left: 0;
+    margin-left: 3mm;
     margin-top: 0;
-    align-self: flex-start;
+    display: inline-block;
 }
 
 /* 説明テキスト - 最小限のスタイル */
@@ -115,6 +111,8 @@ body {
     text-align: left;
     line-height: 2.0;
     font-size: 13px;
+    display: inline-block;
+    margin-left: 3mm;
 }
 
 /* フッター */
