@@ -1,0 +1,158 @@
+/* 柔軟な画像配置 - 1枚ページテンプレート（横書き版） */
+@page {
+    size: A4;
+    margin: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Mincho Pro', 'Yu Mincho', '游明朝', serif;
+    line-height: 1.6;
+    color: #2d3748;
+    background: #fff;
+}
+
+.page {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
+}
+
+.page-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15mm;
+}
+
+/* 画像コンテナ - 上部約70% */
+.image-container {
+    width: 100%;
+    height: 70%; /* 約70%に調整 */
+    position: relative;
+    margin-bottom: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 画像の柔軟な表示 */
+.page-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+/* テキストコンテナ - 下部約30%に固定 */
+.text-container {
+    height: 30%; /* 約30%に調整 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 8mm; /* 少し上に余白を追加 */
+    gap: 3mm;
+    overflow: hidden; /* はみ出しを防ぐ */
+}
+
+/* セクションタイトル - 最小限のスタイル */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* 説明テキスト - 最小限のスタイル */
+.description-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4a5568;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* フッター */
+.page-footer {
+    position: absolute;
+    bottom: 10mm;
+    right: 15mm;
+    z-index: 10;
+}
+
+.page-number {
+    font-size: 12px;
+    color: #a0aec0;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* 装飾要素は削除 - シンプルなレイアウト */
+
+/* 印刷対応 */
+@media print {
+    .page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* 高解像度ディスプレイ対応 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .page-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* レスポンシブ対応（プレビュー時） */
+@media screen and (max-width: 1200px) {
+    .page {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .page {
+        transform: scale(0.6);
+        transform-origin: top left;
+    }
+    
+    .section-title {
+        font-size: 16px;
+    }
+    
+    .description-text {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .page {
+        transform: scale(0.4);
+        transform-origin: top left;
+    }
+    
+    .image-container {
+        min-height: 40%;
+        max-height: 60%;
+    }
+}
