@@ -1,6 +1,6 @@
 /* 横長画像と縦書き格言の見開きページ */
 @page {
-    size: A4 landscape;
+    size: 420mm 297mm;
     margin: 0;
 }
 

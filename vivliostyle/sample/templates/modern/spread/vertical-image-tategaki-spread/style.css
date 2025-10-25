@@ -1,13 +1,13 @@
 /* A3見開きページ（A4×2枚） */
 @page {
-    size: A3 landscape; /* A3横向き = 420mm x 297mm */
+    size: 420mm 297mm; /* 見開き = 420mm x 297mm */
     margin: 0;
     marks: crop cross; /* 印刷マークを追加 */
 }
 
 /* 見開きページ用の設定 */
 @page :first {
-    size: A3 landscape;
+    size: 420mm 297mm;
     margin: 0;
     marks: crop cross;
 }
@@ -200,7 +200,7 @@ body {
 /* 印刷対応 - A3見開き */
 @media print {
     @page {
-        size: A3 landscape; /* A3横向き見開き */
+        size: 420mm 297mm; /* 見開き = 420mm x 297mm */
         margin: 0;
         marks: crop cross;
     }
