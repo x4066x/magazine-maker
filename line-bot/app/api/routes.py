@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from ..handlers import handle_webhook
 from ..services import file_service
 from ..services.quick_memoir_service import quick_memoir_service
@@ -34,16 +34,33 @@ async def webhook(request: Request):
     return await handle_webhook(request)
 
 @router.get("/media/{media_type}/{file_id}")
-async def get_media_file(media_type: str, file_id: str):
-    """メディアファイル（画像・動画・音声）の配信"""
+async def get_media_file(
+    media_type: str, 
+    file_id: str,
+    user_id: Optional[str] = None,
+    group_id: Optional[str] = None
+):
+    """メディアファイル（画像・動画・音声）の配信
+    
+    Args:
+        media_type: メディアタイプ
+        file_id: ファイルID
+        user_id: リクエストユーザーID（オプション）
+        group_id: リクエストグループID（オプション）
+    """
     try:
         print(f"🔍 メディアファイル配信リクエスト: {media_type}/{file_id}")
+        print(f"👤 アクセス制御: user_id={user_id}, group_id={group_id}")
         
-        # ファイルを検索
-        file_info = file_service.get_file_by_id(file_id)
+        # ファイルを検索（アクセス制御付き）
+        file_info = file_service.get_file_by_id(
+            file_id=file_id,
+            requester_user_id=user_id,
+            requester_group_id=group_id
+        )
         if not file_info:
-            print(f"❌ ファイル情報が見つかりません: {file_id}")
-            raise HTTPException(status_code=404, detail="File not found")
+            print(f"❌ ファイル情報が見つからないか、アクセス権限がありません: {file_id}")
+            raise HTTPException(status_code=404, detail="File not found or access denied")
         
         print(f"📋 ファイル情報: {file_info}")
         
@@ -85,16 +102,31 @@ async def get_media_file(media_type: str, file_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/files/{file_id}")
-async def get_file(file_id: str):
-    """ファイルの配信（PDF、ZIP、テキストなど）"""
+async def get_file(
+    file_id: str,
+    user_id: Optional[str] = None,
+    group_id: Optional[str] = None
+):
+    """ファイルの配信（PDF、ZIP、テキストなど）
+    
+    Args:
+        file_id: ファイルID
+        user_id: リクエストユーザーID（オプション）
+        group_id: リクエストグループID（オプション）
+    """
     try:
         print(f"🔍 ファイル配信リクエスト: {file_id}")
+        print(f"👤 アクセス制御: user_id={user_id}, group_id={group_id}")
         
-        # ファイルを検索
-        file_info = file_service.get_file_by_id(file_id)
+        # ファイルを検索（アクセス制御付き）
+        file_info = file_service.get_file_by_id(
+            file_id=file_id,
+            requester_user_id=user_id,
+            requester_group_id=group_id
+        )
         if not file_info:
-            print(f"❌ ファイル情報が見つかりません: {file_id}")
-            raise HTTPException(status_code=404, detail="File not found")
+            print(f"❌ ファイル情報が見つからないか、アクセス権限がありません: {file_id}")
+            raise HTTPException(status_code=404, detail="File not found or access denied")
         
         print(f"📋 ファイル情報: {file_info}")
         

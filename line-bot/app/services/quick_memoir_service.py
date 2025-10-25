@@ -7,7 +7,7 @@ import asyncio
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field, asdict
 from ..config import settings
 from .vivliostyle_service import vivliostyle_service
@@ -46,10 +46,16 @@ class QuickMemoirSession:
     single_text: str = "この写真は、人生の中で特別な意味を持つ一枚です。何気ない日常の中にも、かけがえのない瞬間が隠れています。写真として残すことで、その瞬間は永遠に私たちの心に刻まれます。"  # 単一ページの説明文
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
+    # 所有者情報（アクセス制御用）
+    owner_type: str = "user"  # "user" または "group"
+    owner_id: Optional[str] = None  # user_id または group_id
     
     def __post_init__(self):
         if self.data is None:
             self.data = QuickMemoirData(title="")
+        # owner_idがない場合はuser_idを使用（後方互換性）
+        if self.owner_id is None:
+            self.owner_id = self.user_id
 
 
 class QuickMemoirService:
@@ -63,13 +69,26 @@ class QuickMemoirService:
         trigger_keywords = ['作る', '作成', 'つくる', 'create', '自分史']
         return any(keyword in message.lower() for keyword in trigger_keywords)
     
-    def start_quick_create(self, user_id: str) -> tuple[QuickMemoirSession, str]:
-        """簡易作成を開始"""
+    def start_quick_create(
+        self, 
+        user_id: str,
+        owner_type: str = "user",
+        owner_id: Optional[str] = None
+    ) -> Tuple[QuickMemoirSession, str]:
+        """簡易作成を開始
+        
+        Args:
+            user_id: ユーザーID
+            owner_type: 所有者タイプ ("user" または "group")
+            owner_id: 所有者ID (指定しない場合はuser_idを使用)
+        """
         session_id = f"quick_{uuid.uuid4().hex[:12]}"
         session = QuickMemoirSession(
             session_id=session_id,
             user_id=user_id,
-            state="waiting_title"
+            state="waiting_title",
+            owner_type=owner_type,
+            owner_id=owner_id or user_id
         )
         self.sessions[session_id] = session
         
@@ -110,7 +129,7 @@ class QuickMemoirService:
         
         return response_message
     
-    def process_cover_image(self, session: QuickMemoirSession, image_url: str) -> tuple[bool, str]:
+    def process_cover_image(self, session: QuickMemoirSession, image_url: str) -> Tuple[bool, str]:
         """カバー画像を処理"""
         session.data.cover_image_url = image_url
         session.data.date = datetime.now().strftime("%Y年%m月")
@@ -121,7 +140,7 @@ class QuickMemoirService:
         
         return True, response_message
     
-    def process_spread_image(self, session: QuickMemoirSession, image_url: str) -> tuple[bool, str]:
+    def process_spread_image(self, session: QuickMemoirSession, image_url: str) -> Tuple[bool, str]:
         """見開きページ用画像を処理"""
         session.spread_image_url = image_url
         session.state = "waiting_single_image"
@@ -135,7 +154,7 @@ class QuickMemoirService:
         
         return True, response_message
     
-    def process_single_image(self, session: QuickMemoirSession, image_url: str) -> tuple[bool, str]:
+    def process_single_image(self, session: QuickMemoirSession, image_url: str) -> Tuple[bool, str]:
         """単一ページ用画像を処理"""
         session.single_image_url = image_url
         session.state = "editing"

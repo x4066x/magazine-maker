@@ -20,7 +20,7 @@ from linebot.v3.webhooks import (
     TextMessageContent,
     ImageMessageContent
 )
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 from pathlib import Path
 import logging
 from ..config import settings
@@ -35,6 +35,28 @@ logger = logging.getLogger(__name__)
 # LINE Bot API設定
 configuration = Configuration(access_token=settings.CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(settings.CHANNEL_SECRET)
+
+def get_owner_info(event: MessageEvent) -> Tuple[str, str, str]:
+    """イベントから所有者情報を取得
+    
+    Args:
+        event: LINEメッセージイベント
+    
+    Returns:
+        (owner_type, owner_id, user_id) のタプル
+        - owner_type: "user" または "group"
+        - owner_id: user_id または group_id
+        - user_id: メッセージを送信したユーザーのID
+    """
+    user_id = event.source.user_id
+    
+    # グループチャットの場合
+    if hasattr(event.source, 'type') and event.source.type == "group":
+        group_id = event.source.group_id
+        return ("group", group_id, user_id)
+    
+    # 1対1チャットの場合
+    return ("user", user_id, user_id)
 
 def download_file_from_line(message_id: str) -> bytes:
     """LINE Platform APIからファイルをダウンロード"""
@@ -427,6 +449,10 @@ def handle_text_message(event: MessageEvent):
     user_message = event.message.text
     user_id = event.source.user_id
     
+    # 所有者情報を取得
+    owner_type, owner_id, uploader_id = get_owner_info(event)
+    print(f"👤 owner_type={owner_type}, owner_id={owner_id}, uploader_id={uploader_id}")
+    
     # 写真フロー: セッションを確認（最優先）
     photo_session = photo_memoir_service.get_session_by_user(user_id)
     
@@ -498,14 +524,23 @@ def handle_text_message(event: MessageEvent):
                             # 全写真完了 → PDF生成
                             pdf_result = photo_memoir_service.generate_pdf(photo_session)
                             
-                            # PDFファイルを保存
+                            # PDFファイルを保存（owner情報を含める）
                             file_metadata = file_service.save_file(
-                                pdf_result["pdf_buffer"],
-                                pdf_result["filename"],
-                                "application/pdf"
+                                file_data=pdf_result["pdf_buffer"],
+                                filename=pdf_result["filename"],
+                                content_type="application/pdf",
+                                owner_type=photo_session.owner_type,
+                                owner_id=photo_session.owner_id,
+                                uploader_id=photo_session.user_id
                             )
                             
-                            pdf_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
+                            pdf_url = file_service.get_file_url(
+                                file_id=file_metadata['file_id'],
+                                base_url=settings.BASE_URL,
+                                message_type='file',
+                                requester_user_id=photo_session.user_id,
+                                requester_group_id=photo_session.owner_id if photo_session.owner_type == "group" else None
+                            )
                             
                             success_message = (
                                 f"✨ 写真自分史が完成しました！\n\n"
@@ -552,7 +587,11 @@ def handle_text_message(event: MessageEvent):
     trigger_keywords = ['作る', '作成', 'つくる', 'create', '自分史']
     if any(keyword in user_message.lower() for keyword in trigger_keywords) and not quick_session:
         try:
-            session, response = quick_memoir_service.start_quick_create(user_id)
+            session, response = quick_memoir_service.start_quick_create(
+                user_id=user_id,
+                owner_type=owner_type,
+                owner_id=owner_id
+            )
             send_text_message_with_fallback(event.reply_token, user_id, response)
             return
         except Exception as e:
@@ -623,24 +662,33 @@ def handle_image_message(event: MessageEvent):
     print(f'Received image message event: {event}')
     
     try:
+        user_id = event.source.user_id
+        
+        # 所有者情報を取得
+        owner_type, owner_id, uploader_id = get_owner_info(event)
+        print(f"👤 owner_type={owner_type}, owner_id={owner_id}, uploader_id={uploader_id}")
+        
         # LINE Platform APIから画像をダウンロード
         image_data = download_file_from_line(event.message.id)
         
-        # 画像ファイルを保存
+        # 画像ファイルを保存（owner情報を含める）
         file_metadata = file_service.save_file(
-            image_data,
-            f"received_image_{event.message.id}.jpg",
-            "image/jpeg"
+            file_data=image_data,
+            filename=f"received_image_{event.message.id}.jpg",
+            content_type="image/jpeg",
+            owner_type=owner_type,
+            owner_id=owner_id,
+            uploader_id=uploader_id
         )
         
-        # 画像のURLを生成
+        # 画像のURLを生成（認証パラメータ付き）
         file_url = file_service.get_file_url(
-            file_metadata['file_id'],
-            settings.BASE_URL,
-            file_metadata['message_type']
+            file_id=file_metadata['file_id'],
+            base_url=settings.BASE_URL,
+            message_type=file_metadata['message_type'],
+            requester_user_id=uploader_id,
+            requester_group_id=owner_id if owner_type == "group" else None
         )
-        
-        user_id = event.source.user_id
         
         # 写真フロー: 写真収集中（最優先）
         photo_session = photo_memoir_service.get_session_by_user(user_id)
@@ -672,15 +720,24 @@ def handle_image_message(event: MessageEvent):
                             import asyncio
                             pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session, full_version=False))
                             
-                            # PDFファイルを保存
+                            # PDFファイルを保存（owner情報を含める）
                             pdf_metadata = file_service.save_file(
-                                pdf_result["pdf_buffer"],
-                                pdf_result["filename"],
-                                "application/pdf"
+                                file_data=pdf_result["pdf_buffer"],
+                                filename=pdf_result["filename"],
+                                content_type="application/pdf",
+                                owner_type=quick_session.owner_type,
+                                owner_id=quick_session.owner_id,
+                                uploader_id=quick_session.user_id
                             )
                             
-                            # URLを生成
-                            pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
+                            # URLを生成（認証パラメータ付き）
+                            pdf_url = file_service.get_file_url(
+                                file_id=pdf_metadata['file_id'],
+                                base_url=settings.BASE_URL,
+                                message_type='file',
+                                requester_user_id=quick_session.user_id,
+                                requester_group_id=quick_session.owner_id if quick_session.owner_type == "group" else None
+                            )
                             edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
                             
                             # Flex Messageを送信（表紙のみ版）
@@ -739,15 +796,24 @@ def handle_image_message(event: MessageEvent):
                             import asyncio
                             pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session, full_version=True))
                             
-                            # PDFファイルを保存
+                            # PDFファイルを保存（owner情報を含める）
                             pdf_metadata = file_service.save_file(
-                                pdf_result["pdf_buffer"],
-                                pdf_result["filename"],
-                                "application/pdf"
+                                file_data=pdf_result["pdf_buffer"],
+                                filename=pdf_result["filename"],
+                                content_type="application/pdf",
+                                owner_type=quick_session.owner_type,
+                                owner_id=quick_session.owner_id,
+                                uploader_id=quick_session.user_id
                             )
                             
-                            # URLを生成
-                            pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
+                            # URLを生成（認証パラメータ付き）
+                            pdf_url = file_service.get_file_url(
+                                file_id=pdf_metadata['file_id'],
+                                base_url=settings.BASE_URL,
+                                message_type='file',
+                                requester_user_id=quick_session.user_id,
+                                requester_group_id=quick_session.owner_id if quick_session.owner_type == "group" else None
+                            )
                             edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
                             
                             # 完全版PDF完成Flex Messageを送信

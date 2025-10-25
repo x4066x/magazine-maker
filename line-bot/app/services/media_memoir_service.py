@@ -41,6 +41,9 @@ class MediaMemoirSession:
     pages: List[PageData] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
+    # 所有者情報（アクセス制御用）
+    owner_type: str = "user"  # "user" または "group"
+    owner_id: Optional[str] = None  # user_id または group_id
     
     def get_page_by_id(self, page_id: str) -> Optional[PageData]:
         """ページIDからページデータを取得"""
@@ -56,8 +59,21 @@ class MediaMemoirService:
     def __init__(self):
         self.sessions: Dict[str, MediaMemoirSession] = {}
     
-    def start_media_memoir(self, user_id: str, template_id: str = "memoir_vertical") -> Tuple[Optional[MediaMemoirSession], str]:
-        """メディア自分史作成を開始"""
+    def start_media_memoir(
+        self, 
+        user_id: str, 
+        template_id: str = "memoir_vertical",
+        owner_type: str = "user",
+        owner_id: Optional[str] = None
+    ) -> Tuple[Optional[MediaMemoirSession], str]:
+        """メディア自分史作成を開始
+        
+        Args:
+            user_id: ユーザーID
+            template_id: テンプレートID
+            owner_type: 所有者タイプ ("user" または "group")
+            owner_id: 所有者ID (指定しない場合はuser_idを使用)
+        """
         
         # テンプレートを取得
         template = get_template(template_id)
@@ -70,7 +86,9 @@ class MediaMemoirService:
             session_id=session_id,
             user_id=user_id,
             template_id=template_id,
-            state="collecting"
+            state="collecting",
+            owner_type=owner_type,
+            owner_id=owner_id or user_id
         )
         
         # ページデータを初期化
