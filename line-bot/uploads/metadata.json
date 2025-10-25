@@ -598,5 +598,55 @@
     "file_size": 1344461,
     "upload_time": "2025-10-25T21:10:06.922867",
     "message_type": "file"
+  },
+  "e61b0ece-3614-44ad-9c9b-c4fc08195fee": {
+    "file_id": "e61b0ece-3614-44ad-9c9b-c4fc08195fee",
+    "original_filename": "received_image_584798863786246930.jpg",
+    "stored_filename": "e61b0ece-3614-44ad-9c9b-c4fc08195fee.jpg",
+    "file_path": "uploads/e61b0ece-3614-44ad-9c9b-c4fc08195fee.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 426862,
+    "upload_time": "2025-10-25T22:23:12.205031",
+    "message_type": "image"
+  },
+  "3f727bc9-5703-4169-a511-0a1424b72a07": {
+    "file_id": "3f727bc9-5703-4169-a511-0a1424b72a07",
+    "original_filename": "memoir_鈴木一郎_20251025_222312.pdf",
+    "stored_filename": "3f727bc9-5703-4169-a511-0a1424b72a07.pdf",
+    "file_path": "uploads/3f727bc9-5703-4169-a511-0a1424b72a07.pdf",
+    "content_type": "application/pdf",
+    "file_size": 1284735,
+    "upload_time": "2025-10-25T22:23:14.801211",
+    "message_type": "file"
+  },
+  "87bcb2ca-346b-46a3-9704-85474528a755": {
+    "file_id": "87bcb2ca-346b-46a3-9704-85474528a755",
+    "original_filename": "received_image_584798931046105397.jpg",
+    "stored_filename": "87bcb2ca-346b-46a3-9704-85474528a755.jpg",
+    "file_path": "uploads/87bcb2ca-346b-46a3-9704-85474528a755.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 202316,
+    "upload_time": "2025-10-25T22:23:51.454810",
+    "message_type": "image"
+  },
+  "9b9bcb98-9f70-44a3-902b-c35f78f18200": {
+    "file_id": "9b9bcb98-9f70-44a3-902b-c35f78f18200",
+    "original_filename": "received_image_584798948493885944.jpg",
+    "stored_filename": "9b9bcb98-9f70-44a3-902b-c35f78f18200.jpg",
+    "file_path": "uploads/9b9bcb98-9f70-44a3-902b-c35f78f18200.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 199587,
+    "upload_time": "2025-10-25T22:24:01.619811",
+    "message_type": "image"
+  },
+  "383a6f9e-c247-4cc5-a16d-4b1665488de0": {
+    "file_id": "383a6f9e-c247-4cc5-a16d-4b1665488de0",
+    "original_filename": "memoir_vertical_鈴木一郎_20251025_222401.pdf",
+    "stored_filename": "383a6f9e-c247-4cc5-a16d-4b1665488de0.pdf",
+    "file_path": "uploads/383a6f9e-c247-4cc5-a16d-4b1665488de0.pdf",
+    "content_type": "application/pdf",
+    "file_size": 3190967,
+    "upload_time": "2025-10-25T22:24:05.938475",
+    "message_type": "file"
   }
 }

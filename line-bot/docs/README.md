@@ -9,55 +9,57 @@
 ### 🎯 設計・要求定義
 
 #### [design.md](./design.md)
-**LINE Bot 自分史作成サービス - 簡易フロー設計**
+**LINE Bot 自分史作成サービス - 全体設計** （参考用・一部古い情報あり）
 
-- 目的と課題
-- 新しいチャットフロー
-- 初期PDF生成の仕様
-- LIFF編集画面の仕様
-- LLM文章生成機能
-- API設計
+- サービス全体の設計思想
 - データ構造
-- 実装フェーズ
-- **🚨 NEW**: 現在のフォームベース編集の課題
-- **💡 NEW**: 写真中心・対話ベース自分史アプローチ
-- **⚡ 2025-10-25更新**: パフォーマンスとUX改善
-  - イベントループ問題の修正
-  - 画像処理の最適化（30秒→3秒）
-  - セッション管理の改善
-  - Flex Messageデザイン更新
+- 技術スタック
 
 **対象読者**: 開発者、プロダクトマネージャー  
 **内容**: サービス全体の設計、要求定義、技術スタック
 
-**重要**: 
-- 現在のフォームベース編集には課題があり、新しい「写真中心・対話ベース」アプローチを設計しました
-- 最新の技術改善により、PDF生成が10倍高速化し、安定性が向上しました
-- 詳細は design.md の各セクションを参照してください
+**注意**: このドキュメントには古い情報が含まれています。最新の実装内容は以下のドキュメントを参照してください：
+- 拡張版簡易フロー: `extended-quick-flow-guide.md`
+- メディアテンプレート: `media-template-guide.md`
 
 ---
 
 ### 🚀 実装ガイド
 
-#### [quick-flow-guide.md](./quick-flow-guide.md)
-**簡易自分史作成フロー - 実装ガイド**
+#### [extended-quick-flow-guide.md](./extended-quick-flow-guide.md) ⭐**最新**
+**拡張版簡易フロー - 実装ガイド**
 
-- 実装完了した作業（現在のフォームベース編集）
-- **⚡ NEW**: 技術的な特徴
-  - 高速な画像処理（3秒以内）
-  - 非同期処理の最適化
-  - Single Source of Truth原則のセッション管理
-- 新しいフローの特徴
-- 使い方
-- 実装プラン
-- 主な機能
-- **🚨 NEW**: 現在のフローの課題
-- **💡 NEW**: 写真中心・対話ベース自分史の実装ガイド
+- 2段階PDF生成フロー（表紙のみ → 完全版）
+- メディアテンプレート統合
+- 技術実装の詳細
+- データ構造とフロー
+- UX設計の意図
 
 **対象読者**: 開発者  
-**内容**: 簡易フロー機能の実装手順、ファイル構成、テスト方法
+**内容**: 最新の簡易フロー実装（タイトル→カバー→表紙PDF→見開き画像→単一ページ画像→完全版PDF）
 
-**最新アップデート**: PDF生成が劇的に高速化し、安定性が向上しました（2025-10-25）
+**推奨**: これが最新の実装ガイドです。まずこれを読んでください。
+
+---
+
+#### [media-template-guide.md](./media-template-guide.md) ⭐**最新**
+**メディアテンプレート - 実装ガイド**
+
+- メディアテンプレートの概念とスキーマ
+- `memoir_vertical` (自分史_縦書き) テンプレート
+- ページ型の定義と拡張方法
+- 編集画面の実装
+- 新しいテンプレートの追加方法
+
+**対象読者**: 開発者  
+**内容**: メディアテンプレートシステムの全体像と実装詳細
+
+---
+
+#### [quick-flow-guide.md](./quick-flow-guide.md) （参考用）
+**旧・簡易自分史作成フロー - 実装ガイド**
+
+写真フローなど、一部実装されていない機能の設計が含まれています。最新の実装は `extended-quick-flow-guide.md` を参照してください。
 
 ---
 
@@ -130,11 +132,13 @@
 ```
 docs/
 ├── README.md (このファイル)
-├── design.md (設計・要求定義)
-├── quick-flow-guide.md (簡易フロー実装ガイド)
+├── extended-quick-flow-guide.md ⭐ (拡張版簡易フロー - 最新)
+├── media-template-guide.md ⭐ (メディアテンプレート - 最新)
 ├── vivliostyle-integration.md (Vivliostyle統合ガイド)
 ├── vivliostyle-options.md (Vivliostyleオプション設定)
-└── troubleshooting-vivliostyle.md (トラブルシューティング)
+├── troubleshooting-vivliostyle.md (トラブルシューティング)
+├── design.md (全体設計 - 参考用)
+└── quick-flow-guide.md (旧・簡易フロー - 参考用)
 ```
 
 ---
@@ -143,8 +147,8 @@ docs/
 
 ### 新規メンバー向け
 
-1. **[design.md](./design.md)** - 全体の設計を理解
-2. **[quick-flow-guide.md](./quick-flow-guide.md)** - 簡易フローの実装を理解
+1. **[extended-quick-flow-guide.md](./extended-quick-flow-guide.md)** ⭐ - 最新の簡易フローを理解
+2. **[media-template-guide.md](./media-template-guide.md)** ⭐ - メディアテンプレートシステムを理解
 3. **[vivliostyle-integration.md](./vivliostyle-integration.md)** - PDF生成の仕組みを理解
 4. **[vivliostyle-options.md](./vivliostyle-options.md)** - オプションの使い方を学ぶ
 
@@ -155,8 +159,8 @@ docs/
 
 ### 新機能追加時
 
-1. **[design.md](./design.md)** - 設計方針を確認
-2. 該当する実装ガイドを参照
+1. **[media-template-guide.md](./media-template-guide.md)** - メディアテンプレートの追加方法を確認
+2. **[extended-quick-flow-guide.md](./extended-quick-flow-guide.md)** - フロー統合の方法を確認
 3. **[troubleshooting-vivliostyle.md](./troubleshooting-vivliostyle.md)** - ベストプラクティスを確認
 
 ---
@@ -180,11 +184,14 @@ docs/
 **Q: タイムアウトエラーが発生する**  
 → [vivliostyle-options.md - タイムアウト設定](./vivliostyle-options.md#タイムアウト設定の目安)
 
-**Q: 簡易フローの仕組みを知りたい**  
-→ [quick-flow-guide.md](./quick-flow-guide.md)
+**Q: 最新の簡易フローの仕組みを知りたい**  
+→ [extended-quick-flow-guide.md](./extended-quick-flow-guide.md)
 
-**Q: LLM文章生成機能の使い方**  
-→ [design.md - LLM文章生成機能](./design.md#llm文章生成機能)
+**Q: メディアテンプレートとは？**  
+→ [media-template-guide.md](./media-template-guide.md)
+
+**Q: 新しいメディアタイプ（旅ログなど）を追加したい**  
+→ [media-template-guide.md - 新しいテンプレートの追加方法](./media-template-guide.md#新しいテンプレートの追加方法)
 
 ---
 
@@ -238,7 +245,9 @@ line-bot/
 │   ├── api/
 │   │   └── routes.py (APIエンドポイント)
 │   ├── services/
-│   │   ├── quick_memoir_service.py (簡易フロー)
+│   │   ├── quick_memoir_service.py (拡張版簡易フロー)
+│   │   ├── media_template_schema.py (メディアテンプレートスキーマ)
+│   │   ├── media_memoir_service.py (メディアフロー - 将来的に統合)
 │   │   ├── vivliostyle_service.py (PDF生成)
 │   │   ├── openai_service.py (LLM文章生成)
 │   │   └── line_service.py (LINE連携)
@@ -246,17 +255,23 @@ line-bot/
 │   │   └── settings.py (設定)
 │   └── main.py (エントリーポイント)
 ├── templates/
-│   └── memoir/
-│       └── template.html (自分史テンプレート)
+│   ├── memoir/
+│   │   └── template.html (従来の自分史テンプレート)
+│   └── media/
+│       └── memoir-vertical/
+│           └── template.html (メディアテンプレート: 自分史_縦書き)
 ├── liff/
-│   └── edit.html (編集画面)
+│   ├── edit.html (従来の編集画面)
+│   └── edit-media.html (メディアテンプレート編集画面)
 ├── docs/ (このディレクトリ)
 │   ├── README.md
-│   ├── design.md
-│   ├── quick-flow-guide.md
+│   ├── extended-quick-flow-guide.md ⭐
+│   ├── media-template-guide.md ⭐
 │   ├── vivliostyle-integration.md
 │   ├── vivliostyle-options.md
-│   └── troubleshooting-vivliostyle.md
+│   ├── troubleshooting-vivliostyle.md
+│   ├── design.md (参考用)
+│   └── quick-flow-guide.md (参考用)
 └── uploads/ (PDF・画像保存先)
 ```
 
@@ -307,5 +322,24 @@ line-bot/
 ---
 
 **最終更新**: 2025-10-25  
-**バージョン**: 1.0.0
+**バージョン**: 2.0.0 - メディアテンプレート対応
+
+## 🎉 最新情報（v2.0.0）
+
+### 拡張版簡易フロー
+- タイトル+カバー写真で即座に表紙PDF生成
+- 見開き画像、単一ページ画像を追加収集
+- 完全版PDF（4ページ）を自動生成
+
+### メディアテンプレート
+- スキーマ駆動のテンプレートシステム
+- `memoir_vertical`（自分史_縦書き）実装済み
+- 将来的に旅ログ、推しログなど追加可能
+
+### 編集機能
+- メディアテンプレート専用編集画面
+- 見開きページと単一ページのテキスト編集
+- AI文章生成機能（将来実装予定）
+
+詳細は [extended-quick-flow-guide.md](./extended-quick-flow-guide.md) と [media-template-guide.md](./media-template-guide.md) を参照してください。
 

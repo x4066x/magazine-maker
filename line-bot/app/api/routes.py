@@ -8,6 +8,7 @@ from ..services import file_service
 from ..services.quick_memoir_service import quick_memoir_service
 from ..services.openai_service import openai_service
 from ..services.line_service import send_push_message
+from ..services.media_template_schema import get_template
 from ..config import settings
 
 router = APIRouter()
@@ -17,8 +18,16 @@ class MemoirSaveRequest(BaseModel):
     data: Dict[str, Any]
 
 class TextGenerationRequest(BaseModel):
-    type: str  # "profile" | "timeline_description"
+    type: str  # "profile" | "timeline_description" | "spread_story" | "single_description"
     data: Dict[str, Any]
+
+class MediaMemoirSaveRequest(BaseModel):
+    title: str
+    author: str
+    spread_title: str = ""
+    spread_text: str
+    single_title: str = ""
+    single_text: str
 
 @router.post('/callback')
 async def webhook(request: Request):
@@ -247,6 +256,177 @@ async def generate_memoir_text(request: TextGenerationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/api/memoir/edit-media/{session_id}")
+async def get_media_memoir_edit_data(session_id: str):
+    """メディアテンプレート編集データ取得API"""
+    try:
+        session = quick_memoir_service.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # メディアテンプレートスキーマを取得
+        template = get_template("memoir_vertical")
+        
+        # デフォルト値を設定
+        spread_title = "思い出のひととき"
+        spread_text = (
+            "この写真には、大切な思い出が詰まっています。時が経つにつれて、記憶は少しずつ色褪せていくかもしれません。"
+            "しかし、この一枚の写真が、あの日の感動や喜びを鮮やかに蘇らせてくれます。"
+            "人生の旅路において、このような瞬間を大切に残しておくことは、とても意味のあることです。"
+            "写真を見るたびに、当時の気持ちや周囲の雰囲気が心に蘇ってきます。"
+            "それは単なる記録ではなく、心の財産として、これからも大切に保管していきたいと思います。"
+        )
+        single_title = "大切な一枚"
+        single_text = (
+            "この写真は、人生の中で特別な意味を持つ一枚です。"
+            "何気ない日常の中にも、かけがえのない瞬間が隠れています。"
+            "写真として残すことで、その瞬間は永遠に私たちの心に刻まれます。"
+        )
+        
+        return {
+            "session_id": session.session_id,
+            "template_id": "memoir_vertical",
+            "template_name": template.template_name if template else "自分史_縦書き",
+            "title": session.data.title,
+            "author": session.data.author,
+            "cover_image_url": session.data.cover_image_url,
+            "spread_image_url": session.spread_image_url,
+            "single_image_url": session.single_image_url,
+            "spread_title": spread_title,
+            "spread_text": spread_text,
+            "single_title": single_title,
+            "single_text": single_text
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f'Error getting media memoir edit data: {e}')
+        print(f'Full traceback:\n{error_trace}')
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/memoir/save-media/{session_id}")
+async def save_media_memoir_data(session_id: str, request: MediaMemoirSaveRequest):
+    """メディアテンプレート編集データ保存＆完全版PDF再生成API"""
+    try:
+        # セッションを取得
+        session = quick_memoir_service.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # 基本情報を更新
+        session.data.title = request.title
+        session.data.author = request.author
+        
+        # 完全版PDFを再生成（カスタマイズされたテキストを使用）
+        import asyncio
+        
+        # _prepare_media_template_dataをオーバーライド
+        template_data = {
+            "title": request.title,
+            "pages": [
+                # ページ1: タイトルページ（表紙）
+                {
+                    "page_type": "title",
+                    "page_number": 1,
+                    "data": {
+                        "title": request.title,
+                        "author": request.author,
+                        "cover_image": session.data.cover_image_url
+                    }
+                },
+                # ページ2-3: 見開き画像+縦書きテキスト（カスタマイズ版）
+                {
+                    "page_type": "spread_image_text",
+                    "page_number": 2,
+                    "data": {
+                        "image": session.spread_image_url,
+                        "story_title": request.spread_title or "思い出のひととき",
+                        "story_text": request.spread_text
+                    }
+                },
+                # ページ4: 単一ページ画像+テキスト（カスタマイズ版）
+                {
+                    "page_type": "single_image_text",
+                    "page_number": 4,
+                    "data": {
+                        "image": session.single_image_url,
+                        "section_title": request.single_title or "大切な一枚",
+                        "description": request.single_text
+                    }
+                }
+            ]
+        }
+        
+        # 完全版PDF生成
+        from pathlib import Path
+        from datetime import datetime
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_title = "".join(c for c in request.title if c.isalnum() or c in (' ', '-', '_'))[:20]
+        filename = f"memoir_vertical_{safe_title}_{timestamp}.pdf"
+        
+        output_dir = Path(settings.UPLOADS_DIR)
+        output_dir.mkdir(exist_ok=True)
+        output_path = output_dir / filename
+        
+        vivliostyle_options = {
+            "size": "A4",
+            "format": "pdf",
+            "single_doc": True,
+            "timeout": 90
+        }
+        
+        from ..services.vivliostyle_service import vivliostyle_service
+        await vivliostyle_service.generate_pdf(
+            template_name="media/memoir-vertical",
+            data=template_data,
+            output_path=output_path,
+            vivliostyle_options=vivliostyle_options
+        )
+        
+        # PDFファイルを読み込み
+        with open(output_path, "rb") as f:
+            pdf_buffer = f.read()
+        
+        # PDFファイルを保存
+        file_metadata = file_service.save_file(
+            pdf_buffer,
+            filename,
+            "application/pdf"
+        )
+        
+        # PDFのURLを取得
+        pdf_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
+        edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={session_id}"
+        
+        # LINEにメッセージを送信
+        complete_message = (
+            f"✨ 編集した自分史PDFが完成しました！\n\n"
+            f"📄 PDF: {pdf_url}\n"
+            f"ファイル名: {filename}\n"
+            f"サイズ: {len(pdf_buffer):,} bytes"
+        )
+        send_push_message(session.user_id, complete_message)
+        
+        return {
+            "success": True,
+            "pdf_url": pdf_url,
+            "message": "PDFを更新しました"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f'Error saving media memoir data: {e}')
+        print(f'Full traceback:\n{error_trace}')
+        raise HTTPException(status_code=500, detail=f"PDF生成エラー: {str(e)}")
+
+
 @router.get("/")
 async def root():
     """APIドキュメント"""
@@ -261,6 +441,8 @@ async def root():
             "api_file_info": "GET /api/files/{file_id}",
             "memoir_edit": "GET /api/memoir/edit/{session_id}",
             "memoir_save": "POST /api/memoir/save/{session_id}",
+            "memoir_edit_media": "GET /api/memoir/edit-media/{session_id}",
+            "memoir_save_media": "POST /api/memoir/save-media/{session_id}",
             "memoir_generate_text": "POST /api/memoir/generate-text"
         }
     }

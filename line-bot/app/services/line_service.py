@@ -27,7 +27,6 @@ from .file_service import file_service
 from .memoir_service import memoir_service
 from .quick_memoir_service import quick_memoir_service
 from .photo_memoir_service import photo_memoir_service
-from .openai_service import get_chatgpt_response
 
 # LINE Bot API設定
 configuration = Configuration(access_token=settings.CHANNEL_ACCESS_TOKEN)
@@ -518,7 +517,8 @@ def handle_text_message(event: MessageEvent):
     quick_session = quick_memoir_service.get_session_by_user(user_id)
     
     # 簡易フロー: 「作る」などのトリガーワード
-    if quick_memoir_service.is_quick_create_request(user_message):
+    trigger_keywords = ['作る', '作成', 'つくる', 'create', '自分史']
+    if any(keyword in user_message.lower() for keyword in trigger_keywords) and not quick_session:
         try:
             session, response = quick_memoir_service.start_quick_create(user_id)
             send_text_message_with_fallback(event.reply_token, user_id, response)
@@ -546,8 +546,9 @@ def handle_text_message(event: MessageEvent):
     elif user_message.lower() == 'サンプル確認':
         handle_sample_command(event.reply_token)
     else:
-        # 通常のChatGPT応答
-        handle_chatgpt_response(event)
+        # セッション外でのメッセージには案内を表示
+        response_text = "自分史を作成する場合は「作成」と送信してください。"
+        send_text_message(event.reply_token, response_text)
 
 def handle_sample_command(reply_token: str):
     """サンプルPDFファイル一覧を返信"""
@@ -621,7 +622,7 @@ def handle_image_message(event: MessageEvent):
                 send_text_message_with_fallback(event.reply_token, user_id, error_message)
                 return
         
-        # 簡易フロー: カバー写真待ち（優先）
+        # 簡易フロー: カバー写真待ち
         quick_session = quick_memoir_service.get_session_by_user(user_id)
         if quick_session and quick_session.state == "waiting_cover":
             try:
@@ -629,15 +630,15 @@ def handle_image_message(event: MessageEvent):
                 success, response_text = quick_memoir_service.process_cover_image(quick_session, file_url)
                 send_text_message_with_fallback(event.reply_token, user_id, response_text)
                 
-                # 非同期でPDF生成
+                # 非同期で表紙PDFを生成
                 if success:
                     import threading
                     
-                    def generate_quick_pdf_async():
+                    def generate_cover_pdf_async():
                         try:
-                            # PDF生成（async関数をスレッド内で実行）
+                            # 表紙のみのPDF生成
                             import asyncio
-                            pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session))
+                            pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session, full_version=False))
                             
                             # PDFファイルを保存
                             pdf_metadata = file_service.save_file(
@@ -648,17 +649,88 @@ def handle_image_message(event: MessageEvent):
                             
                             # URLを生成
                             pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
-                            edit_url = f"{settings.BASE_URL}/liff/edit.html?session_id={quick_session.session_id}"
+                            edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
                             
-                            # Flex Messageを送信（reply_tokenは期限切れなので、空文字でPush扱い）
+                            # Flex Messageを送信
                             send_memoir_complete_message("", user_id, pdf_url, edit_url)
+                            
+                            # 続けて見開き画像を依頼
+                            spread_request_message = (
+                                "\n📸 次に、見開きページ用の写真を送ってください。\n"
+                                "（例：思い出の風景、大切な瞬間など、縦長の写真推奨）"
+                            )
+                            send_push_message(user_id, spread_request_message)
                             
                         except Exception as e:
                             error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
                             send_push_message(user_id, error_message)
                     
                     # 非同期スレッドを開始
-                    pdf_thread = threading.Thread(target=generate_quick_pdf_async)
+                    pdf_thread = threading.Thread(target=generate_cover_pdf_async)
+                    pdf_thread.start()
+                
+                return
+            except Exception as e:
+                error_message = f"画像の処理中にエラーが発生しました: {str(e)}"
+                send_text_message_with_fallback(event.reply_token, user_id, error_message)
+                return
+        
+        # 簡易フロー: 見開き画像待ち
+        if quick_session and quick_session.state == "waiting_spread_image":
+            try:
+                success, response_text = quick_memoir_service.process_spread_image(quick_session, file_url)
+                send_text_message_with_fallback(event.reply_token, user_id, response_text)
+                return
+            except Exception as e:
+                error_message = f"画像の処理中にエラーが発生しました: {str(e)}"
+                send_text_message_with_fallback(event.reply_token, user_id, error_message)
+                return
+        
+        # 簡易フロー: 単一ページ画像待ち
+        if quick_session and quick_session.state == "waiting_single_image":
+            try:
+                success, response_text = quick_memoir_service.process_single_image(quick_session, file_url)
+                send_text_message_with_fallback(event.reply_token, user_id, response_text)
+                
+                # 完全版PDFを生成
+                if success:
+                    import threading
+                    
+                    def generate_full_pdf_async():
+                        try:
+                            # 完全版PDF生成
+                            import asyncio
+                            pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session, full_version=True))
+                            
+                            # PDFファイルを保存
+                            pdf_metadata = file_service.save_file(
+                                pdf_result["pdf_buffer"],
+                                pdf_result["filename"],
+                                "application/pdf"
+                            )
+                            
+                            # URLを生成
+                            pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
+                            edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
+                            
+                            # 完全版PDF完成メッセージを送信
+                            complete_message = (
+                                f"✨ 完全版の自分史が完成しました！\n\n"
+                                f"📄 PDF: {pdf_url}\n"
+                                f"✏️ 内容を編集: {edit_url}\n\n"
+                                f"ファイル名: {pdf_result['filename']}\n"
+                                f"サイズ: {pdf_result['size']:,} bytes\n\n"
+                                f"表紙、見開きページ、単一ページの3種類のページを含む、"
+                                f"本格的な自分史PDFです。"
+                            )
+                            send_push_message(user_id, complete_message)
+                            
+                        except Exception as e:
+                            error_message = f"完全版PDF生成中にエラーが発生しました: {str(e)}"
+                            send_push_message(user_id, error_message)
+                    
+                    # 非同期スレッドを開始
+                    pdf_thread = threading.Thread(target=generate_full_pdf_async)
                     pdf_thread.start()
                 
                 return
@@ -702,14 +774,4 @@ def handle_file_list_command(reply_token: str):
         print(f'Error handling file list command: {e}')
         send_text_message(reply_token, "ファイル一覧の取得に失敗しました。")
 
-def handle_chatgpt_response(event: MessageEvent):
-    """ChatGPT応答を処理"""
-    try:
-        # ChatGPTからレスポンスを取得
-        chatgpt_response = get_chatgpt_response(event.message.text)
-        send_text_message(event.reply_token, chatgpt_response)
-        
-    except Exception as e:
-        print(f'Error handling ChatGPT response: {e}')
-        send_text_message(event.reply_token, f"エラーが発生しました: {str(e)}")
 

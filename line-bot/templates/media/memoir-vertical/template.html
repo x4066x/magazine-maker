@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* ====================================
+           共通スタイル
+        ==================================== */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Noto Serif JP", "游明朝", "Yu Mincho", serif;
+            font-size: 12pt;
+            line-height: 2;
+            color: #333;
+        }
+        
+        /* ページ分割 */
+        .page-break {
+            page-break-after: always;
+        }
+        
+        /* ====================================
+           タイトルページ（カバー）スタイル
+        ==================================== */
+        .title-page {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title-page .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .title-page .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.7);
+        }
+        
+        .title-page .text-area {
+            position: absolute;
+            top: 0;
+            right: 10%;
+            width: 30%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .title-page .author-section {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .title-page .author-name {
+            font-size: 28pt;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.3em;
+        }
+        
+        /* ====================================
+           見開き画像+縦書きテキスト スタイル
+        ==================================== */
+        .spread {
+            width: 200%;
+            height: 100vh;
+            display: flex;
+        }
+        
+        .left-page, .right-page {
+            width: 50%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* 左ページ: 画像フル */
+        .spread .image-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .spread .main-vertical-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        /* 右ページ: 縦書きテキスト */
+        .spread .page-content {
+            width: 100%;
+            height: 100%;
+            padding: 5%;
+            position: relative;
+        }
+        
+        .spread .tategaki-container {
+            width: 100%;
+            height: 90%;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        .spread .content-flow {
+            column-count: 3;
+            column-gap: 3em;
+            column-fill: auto;
+            height: 100%;
+        }
+        
+        .spread .article-title {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 2em;
+            letter-spacing: 0.2em;
+        }
+        
+        .spread .continuous-text {
+            font-size: 11pt;
+            line-height: 2.2;
+            text-indent: 1em;
+        }
+        
+        .spread .page-footer {
+            position: absolute;
+            bottom: 3%;
+            right: 5%;
+            writing-mode: horizontal-tb;
+        }
+        
+        .spread .page-number {
+            font-size: 10pt;
+            color: #666;
+        }
+        
+        /* ====================================
+           単一ページ画像+テキスト スタイル
+        ==================================== */
+        .single-page {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            padding: 5%;
+        }
+        
+        .single-page .page-content {
+            width: 100%;
+            height: 90%;
+            display: flex;
+            gap: 3%;
+        }
+        
+        .single-page .image-container {
+            flex: 0 0 40%;
+            height: 100%;
+        }
+        
+        .single-page .page-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .single-page .text-container {
+            flex: 1;
+            height: 100%;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        .single-page .section-title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 1.5em;
+            letter-spacing: 0.2em;
+        }
+        
+        .single-page .description-text {
+            font-size: 11pt;
+            line-height: 2.2;
+        }
+        
+        .single-page .page-footer {
+            position: absolute;
+            bottom: 3%;
+            right: 5%;
+        }
+        
+        .single-page .page-number {
+            font-size: 10pt;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    {% for page in pages %}
+        {% if page.page_type == "title" %}
+            {# タイトルページ（カバー） #}
+            <div class="title-page">
+                <div class="background-image">
+                    <img src="{{ page.data.cover_image }}" alt="Cover Image" class="cover-image">
+                </div>
+                <div class="text-area">
+                    <div class="author-section">
+                        <h1 class="author-name">{{ page.data.author }}</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="page-break"></div>
+            
+        {% elif page.page_type == "spread_image_text" %}
+            {# 見開き画像+縦書きテキスト #}
+            <div class="spread">
+                <div class="left-page">
+                    <div class="image-container">
+                        <img src="{{ page.data.image }}" alt="メイン画像" class="main-vertical-image">
+                    </div>
+                </div>
+                <div class="right-page">
+                    <div class="page-content">
+                        <div class="tategaki-container">
+                            <div class="content-flow">
+                                {% if page.data.story_title %}
+                                <h1 class="article-title">{{ page.data.story_title }}</h1>
+                                {% endif %}
+                                <div class="continuous-text">
+                                    {{ page.data.story_text }}
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="page-footer">
+                            <p class="page-number">{{ page.page_number }}-{{ page.page_number + 1 }}</p>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+            <div class="page-break"></div>
+            
+        {% elif page.page_type == "single_image_text" %}
+            {# 単一ページ画像+テキスト #}
+            <div class="single-page">
+                <div class="page-content">
+                    <div class="image-container">
+                        <img src="{{ page.data.image }}" alt="ページ画像" class="page-image">
+                    </div>
+                    <div class="text-container vertical-text">
+                        {% if page.data.section_title %}
+                        <h2 class="section-title">{{ page.data.section_title }}</h2>
+                        {% endif %}
+                        <div class="description-text">
+                            {{ page.data.description }}
+                        </div>
+                    </div>
+                </div>
+                <footer class="page-footer">
+                    <p class="page-number">{{ page.page_number }}</p>
+                </footer>
+            </div>
+            {% if not loop.last %}
+            <div class="page-break"></div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
+
