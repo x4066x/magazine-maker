@@ -108,5 +108,455 @@
     "file_size": 148438,
     "upload_time": "2025-07-01T17:32:27.124500",
     "message_type": "file"
+  },
+  "8ff488dd-04b1-4308-89d0-0d8158c04d6a": {
+    "file_id": "8ff488dd-04b1-4308-89d0-0d8158c04d6a",
+    "original_filename": "received_image_584743733418262733.jpg",
+    "stored_filename": "8ff488dd-04b1-4308-89d0-0d8158c04d6a.jpg",
+    "file_path": "uploads/8ff488dd-04b1-4308-89d0-0d8158c04d6a.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 323394,
+    "upload_time": "2025-10-25T13:15:30.405994",
+    "message_type": "image"
+  },
+  "72b439d9-ffdd-4af6-8781-824cdf139374": {
+    "file_id": "72b439d9-ffdd-4af6-8781-824cdf139374",
+    "original_filename": "received_image_584744894905189187.jpg",
+    "stored_filename": "72b439d9-ffdd-4af6-8781-824cdf139374.jpg",
+    "file_path": "uploads/72b439d9-ffdd-4af6-8781-824cdf139374.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 323394,
+    "upload_time": "2025-10-25T13:27:02.538368",
+    "message_type": "image"
+  },
+  "f132b2e9-0020-4c1a-86e5-8ee696f24451": {
+    "file_id": "f132b2e9-0020-4c1a-86e5-8ee696f24451",
+    "original_filename": "received_image_584745350960251209.jpg",
+    "stored_filename": "f132b2e9-0020-4c1a-86e5-8ee696f24451.jpg",
+    "file_path": "uploads/f132b2e9-0020-4c1a-86e5-8ee696f24451.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 323394,
+    "upload_time": "2025-10-25T13:31:34.510729",
+    "message_type": "image"
+  },
+  "f8fc1d68-dc38-420e-a3f2-91473579be82": {
+    "file_id": "f8fc1d68-dc38-420e-a3f2-91473579be82",
+    "original_filename": "received_image_584745886522278246.jpg",
+    "stored_filename": "f8fc1d68-dc38-420e-a3f2-91473579be82.jpg",
+    "file_path": "uploads/f8fc1d68-dc38-420e-a3f2-91473579be82.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 503416,
+    "upload_time": "2025-10-25T13:36:53.867126",
+    "message_type": "image"
+  },
+  "5f140118-718e-4030-ac06-c3671fc516c9": {
+    "file_id": "5f140118-718e-4030-ac06-c3671fc516c9",
+    "original_filename": "received_image_584746220070109661.jpg",
+    "stored_filename": "5f140118-718e-4030-ac06-c3671fc516c9.jpg",
+    "file_path": "uploads/5f140118-718e-4030-ac06-c3671fc516c9.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 503416,
+    "upload_time": "2025-10-25T13:40:12.589973",
+    "message_type": "image"
+  },
+  "701cd738-3911-4dfe-b340-6ef768360b86": {
+    "file_id": "701cd738-3911-4dfe-b340-6ef768360b86",
+    "original_filename": "memoir_か_20251025_134012.pdf",
+    "stored_filename": "701cd738-3911-4dfe-b340-6ef768360b86.pdf",
+    "file_path": "uploads/701cd738-3911-4dfe-b340-6ef768360b86.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2612007,
+    "upload_time": "2025-10-25T13:40:15.797940",
+    "message_type": "file"
+  },
+  "685bef8f-5c17-4b75-b895-b3273db99c7a": {
+    "file_id": "685bef8f-5c17-4b75-b895-b3273db99c7a",
+    "original_filename": "received_image_584748259726852507.jpg",
+    "stored_filename": "685bef8f-5c17-4b75-b895-b3273db99c7a.jpg",
+    "file_path": "uploads/685bef8f-5c17-4b75-b895-b3273db99c7a.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:00:27.837833",
+    "message_type": "image"
+  },
+  "9e35a416-0564-44cf-9a28-f75bef0e15d3": {
+    "file_id": "9e35a416-0564-44cf-9a28-f75bef0e15d3",
+    "original_filename": "memoir_あいうえお_20251025_140027.pdf",
+    "stored_filename": "9e35a416-0564-44cf-9a28-f75bef0e15d3.pdf",
+    "file_path": "uploads/9e35a416-0564-44cf-9a28-f75bef0e15d3.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327311,
+    "upload_time": "2025-10-25T14:00:30.865504",
+    "message_type": "file"
+  },
+  "b7202376-060a-41f0-a523-d5e8aaedf7d5": {
+    "file_id": "b7202376-060a-41f0-a523-d5e8aaedf7d5",
+    "original_filename": "received_image_584748649763308049.jpg",
+    "stored_filename": "b7202376-060a-41f0-a523-d5e8aaedf7d5.jpg",
+    "file_path": "uploads/b7202376-060a-41f0-a523-d5e8aaedf7d5.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:04:20.611857",
+    "message_type": "image"
+  },
+  "64d28787-0865-47bc-937a-0f5f66ad028d": {
+    "file_id": "64d28787-0865-47bc-937a-0f5f66ad028d",
+    "original_filename": "memoir_あかさかあ_20251025_140420.pdf",
+    "stored_filename": "64d28787-0865-47bc-937a-0f5f66ad028d.pdf",
+    "file_path": "uploads/64d28787-0865-47bc-937a-0f5f66ad028d.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327312,
+    "upload_time": "2025-10-25T14:04:23.704919",
+    "message_type": "file"
+  },
+  "b1afeccd-e8aa-427d-bb90-82ef863ea75f": {
+    "file_id": "b1afeccd-e8aa-427d-bb90-82ef863ea75f",
+    "original_filename": "received_image_584748980174061742.jpg",
+    "stored_filename": "b1afeccd-e8aa-427d-bb90-82ef863ea75f.jpg",
+    "file_path": "uploads/b1afeccd-e8aa-427d-bb90-82ef863ea75f.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:07:37.842034",
+    "message_type": "image"
+  },
+  "abd90bd2-eefc-4da2-8ce5-cf3fa9759035": {
+    "file_id": "abd90bd2-eefc-4da2-8ce5-cf3fa9759035",
+    "original_filename": "received_image_584749433292849579.jpg",
+    "stored_filename": "abd90bd2-eefc-4da2-8ce5-cf3fa9759035.jpg",
+    "file_path": "uploads/abd90bd2-eefc-4da2-8ce5-cf3fa9759035.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:12:07.995129",
+    "message_type": "image"
+  },
+  "fb77588e-37ff-46c9-bed1-cc5dd7e4e146": {
+    "file_id": "fb77588e-37ff-46c9-bed1-cc5dd7e4e146",
+    "original_filename": "memoir_あかさかあか_20251025_141208.pdf",
+    "stored_filename": "fb77588e-37ff-46c9-bed1-cc5dd7e4e146.pdf",
+    "file_path": "uploads/fb77588e-37ff-46c9-bed1-cc5dd7e4e146.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327309,
+    "upload_time": "2025-10-25T14:12:11.073740",
+    "message_type": "file"
+  },
+  "750f4f89-282f-4ee0-8026-b9b07df1de6a": {
+    "file_id": "750f4f89-282f-4ee0-8026-b9b07df1de6a",
+    "original_filename": "memoir_あかさかあか_20251025_141220.pdf",
+    "stored_filename": "750f4f89-282f-4ee0-8026-b9b07df1de6a.pdf",
+    "file_path": "uploads/750f4f89-282f-4ee0-8026-b9b07df1de6a.pdf",
+    "content_type": "application/pdf",
+    "file_size": 69546,
+    "upload_time": "2025-10-25T14:12:53.356591",
+    "message_type": "file"
+  },
+  "27dc4493-429b-4489-a60d-812d63cfa5e2": {
+    "file_id": "27dc4493-429b-4489-a60d-812d63cfa5e2",
+    "original_filename": "memoir_あかさかあか_20251025_141410.pdf",
+    "stored_filename": "27dc4493-429b-4489-a60d-812d63cfa5e2.pdf",
+    "file_path": "uploads/27dc4493-429b-4489-a60d-812d63cfa5e2.pdf",
+    "content_type": "application/pdf",
+    "file_size": 93290,
+    "upload_time": "2025-10-25T14:14:42.941326",
+    "message_type": "file"
+  },
+  "026996e6-48d8-4fa7-a887-acdeedef8cf9": {
+    "file_id": "026996e6-48d8-4fa7-a887-acdeedef8cf9",
+    "original_filename": "received_image_584750649540346537.jpg",
+    "stored_filename": "026996e6-48d8-4fa7-a887-acdeedef8cf9.jpg",
+    "file_path": "uploads/026996e6-48d8-4fa7-a887-acdeedef8cf9.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:24:12.234003",
+    "message_type": "image"
+  },
+  "4ddc3434-ccb8-4067-860e-a86c91b58f6a": {
+    "file_id": "4ddc3434-ccb8-4067-860e-a86c91b58f6a",
+    "original_filename": "memoir_あかさかあか_20251025_142412.pdf",
+    "stored_filename": "4ddc3434-ccb8-4067-860e-a86c91b58f6a.pdf",
+    "file_path": "uploads/4ddc3434-ccb8-4067-860e-a86c91b58f6a.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327309,
+    "upload_time": "2025-10-25T14:24:15.366133",
+    "message_type": "file"
+  },
+  "e7e8f107-6fcd-47ce-a481-eb4aa31907ee": {
+    "file_id": "e7e8f107-6fcd-47ce-a481-eb4aa31907ee",
+    "original_filename": "memoir_あかさかあか_20251025_142425.pdf",
+    "stored_filename": "e7e8f107-6fcd-47ce-a481-eb4aa31907ee.pdf",
+    "file_path": "uploads/e7e8f107-6fcd-47ce-a481-eb4aa31907ee.pdf",
+    "content_type": "application/pdf",
+    "file_size": 71243,
+    "upload_time": "2025-10-25T14:24:58.105810",
+    "message_type": "file"
+  },
+  "533f7d75-a388-4519-b0d0-10028aae7229": {
+    "file_id": "533f7d75-a388-4519-b0d0-10028aae7229",
+    "original_filename": "received_image_584751359568642412.jpg",
+    "stored_filename": "533f7d75-a388-4519-b0d0-10028aae7229.jpg",
+    "file_path": "uploads/533f7d75-a388-4519-b0d0-10028aae7229.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:31:15.813840",
+    "message_type": "image"
+  },
+  "98696a26-8263-4423-b717-99364bea74c0": {
+    "file_id": "98696a26-8263-4423-b717-99364bea74c0",
+    "original_filename": "memoir_あかさかあか_20251025_143115.pdf",
+    "stored_filename": "98696a26-8263-4423-b717-99364bea74c0.pdf",
+    "file_path": "uploads/98696a26-8263-4423-b717-99364bea74c0.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327309,
+    "upload_time": "2025-10-25T14:31:18.773724",
+    "message_type": "file"
+  },
+  "093cb944-3712-4ee7-98e7-22845ba41394": {
+    "file_id": "093cb944-3712-4ee7-98e7-22845ba41394",
+    "original_filename": "memoir_あかさかあか_20251025_143141.pdf",
+    "stored_filename": "093cb944-3712-4ee7-98e7-22845ba41394.pdf",
+    "file_path": "uploads/093cb944-3712-4ee7-98e7-22845ba41394.pdf",
+    "content_type": "application/pdf",
+    "file_size": 69361,
+    "upload_time": "2025-10-25T14:32:13.627628",
+    "message_type": "file"
+  },
+  "11f97c7c-2775-43eb-a33d-224781b6bb00": {
+    "file_id": "11f97c7c-2775-43eb-a33d-224781b6bb00",
+    "original_filename": "received_image_584752403782828356.jpg",
+    "stored_filename": "11f97c7c-2775-43eb-a33d-224781b6bb00.jpg",
+    "file_path": "uploads/11f97c7c-2775-43eb-a33d-224781b6bb00.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:41:37.844985",
+    "message_type": "image"
+  },
+  "7034eb4c-40d1-49bb-8917-6304fb08cee7": {
+    "file_id": "7034eb4c-40d1-49bb-8917-6304fb08cee7",
+    "original_filename": "memoir_鈴木一郎_20251025_144137.pdf",
+    "stored_filename": "7034eb4c-40d1-49bb-8917-6304fb08cee7.pdf",
+    "file_path": "uploads/7034eb4c-40d1-49bb-8917-6304fb08cee7.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327313,
+    "upload_time": "2025-10-25T14:41:40.852298",
+    "message_type": "file"
+  },
+  "1c215f71-839b-4ab1-a7a9-1018a9508a7e": {
+    "file_id": "1c215f71-839b-4ab1-a7a9-1018a9508a7e",
+    "original_filename": "memoir_鈴木一郎_20251025_144203.pdf",
+    "stored_filename": "1c215f71-839b-4ab1-a7a9-1018a9508a7e.pdf",
+    "file_path": "uploads/1c215f71-839b-4ab1-a7a9-1018a9508a7e.pdf",
+    "content_type": "application/pdf",
+    "file_size": 69285,
+    "upload_time": "2025-10-25T14:42:36.040371",
+    "message_type": "file"
+  },
+  "d3714e95-f0a6-452c-a909-c5bddfbad547": {
+    "file_id": "d3714e95-f0a6-452c-a909-c5bddfbad547",
+    "original_filename": "received_image_584752785531076712.jpg",
+    "stored_filename": "d3714e95-f0a6-452c-a909-c5bddfbad547.jpg",
+    "file_path": "uploads/d3714e95-f0a6-452c-a909-c5bddfbad547.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:45:25.578915",
+    "message_type": "image"
+  },
+  "fd9d151b-49dc-445f-aabb-7a0b62fed2a2": {
+    "file_id": "fd9d151b-49dc-445f-aabb-7a0b62fed2a2",
+    "original_filename": "memoir_鈴木一郎_20251025_144525.pdf",
+    "stored_filename": "fd9d151b-49dc-445f-aabb-7a0b62fed2a2.pdf",
+    "file_path": "uploads/fd9d151b-49dc-445f-aabb-7a0b62fed2a2.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327313,
+    "upload_time": "2025-10-25T14:45:28.732842",
+    "message_type": "file"
+  },
+  "1be82f4d-6bf1-475d-baa6-7240f4391caa": {
+    "file_id": "1be82f4d-6bf1-475d-baa6-7240f4391caa",
+    "original_filename": "memoir_鈴木一郎_20251025_144556.pdf",
+    "stored_filename": "1be82f4d-6bf1-475d-baa6-7240f4391caa.pdf",
+    "file_path": "uploads/1be82f4d-6bf1-475d-baa6-7240f4391caa.pdf",
+    "content_type": "application/pdf",
+    "file_size": 68558,
+    "upload_time": "2025-10-25T14:46:28.670993",
+    "message_type": "file"
+  },
+  "53a11dfd-7201-40d8-a36c-730441fb602e": {
+    "file_id": "53a11dfd-7201-40d8-a36c-730441fb602e",
+    "original_filename": "received_image_584753294602142450.jpg",
+    "stored_filename": "53a11dfd-7201-40d8-a36c-730441fb602e.jpg",
+    "file_path": "uploads/53a11dfd-7201-40d8-a36c-730441fb602e.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:50:28.929826",
+    "message_type": "image"
+  },
+  "e5c4a8af-bfb8-48d3-a3c3-be4b21bea472": {
+    "file_id": "e5c4a8af-bfb8-48d3-a3c3-be4b21bea472",
+    "original_filename": "memoir_あいうえお_20251025_145029.pdf",
+    "stored_filename": "e5c4a8af-bfb8-48d3-a3c3-be4b21bea472.pdf",
+    "file_path": "uploads/e5c4a8af-bfb8-48d3-a3c3-be4b21bea472.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327312,
+    "upload_time": "2025-10-25T14:50:32.039482",
+    "message_type": "file"
+  },
+  "d88de20f-99ff-46c1-b5d7-d67ed573eceb": {
+    "file_id": "d88de20f-99ff-46c1-b5d7-d67ed573eceb",
+    "original_filename": "memoir_あいうえお_20251025_145158.pdf",
+    "stored_filename": "d88de20f-99ff-46c1-b5d7-d67ed573eceb.pdf",
+    "file_path": "uploads/d88de20f-99ff-46c1-b5d7-d67ed573eceb.pdf",
+    "content_type": "application/pdf",
+    "file_size": 70232,
+    "upload_time": "2025-10-25T14:52:30.586227",
+    "message_type": "file"
+  },
+  "c41fbb6b-93cd-4480-9599-5a33e7ad948f": {
+    "file_id": "c41fbb6b-93cd-4480-9599-5a33e7ad948f",
+    "original_filename": "received_image_584753925694423194.jpg",
+    "stored_filename": "c41fbb6b-93cd-4480-9599-5a33e7ad948f.jpg",
+    "file_path": "uploads/c41fbb6b-93cd-4480-9599-5a33e7ad948f.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 324394,
+    "upload_time": "2025-10-25T14:56:45.116242",
+    "message_type": "image"
+  },
+  "f84a4822-6024-42c2-9fa8-2d723c082247": {
+    "file_id": "f84a4822-6024-42c2-9fa8-2d723c082247",
+    "original_filename": "memoir_あかさかあか_20251025_145645.pdf",
+    "stored_filename": "f84a4822-6024-42c2-9fa8-2d723c082247.pdf",
+    "file_path": "uploads/f84a4822-6024-42c2-9fa8-2d723c082247.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2327309,
+    "upload_time": "2025-10-25T14:56:47.617668",
+    "message_type": "file"
+  },
+  "92333e9b-aa02-49f9-930a-1f8cbc390a5a": {
+    "file_id": "92333e9b-aa02-49f9-930a-1f8cbc390a5a",
+    "original_filename": "memoir_あかさかあか_20251025_145747.pdf",
+    "stored_filename": "92333e9b-aa02-49f9-930a-1f8cbc390a5a.pdf",
+    "file_path": "uploads/92333e9b-aa02-49f9-930a-1f8cbc390a5a.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2388336,
+    "upload_time": "2025-10-25T14:57:49.918869",
+    "message_type": "file"
+  },
+  "86d43523-e337-4b59-bb1f-11c1d02f80b4": {
+    "file_id": "86d43523-e337-4b59-bb1f-11c1d02f80b4",
+    "original_filename": "memoir_あかさかあか_20251025_145951.pdf",
+    "stored_filename": "86d43523-e337-4b59-bb1f-11c1d02f80b4.pdf",
+    "file_path": "uploads/86d43523-e337-4b59-bb1f-11c1d02f80b4.pdf",
+    "content_type": "application/pdf",
+    "file_size": 2392341,
+    "upload_time": "2025-10-25T14:59:53.734116",
+    "message_type": "file"
+  },
+  "9665b81f-3055-4fa6-a1e2-1c68aebef098": {
+    "file_id": "9665b81f-3055-4fa6-a1e2-1c68aebef098",
+    "original_filename": "received_image_584757979136655668.jpg",
+    "stored_filename": "9665b81f-3055-4fa6-a1e2-1c68aebef098.jpg",
+    "file_path": "uploads/9665b81f-3055-4fa6-a1e2-1c68aebef098.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 156540,
+    "upload_time": "2025-10-25T15:37:02.072239",
+    "message_type": "image"
+  },
+  "3bc59bab-7898-487e-b950-bf90009296e7": {
+    "file_id": "3bc59bab-7898-487e-b950-bf90009296e7",
+    "original_filename": "memoir_あかさたな_20251025_153702.pdf",
+    "stored_filename": "3bc59bab-7898-487e-b950-bf90009296e7.pdf",
+    "file_path": "uploads/3bc59bab-7898-487e-b950-bf90009296e7.pdf",
+    "content_type": "application/pdf",
+    "file_size": 551503,
+    "upload_time": "2025-10-25T15:37:04.780577",
+    "message_type": "file"
+  },
+  "69a37af8-edbc-4b05-9bc0-0ab2198534b5": {
+    "file_id": "69a37af8-edbc-4b05-9bc0-0ab2198534b5",
+    "original_filename": "memoir_あかさたな_20251025_153719.pdf",
+    "stored_filename": "69a37af8-edbc-4b05-9bc0-0ab2198534b5.pdf",
+    "file_path": "uploads/69a37af8-edbc-4b05-9bc0-0ab2198534b5.pdf",
+    "content_type": "application/pdf",
+    "file_size": 551503,
+    "upload_time": "2025-10-25T15:37:22.012139",
+    "message_type": "file"
+  },
+  "36baf76e-619a-4a71-aabc-9f7649521bf9": {
+    "file_id": "36baf76e-619a-4a71-aabc-9f7649521bf9",
+    "original_filename": "memoir_あかさたな_20251025_153728.pdf",
+    "stored_filename": "36baf76e-619a-4a71-aabc-9f7649521bf9.pdf",
+    "file_path": "uploads/36baf76e-619a-4a71-aabc-9f7649521bf9.pdf",
+    "content_type": "application/pdf",
+    "file_size": 551503,
+    "upload_time": "2025-10-25T15:37:30.690500",
+    "message_type": "file"
+  },
+  "357f2ed3-2fa9-4644-931a-16f516f4739d": {
+    "file_id": "357f2ed3-2fa9-4644-931a-16f516f4739d",
+    "original_filename": "memoir_あかさたな_20251025_153741.pdf",
+    "stored_filename": "357f2ed3-2fa9-4644-931a-16f516f4739d.pdf",
+    "file_path": "uploads/357f2ed3-2fa9-4644-931a-16f516f4739d.pdf",
+    "content_type": "application/pdf",
+    "file_size": 610618,
+    "upload_time": "2025-10-25T15:37:43.706000",
+    "message_type": "file"
+  },
+  "5a4e1123-5dd8-4afb-bb77-74055b513674": {
+    "file_id": "5a4e1123-5dd8-4afb-bb77-74055b513674",
+    "original_filename": "received_image_584758841335087702.jpg",
+    "stored_filename": "5a4e1123-5dd8-4afb-bb77-74055b513674.jpg",
+    "file_path": "uploads/5a4e1123-5dd8-4afb-bb77-74055b513674.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 156540,
+    "upload_time": "2025-10-25T15:45:36.138805",
+    "message_type": "image"
+  },
+  "12e47146-9a3f-49b2-82a2-8d008bd58136": {
+    "file_id": "12e47146-9a3f-49b2-82a2-8d008bd58136",
+    "original_filename": "memoir_タイトル_20251025_154536.pdf",
+    "stored_filename": "12e47146-9a3f-49b2-82a2-8d008bd58136.pdf",
+    "file_path": "uploads/12e47146-9a3f-49b2-82a2-8d008bd58136.pdf",
+    "content_type": "application/pdf",
+    "file_size": 551500,
+    "upload_time": "2025-10-25T15:45:38.720977",
+    "message_type": "file"
+  },
+  "1fb78c8e-74e2-4986-9234-7fbc55f43add": {
+    "file_id": "1fb78c8e-74e2-4986-9234-7fbc55f43add",
+    "original_filename": "memoir_タイトル_20251025_154550.pdf",
+    "stored_filename": "1fb78c8e-74e2-4986-9234-7fbc55f43add.pdf",
+    "file_path": "uploads/1fb78c8e-74e2-4986-9234-7fbc55f43add.pdf",
+    "content_type": "application/pdf",
+    "file_size": 612576,
+    "upload_time": "2025-10-25T15:45:52.480012",
+    "message_type": "file"
+  },
+  "c5d5ce57-af7f-4ac2-ba48-966fab2a9e4d": {
+    "file_id": "c5d5ce57-af7f-4ac2-ba48-966fab2a9e4d",
+    "original_filename": "received_image_584777572324999205.jpg",
+    "stored_filename": "c5d5ce57-af7f-4ac2-ba48-966fab2a9e4d.jpg",
+    "file_path": "uploads/c5d5ce57-af7f-4ac2-ba48-966fab2a9e4d.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 273785,
+    "upload_time": "2025-10-25T18:51:41.296971",
+    "message_type": "image"
+  },
+  "82778d36-55a0-437e-9020-3ab671edfed0": {
+    "file_id": "82778d36-55a0-437e-9020-3ab671edfed0",
+    "original_filename": "memoir_あかさかあか_20251025_185141.pdf",
+    "stored_filename": "82778d36-55a0-437e-9020-3ab671edfed0.pdf",
+    "file_path": "uploads/82778d36-55a0-437e-9020-3ab671edfed0.pdf",
+    "content_type": "application/pdf",
+    "file_size": 873637,
+    "upload_time": "2025-10-25T18:51:43.793376",
+    "message_type": "file"
+  },
+  "ef547d70-7540-4636-a7e7-9d00d79cd693": {
+    "file_id": "ef547d70-7540-4636-a7e7-9d00d79cd693",
+    "original_filename": "memoir_あかさかあか_20251025_185213.pdf",
+    "stored_filename": "ef547d70-7540-4636-a7e7-9d00d79cd693.pdf",
+    "file_path": "uploads/ef547d70-7540-4636-a7e7-9d00d79cd693.pdf",
+    "content_type": "application/pdf",
+    "file_size": 935872,
+    "upload_time": "2025-10-25T18:52:15.675905",
+    "message_type": "file"
   }
 }
