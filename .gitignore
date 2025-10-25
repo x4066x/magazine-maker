@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+__pycache__/
+
+# Environment variables
+.env
+.env.local
+
+# Build outputs
+dist/
+build/
+*.pyc
+
+# Temporary files and outputs
+temp/
+*.log
+
+# Large binary files
+*.pdf
+!**/docs/**/*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test outputs
+test-results/
+playwright-report/
+
+# Uploads (user generated content)
+uploads/
+output/
+
