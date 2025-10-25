@@ -6,13 +6,23 @@
     <title>{{ title }}</title>
     <style>
         /* ====================================
-           共通スタイル
+           ページサイズ定義
         ==================================== */
+        /* デフォルトはA4 */
         @page {
             size: A4;
             margin: 0;
         }
         
+        /* 見開きページ用 - 420mm x 297mm（A3横） */
+        @page spread {
+            size: 420mm 297mm;
+            margin: 0;
+        }
+        
+        /* ====================================
+           共通スタイル
+        ==================================== */
         * {
             margin: 0;
             padding: 0;
@@ -20,28 +30,34 @@
         }
         
         body {
-            font-family: "Noto Serif JP", "游明朝", "Yu Mincho", serif;
-            font-size: 12pt;
-            line-height: 2;
-            color: #333;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.8;
+            color: #1a202c;
+            background: #fff;
         }
         
-        /* ページ分割 */
-        .page-break {
-            page-break-after: always;
+        /* Vivliostyle用の設定 */
+        html {
+            orphans: 1;
+            widows: 1;
         }
         
         /* ====================================
            タイトルページ（カバー）スタイル
+           modern-vertical-coverベース
         ==================================== */
-        .title-page {
-            width: 100vw;
-            height: 100vh;
+        .cover-page {
+            page: title;
+            width: 210mm;
+            height: 297mm;
             position: relative;
             overflow: hidden;
+            page-break-after: always;
+            break-after: page;
         }
         
-        .title-page .background-image {
+        /* 背景画像 */
+        .background-image {
             position: absolute;
             top: 0;
             left: 0;
@@ -50,243 +66,438 @@
             z-index: 1;
         }
         
-        .title-page .cover-image {
+        .cover-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center;
-            filter: brightness(0.7);
         }
         
-        .title-page .text-area {
+        /* 縦書きテキストエリア */
+        .text-area {
             position: absolute;
             top: 0;
-            right: 10%;
-            width: 30%;
+            right: 0;
+            width: 100mm;
             height: 100%;
             z-index: 2;
+            padding: 20mm 10mm 0 0;
+            display: flex;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        
+        /* タイトルセクション */
+        .title-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .main-title {
+            font-size: 120px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 30px;
+            text-shadow: 
+                1px 1px 0 #888888,
+                -1px 1px 0 #888888,
+                1px -1px 0 #888888,
+                -1px -1px 0 #888888,
+                0 1px 0 #888888,
+                0 -1px 0 #888888,
+                1px 0 0 #888888,
+                -1px 0 0 #888888;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        /* 印刷対応 */
+        @media print {
+            .cover-page {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .cover-image {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        /* ====================================
+           見開きページスタイル（landscape-quote-spreadベース）
+        ==================================== */
+        .spread {
+            page: spread;
+            width: 420mm;
+            height: 297mm;
+            position: relative;
+            display: flex;
+            page-break-after: always;
+            break-after: page;
+            overflow: hidden;
+        }
+        
+        /* 背景画像 - 見開き全体 */
+        .spread-background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 100% auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
+        }
+        
+        /* 左ページ */
+        .left-page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            z-index: 3;
+        }
+        
+        /* 右ページ */
+        .right-page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            z-index: 3;
+        }
+        
+        .page-content {
+            height: 100%;
+            position: relative;
+            padding: 35mm 25mm;
+        }
+        
+        /* 縦書き格言コンテナ - 右上に配置 */
+        .quote-container {
+            position: absolute;
+            top: 40mm;
+            right: 35mm;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            width: auto;
+            height: auto;
+            max-height: 180mm;
+        }
+        
+        /* 縦書きの格言 */
+        .vertical-quote {
+            font-size: 40px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.8;
+            letter-spacing: 0.1em;
+            text-shadow: 
+                1px 1px 0 #888888,
+                -1px 1px 0 #888888,
+                1px -1px 0 #888888,
+                -1px -1px 0 #888888,
+                0 1px 0 #888888,
+                0 -1px 0 #888888,
+                1px 0 0 #888888,
+                -1px 0 0 #888888;
+            margin-bottom: 0px;
+        }
+        
+        /* 著者名・タイトル */
+        .quote-author {
+            font-size: 32px;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 
+                1px 1px 0 #888888,
+                -1px 1px 0 #888888,
+                1px -1px 0 #888888,
+                -1px -1px 0 #888888,
+                0 1px 0 #888888,
+                0 -1px 0 #888888,
+                1px 0 0 #888888,
+                -1px 0 0 #888888;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            margin-left: 20px;
+        }
+        
+        /* 印刷対応 - 見開き */
+        @media print {
+            @page spread {
+                size: 420mm 297mm;
+                margin: 0;
+            }
+            
+            html, body {
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            
+            .spread {
+                width: 420mm !important;
+                height: 297mm !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+                position: relative;
+            }
+            
+            .left-page {
+                width: 210mm !important;
+                page-break-inside: avoid;
+            }
+            
+            .right-page {
+                width: 210mm !important;
+                page-break-inside: avoid;
+            }
+            
+            .spread-background-image {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        /* ====================================
+           単一ページスタイル
+           vertical-central-image-singleベース
+        ==================================== */
+        .single-page {
+            page: single;
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+            page-break-after: always;
+            break-after: page;
+        }
+        
+        .single-page.last-page {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        
+        .single-page-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 15mm;
+        }
+        
+        /* 画像コンテナ - 上部約70% */
+        .single-image-container {
+            width: 100%;
+            height: 70%;
+            position: relative;
+            margin-bottom: 0;
+            border-radius: 8px;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .title-page .author-section {
-            writing-mode: vertical-rl;
-            text-orientation: upright;
+        /* 画像の柔軟な表示 */
+        .page-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            display: block;
         }
         
-        .title-page .author-name {
-            font-size: 28pt;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            letter-spacing: 0.3em;
-        }
-        
-        /* ====================================
-           見開き画像+縦書きテキスト スタイル
-        ==================================== */
-        .spread {
-            width: 200%;
-            height: 100vh;
-            display: flex;
-        }
-        
-        .left-page, .right-page {
-            width: 50%;
-            height: 100%;
-            position: relative;
-        }
-        
-        /* 左ページ: 画像フル */
-        .spread .image-container {
-            width: 100%;
-            height: 100%;
+        /* テキストコンテナ - 下部約30%に固定 */
+        .text-container {
+            height: 30%;
+            padding-top: 4mm;
             overflow: hidden;
         }
         
-        .spread .main-vertical-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-        
-        /* 右ページ: 縦書きテキスト */
-        .spread .page-content {
-            width: 100%;
-            height: 100%;
-            padding: 5%;
-            position: relative;
-        }
-        
-        .spread .tategaki-container {
-            width: 100%;
-            height: 90%;
+        /* 縦書きテキストコンテナ */
+        .vertical-text {
             writing-mode: vertical-rl;
-            text-orientation: mixed;
+            text-orientation: upright;
+            padding-right: 0;
         }
         
-        .spread .content-flow {
-            column-count: 3;
-            column-gap: 3em;
-            column-fill: auto;
-            height: 100%;
+        /* セクションタイトル */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2mm;
+            padding-bottom: 2mm;
+            border-bottom: 2px solid #e2e8f0;
         }
         
-        .spread .article-title {
-            font-size: 18pt;
-            font-weight: bold;
-            margin-bottom: 2em;
-            letter-spacing: 0.2em;
-        }
-        
-        .spread .continuous-text {
-            font-size: 11pt;
-            line-height: 2.2;
-            text-indent: 1em;
-        }
-        
-        .spread .page-footer {
-            position: absolute;
-            bottom: 3%;
-            right: 5%;
-            writing-mode: horizontal-tb;
-        }
-        
-        .spread .page-number {
-            font-size: 10pt;
-            color: #666;
-        }
-        
-        /* ====================================
-           単一ページ画像+テキスト スタイル
-        ==================================== */
-        .single-page {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            padding: 5%;
-        }
-        
-        .single-page .page-content {
-            width: 100%;
-            height: 90%;
-            display: flex;
-            gap: 3%;
-        }
-        
-        .single-page .image-container {
-            flex: 0 0 40%;
-            height: 100%;
-        }
-        
-        .single-page .page-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .single-page .text-container {
-            flex: 1;
-            height: 100%;
+        /* 縦書きセクションタイトル */
+        .vertical-text .section-title {
             writing-mode: vertical-rl;
-            text-orientation: mixed;
+            text-orientation: upright;
+            border-bottom: none;
+            border-left: 2px solid #e2e8f0;
+            padding-bottom: 0;
+            padding-left: 2mm;
+            margin-bottom: 0;
+            margin-left: 3mm;
+            margin-top: 0;
+            display: inline-block;
         }
         
-        .single-page .section-title {
-            font-size: 16pt;
-            font-weight: bold;
-            margin-bottom: 1.5em;
-            letter-spacing: 0.2em;
+        /* 説明テキスト */
+        .description-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #4a5568;
+            text-align: justify;
+            hyphens: auto;
         }
         
-        .single-page .description-text {
-            font-size: 11pt;
-            line-height: 2.2;
+        /* 縦書き説明テキスト */
+        .vertical-text .description-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            text-align: left;
+            line-height: 2.0;
+            font-size: 13px;
+            display: inline-block;
+            margin-left: 3mm;
         }
         
-        .single-page .page-footer {
+        /* 単一ページのフッター */
+        .single-page-footer {
             position: absolute;
-            bottom: 3%;
-            right: 5%;
+            bottom: 10mm;
+            right: 15mm;
+            z-index: 10;
         }
         
-        .single-page .page-number {
-            font-size: 10pt;
-            color: #666;
+        .single-page-number {
+            font-size: 12px;
+            color: #a0aec0;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        /* 印刷対応 - 単一ページ */
+        @media print {
+            .single-page {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .page-image {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        /* 高解像度ディスプレイ対応 */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .page-image {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* レスポンシブ対応（プレビュー時） */
+        @media screen and (max-width: 1200px) {
+            .cover-page, .single-page {
+                transform: scale(0.8);
+                transform-origin: top left;
+            }
+            
+            .spread {
+                transform: scale(0.7);
+                transform-origin: top left;
+            }
+        }
+        
+        @media screen and (max-width: 900px) {
+            .cover-page, .single-page {
+                transform: scale(0.6);
+                transform-origin: top left;
+            }
+            
+            .spread {
+                transform: scale(0.5);
+                transform-origin: top left;
+            }
         }
     </style>
 </head>
 <body>
     {% for page in pages %}
         {% if page.page_type == "title" %}
-            {# タイトルページ（カバー） #}
-            <div class="title-page">
+            {# タイトルページ（カバー） - modern-vertical-coverベース #}
+            <div class="cover-page">
                 <div class="background-image">
                     <img src="{{ page.data.cover_image }}" alt="Cover Image" class="cover-image">
                 </div>
                 <div class="text-area">
-                    <div class="author-section">
-                        <h1 class="author-name">{{ page.data.author }}</h1>
+                    <div class="title-section">
+                        <h1 class="main-title">{{ page.data.title }}</h1>
                     </div>
                 </div>
             </div>
-            <div class="page-break"></div>
             
         {% elif page.page_type == "spread_image_text" %}
-            {# 見開き画像+縦書きテキスト #}
+            {# 見開き画像+縦書きテキスト - landscape-quote-spreadベース #}
             <div class="spread">
+                {# 背景画像 - 見開き全体 #}
+                <div class="spread-background-image" style="background-image: url('{{ page.data.image }}');"></div>
+                
+                {# 左ページ - 画像の一部として使用 #}
                 <div class="left-page">
-                    <div class="image-container">
-                        <img src="{{ page.data.image }}" alt="メイン画像" class="main-vertical-image">
+                    <div class="page-content">
+                        {# 左ページは基本的に画像の一部として使用 #}
                     </div>
                 </div>
+                
+                {# 右ページ - 縦書きの格言 #}
                 <div class="right-page">
                     <div class="page-content">
-                        <div class="tategaki-container">
-                            <div class="content-flow">
-                                {% if page.data.story_title %}
-                                <h1 class="article-title">{{ page.data.story_title }}</h1>
-                                {% endif %}
-                                <div class="continuous-text">
-                                    {{ page.data.story_text }}
-                                </div>
-                            </div>
+                        <div class="quote-container">
+                            <blockquote class="vertical-quote">{{ page.data.story_text }}</blockquote>
+                            {% if page.data.story_title %}
+                            <cite class="quote-author">{{ page.data.story_title }}</cite>
+                            {% endif %}
                         </div>
-                        <footer class="page-footer">
-                            <p class="page-number">{{ page.page_number }}-{{ page.page_number + 1 }}</p>
-                        </footer>
                     </div>
                 </div>
             </div>
-            <div class="page-break"></div>
             
         {% elif page.page_type == "single_image_text" %}
-            {# 単一ページ画像+テキスト #}
-            <div class="single-page">
-                <div class="page-content">
-                    <div class="image-container">
+            {# 単一ページ画像+テキスト - vertical-central-image-singleベース #}
+            <div class="single-page{% if loop.last %} last-page{% endif %}">
+                <div class="single-page-content">
+                    <div class="single-image-container">
                         <img src="{{ page.data.image }}" alt="ページ画像" class="page-image">
                     </div>
                     <div class="text-container vertical-text">
                         {% if page.data.section_title %}
                         <h2 class="section-title">{{ page.data.section_title }}</h2>
                         {% endif %}
-                        <div class="description-text">
-                            {{ page.data.description }}
-                        </div>
+                        <div class="description-text">{{ page.data.description }}</div>
                     </div>
                 </div>
-                <footer class="page-footer">
-                    <p class="page-number">{{ page.page_number }}</p>
+                <footer class="single-page-footer">
+                    <p class="single-page-number">{{ page.page_number }}</p>
                 </footer>
             </div>
-            {% if not loop.last %}
-            <div class="page-break"></div>
-            {% endif %}
         {% endif %}
     {% endfor %}
 </body>
 </html>
-

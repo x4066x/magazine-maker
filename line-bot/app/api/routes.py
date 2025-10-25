@@ -24,8 +24,7 @@ class TextGenerationRequest(BaseModel):
 class MediaMemoirSaveRequest(BaseModel):
     title: str
     author: str
-    spread_title: str = ""
-    spread_text: str
+    spread_text: str  # 格言・ひとこと（短文）
     single_title: str = ""
     single_text: str
 
@@ -267,22 +266,6 @@ async def get_media_memoir_edit_data(session_id: str):
         # メディアテンプレートスキーマを取得
         template = get_template("memoir_vertical")
         
-        # デフォルト値を設定
-        spread_title = "思い出のひととき"
-        spread_text = (
-            "この写真には、大切な思い出が詰まっています。時が経つにつれて、記憶は少しずつ色褪せていくかもしれません。"
-            "しかし、この一枚の写真が、あの日の感動や喜びを鮮やかに蘇らせてくれます。"
-            "人生の旅路において、このような瞬間を大切に残しておくことは、とても意味のあることです。"
-            "写真を見るたびに、当時の気持ちや周囲の雰囲気が心に蘇ってきます。"
-            "それは単なる記録ではなく、心の財産として、これからも大切に保管していきたいと思います。"
-        )
-        single_title = "大切な一枚"
-        single_text = (
-            "この写真は、人生の中で特別な意味を持つ一枚です。"
-            "何気ない日常の中にも、かけがえのない瞬間が隠れています。"
-            "写真として残すことで、その瞬間は永遠に私たちの心に刻まれます。"
-        )
-        
         return {
             "session_id": session.session_id,
             "template_id": "memoir_vertical",
@@ -292,10 +275,9 @@ async def get_media_memoir_edit_data(session_id: str):
             "cover_image_url": session.data.cover_image_url,
             "spread_image_url": session.spread_image_url,
             "single_image_url": session.single_image_url,
-            "spread_title": spread_title,
-            "spread_text": spread_text,
-            "single_title": single_title,
-            "single_text": single_text
+            "spread_text": session.spread_text,  # セッションから取得
+            "single_title": session.single_title,  # セッションから取得
+            "single_text": session.single_text  # セッションから取得
         }
     except HTTPException:
         raise
@@ -320,6 +302,11 @@ async def save_media_memoir_data(session_id: str, request: MediaMemoirSaveReques
         session.data.title = request.title
         session.data.author = request.author
         
+        # メディアテンプレート用のテキストを更新
+        session.spread_text = request.spread_text
+        session.single_title = request.single_title or "大切な一枚"
+        session.single_text = request.single_text
+        
         # 完全版PDFを再生成（カスタマイズされたテキストを使用）
         import asyncio
         
@@ -343,7 +330,7 @@ async def save_media_memoir_data(session_id: str, request: MediaMemoirSaveReques
                     "page_number": 2,
                     "data": {
                         "image": session.spread_image_url,
-                        "story_title": request.spread_title or "思い出のひととき",
+                        "story_title": "",  # タイトルは不要（格言のみ）
                         "story_text": request.spread_text
                     }
                 },
@@ -402,14 +389,25 @@ async def save_media_memoir_data(session_id: str, request: MediaMemoirSaveReques
         pdf_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
         edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={session_id}"
         
-        # LINEにメッセージを送信
-        complete_message = (
-            f"✨ 編集した自分史PDFが完成しました！\n\n"
-            f"📄 PDF: {pdf_url}\n"
-            f"ファイル名: {filename}\n"
-            f"サイズ: {len(pdf_buffer):,} bytes"
-        )
-        send_push_message(session.user_id, complete_message)
+        # FlexMessageを送信（更新完了版）
+        from ..services.line_service import send_memoir_updated_message
+        try:
+            send_memoir_updated_message(
+                user_id=session.user_id,
+                pdf_url=pdf_url,
+                edit_url=edit_url
+            )
+        except Exception as flex_error:
+            # FlexMessage失敗時はテキストメッセージにフォールバック
+            print(f"Flex Message送信失敗: {flex_error}, テキストメッセージにフォールバック")
+            complete_message = (
+                f"✨ 編集した自分史PDFが完成しました！\n\n"
+                f"📄 PDF: {pdf_url}\n"
+                f"✏️ さらに編集: {edit_url}\n\n"
+                f"ファイル名: {filename}\n"
+                f"サイズ: {len(pdf_buffer):,} bytes"
+            )
+            send_push_message(session.user_id, complete_message)
         
         return {
             "success": True,

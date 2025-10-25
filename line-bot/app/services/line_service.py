@@ -22,11 +22,15 @@ from linebot.v3.webhooks import (
 )
 from typing import Dict, Any
 from pathlib import Path
+import logging
 from ..config import settings
 from .file_service import file_service
 from .memoir_service import memoir_service
 from .quick_memoir_service import quick_memoir_service
 from .photo_memoir_service import photo_memoir_service
+
+
+logger = logging.getLogger(__name__)
 
 # LINE Bot API設定
 configuration = Configuration(access_token=settings.CHANNEL_ACCESS_TOKEN)
@@ -176,37 +180,57 @@ def send_multiple_messages(reply_token: str, messages: list) -> None:
         print(f'Error sending multiple messages: {e}')
 
 
-def send_memoir_complete_message(reply_token: str, user_id: str, pdf_url: str, edit_url: str) -> None:
-    """自分史完成メッセージ（Flex Message）を送信"""
+def send_memoir_complete_message(user_id: str, pdf_url: str, edit_url: str, is_full_version: bool = False, reply_token: str = None) -> None:
+    """自分史完成メッセージ（Flex Message）を送信
+    
+    Args:
+        user_id: ユーザーID
+        pdf_url: PDFのURL
+        edit_url: 編集画面のURL
+        is_full_version: True=完全版、False=表紙のみ
+        reply_token: リプライトークン（指定時はReply、未指定時はPush）
+    """
     try:
+        # メッセージ内容を決定
+        if is_full_version:
+            title_text = "✨ 完全版完成！"
+            body_text = "完全版の自分史PDFを生成しました"
+            description_text = "表紙、見開きページ、単一ページを含む本格的な自分史です"
+            header_color = "#10B981"  # 緑色（完全版）
+        else:
+            title_text = "✨ 自分史完成！"
+            body_text = "プレビューPDFを生成しました"
+            description_text = "下のボタンから内容を編集できます"
+            header_color = "#6366F1"  # インディゴ（表紙のみ）
+        
         flex_message = FlexMessage(
-            alt_text="✨ 自分史が完成しました！",
+            alt_text=title_text,
             contents=FlexBubble(
                 size="kilo",
                 header=FlexBox(
                     layout="vertical",
                     contents=[
                         FlexText(
-                            text="✨ 自分史完成！",
+                            text=title_text,
                             weight="bold",
                             size="xl",
                             color="#FFFFFF"
                         )
                     ],
-                    background_color="#6366F1",
+                    background_color=header_color,
                     padding_all="20px"
                 ),
                 body=FlexBox(
                     layout="vertical",
                     contents=[
                         FlexText(
-                            text="プレビューPDFを生成しました",
+                            text=body_text,
                             size="md",
                             color="#333333",
                             margin="md"
                         ),
                         FlexText(
-                            text="下のボタンから内容を編集できます",
+                            text=description_text,
                             size="sm",
                             color="#999999",
                             margin="md",
@@ -248,47 +272,55 @@ def send_memoir_complete_message(reply_token: str, user_id: str, pdf_url: str, e
         with ApiClient(configuration) as api_client:
             messaging_api = MessagingApi(api_client)
             
-            response = messaging_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=reply_token,
-                    messages=[flex_message]
+            # Reply tokenがある場合はReply、ない場合はPush
+            if reply_token:
+                response = messaging_api.reply_message(
+                    ReplyMessageRequest(
+                        reply_token=reply_token,
+                        messages=[flex_message]
+                    )
                 )
-            )
-            
-            print(f'Flex message sent successfully: {response}')
+                print(f'Flex message sent successfully (Reply): {response}')
+            else:
+                response = messaging_api.push_message(
+                    PushMessageRequest(
+                        to=user_id,
+                        messages=[flex_message]
+                    )
+                )
+                print(f'Flex message sent successfully (Push): {response}')
             
     except Exception as e:
         error_message = str(e)
+        print(f'Error sending Flex message: {e}')
+        
+        # Reply tokenエラーの場合はPushで再試行
         if "Invalid reply token" in error_message or "400" in error_message:
-            print(f'Reply token expired, sending push message instead: {e}')
-            # Flex MessageはPush Messageとしても送信可能
-            try:
-                with ApiClient(configuration) as api_client:
-                    messaging_api = MessagingApi(api_client)
-                    messaging_api.push_message(
-                        PushMessageRequest(
-                            to=user_id,
-                            messages=[flex_message]
+            if reply_token:  # Reply tokenがある場合のみ
+                print(f'Reply token expired, sending push message instead')
+                try:
+                    with ApiClient(configuration) as api_client:
+                        messaging_api = MessagingApi(api_client)
+                        messaging_api.push_message(
+                            PushMessageRequest(
+                                to=user_id,
+                                messages=[flex_message]
+                            )
                         )
-                    )
-            except Exception as push_error:
-                print(f'Error sending push message: {push_error}')
-                # フォールバック: 通常のテキストメッセージ
-                fallback_text = (
-                    f"✨ 自分史が完成しました！\n\n"
-                    f"📄 PDF: {pdf_url}\n"
-                    f"✏️ 編集: {edit_url}"
-                )
-                send_push_message(user_id, fallback_text)
-        else:
-            print(f'Error sending flex message: {e}')
-            # フォールバック: 通常のテキストメッセージ
+                        return  # 成功したら終了
+                except Exception as push_error:
+                    print(f'Error sending push message: {push_error}')
+        
+        # フォールバック: 通常のテキストメッセージ
+        try:
             fallback_text = (
-                f"✨ 自分史が完成しました！\n\n"
+                f"{title_text}\n\n"
                 f"📄 PDF: {pdf_url}\n"
                 f"✏️ 編集: {edit_url}"
             )
             send_push_message(user_id, fallback_text)
+        except Exception as fallback_error:
+            print(f'Error sending fallback message: {fallback_error}')
 
 
 def send_memoir_updated_message(user_id: str, pdf_url: str, edit_url: str) -> None:
@@ -651,12 +683,17 @@ def handle_image_message(event: MessageEvent):
                             pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
                             edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
                             
-                            # Flex Messageを送信
-                            send_memoir_complete_message("", user_id, pdf_url, edit_url)
+                            # Flex Messageを送信（表紙のみ版）
+                            send_memoir_complete_message(
+                                user_id=user_id,
+                                pdf_url=pdf_url,
+                                edit_url=edit_url,
+                                is_full_version=False
+                            )
                             
                             # 続けて見開き画像を依頼
                             spread_request_message = (
-                                "\n📸 次に、見開きページ用の写真を送ってください。\n"
+                                "📸 次に、見開きページ用の写真を送ってください。\n"
                                 "（例：思い出の風景、大切な瞬間など、縦長の写真推奨）"
                             )
                             send_push_message(user_id, spread_request_message)
@@ -713,17 +750,27 @@ def handle_image_message(event: MessageEvent):
                             pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
                             edit_url = f"{settings.BASE_URL}/liff/edit-media.html?session_id={quick_session.session_id}"
                             
-                            # 完全版PDF完成メッセージを送信
-                            complete_message = (
-                                f"✨ 完全版の自分史が完成しました！\n\n"
-                                f"📄 PDF: {pdf_url}\n"
-                                f"✏️ 内容を編集: {edit_url}\n\n"
-                                f"ファイル名: {pdf_result['filename']}\n"
-                                f"サイズ: {pdf_result['size']:,} bytes\n\n"
-                                f"表紙、見開きページ、単一ページの3種類のページを含む、"
-                                f"本格的な自分史PDFです。"
-                            )
-                            send_push_message(user_id, complete_message)
+                            # 完全版PDF完成Flex Messageを送信
+                            try:
+                                send_memoir_complete_message(
+                                    user_id=user_id,
+                                    pdf_url=pdf_url,
+                                    edit_url=edit_url,
+                                    is_full_version=True
+                                )
+                            except Exception as flex_error:
+                                # Flex Message失敗時はテキストメッセージにフォールバック
+                                logger.warning(f"Flex Message送信失敗: {flex_error}, テキストメッセージにフォールバック")
+                                complete_message = (
+                                    f"✨ 完全版の自分史が完成しました！\n\n"
+                                    f"📄 PDF: {pdf_url}\n"
+                                    f"✏️ 内容を編集: {edit_url}\n\n"
+                                    f"ファイル名: {pdf_result['filename']}\n"
+                                    f"サイズ: {pdf_result['size']:,} bytes\n\n"
+                                    f"表紙、見開きページ、単一ページの3種類のページを含む、"
+                                    f"本格的な自分史PDFです。"
+                                )
+                                send_push_message(user_id, complete_message)
                             
                         except Exception as e:
                             error_message = f"完全版PDF生成中にエラーが発生しました: {str(e)}"

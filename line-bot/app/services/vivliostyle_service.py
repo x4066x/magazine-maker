@@ -86,6 +86,31 @@ class VivliostyleService:
                                 logger.warning(f"年表画像{i}の処理に失敗しました")
                                 item["image"] = None
                 
+                # メディアテンプレートのページ画像も処理
+                if data.get("pages"):
+                    for i, page in enumerate(data["pages"]):
+                        page_data = page.get("data", {})
+                        
+                        # カバー画像
+                        if page_data.get("cover_image"):
+                            image_local = await self._process_image(page_data["cover_image"], temp_path, f"page_{i}_cover")
+                            if image_local:
+                                page_data["cover_image"] = image_local
+                                logger.info(f"ページ{i}カバー画像を処理: {image_local}")
+                            else:
+                                logger.warning(f"ページ{i}カバー画像の処理に失敗しました")
+                                page_data["cover_image"] = None
+                        
+                        # 見開き/単一ページの画像
+                        if page_data.get("image"):
+                            image_local = await self._process_image(page_data["image"], temp_path, f"page_{i}_image")
+                            if image_local:
+                                page_data["image"] = image_local
+                                logger.info(f"ページ{i}画像を処理: {image_local}")
+                            else:
+                                logger.warning(f"ページ{i}画像の処理に失敗しました")
+                                page_data["image"] = None
+                
                 # 2. HTMLファイルを保存（画像処理後）
                 html_content = self._render_template(template_name, data)
                 html_file = temp_path / "index.html"

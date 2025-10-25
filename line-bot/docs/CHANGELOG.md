@@ -8,6 +8,9 @@
 - **拡張版簡易フロー**: タイトル+カバー写真で表紙PDF即座生成、その後見開き・単一ページ画像を収集して完全版PDF生成
 - **メディアテンプレートシステム**: スキーマ駆動のテンプレートシステムを導入
 - **`memoir_vertical` テンプレート**: 自分史_縦書き（表紙+見開き+単一ページ、計4ページ）
+  - 表紙: ユーザー入力のタイトルを大きく表示（modern-vertical-coverベース）
+  - 見開き: 420mm×297mm（A3横）で背景画像全体に格言風の短文を縦書き表示（landscape-quote-spreadベース）
+  - 単一ページ: 画像70%+縦書きテキスト30%（vertical-central-image-singleベース）
 - **メディアテンプレート専用編集画面** (`liff/edit-media.html`): 見開きページと単一ページのテキスト編集
 - **新規APIエンドポイント**:
   - `GET /api/memoir/edit-media/{session_id}`: メディアテンプレート編集データ取得
@@ -21,10 +24,18 @@
   - `spread_image_url`, `single_image_url` フィールド追加
   - `generate_quick_pdf()` に `full_version` パラメータ追加
   - `_prepare_media_template_data()` メソッド追加
+  - 見開きのテキストを格言風の短文に変更
 - **`line_service.py`**: 新しいフローに対応
-  - カバー写真受信時に表紙PDF生成
+  - カバー写真受信時に表紙PDF生成（FlexMessage送信）
   - 見開き画像、単一ページ画像の処理追加
-  - 完全版PDF生成フローの統合
+  - 完全版PDF生成フロー統合（完全版用FlexMessage送信）
+  - `send_memoir_complete_message()` 関数を拡張（is_full_versionパラメータ追加）
+- **`vivliostyle_service.py`**: メディアテンプレート画像処理対応
+  - `data.pages`内の画像を自動処理（カバー画像、見開き画像、単一ページ画像）
+- **`templates/media/memoir-vertical/template.html`**: modernテンプレート完全活用
+  - CSS/HTMLをmodernサンプルと同等に修正
+  - 見開きページを420mm×297mmの単一コンテナとして実装
+  - タイトルページでユーザー入力のタイトルを表示
 - **編集画面URL**: `/liff/edit.html` → `/liff/edit-media.html` (メディアテンプレート用)
 
 ### ドキュメント

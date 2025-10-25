@@ -288,24 +288,16 @@
                     <h2 class="section-title">📄 見開きページ（画像+縦書き）</h2>
                     
                     <div class="form-group">
-                        <label class="form-label">ストーリータイトル（任意）</label>
-                        <input type="text" id="spreadTitle" class="form-input" placeholder="思い出のひととき" maxlength="30">
-                        <div class="char-count">
-                            <span id="spreadTitleCount">0</span> / 30文字
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">ストーリー本文</label>
-                        <textarea id="spreadText" class="form-textarea large" placeholder="この写真には、大切な思い出が詰まっています..." maxlength="2000" required></textarea>
+                        <label class="form-label">格言・ひとこと</label>
+                        <textarea id="spreadText" class="form-textarea" placeholder="この瞬間は、心の財産として永遠に輝き続ける。" maxlength="100" required></textarea>
                         <button type="button" class="ai-button" onclick="generateSpreadText()">
                             <span>🤖</span>
                             <span>AIに文章を書いてもらう</span>
                         </button>
                         <div class="char-count">
-                            <span id="spreadTextCount">0</span> / 2000文字
+                            <span id="spreadTextCount">0</span> / 100文字
                         </div>
-                        <p class="hint">※ 縦書き3段組みで表示されます</p>
+                        <p class="hint">※ 背景画像全体に大きく縦書きで表示されます（格言風・短文推奨）</p>
                     </div>
                     
                     <p class="hint">※ 見開き画像は変更できません</p>
@@ -363,7 +355,6 @@
             }
 
             // 文字数カウント設定
-            setupCharCounter('spreadTitle', 'spreadTitleCount');
             setupCharCounter('spreadText', 'spreadTextCount');
             setupCharCounter('singleTitle', 'singleTitleCount');
             setupCharCounter('singleText', 'singleTextCount');
@@ -399,18 +390,16 @@
                 document.getElementById('author').value = result.author || '';
 
                 // 見開きページ
-                document.getElementById('spreadTitle').value = result.spread_title || '';
-                document.getElementById('spreadText').value = result.spread_text || '';
+                document.getElementById('spreadText').value = result.spread_text || 'この瞬間は、心の財産として永遠に輝き続ける。';
 
                 // 単一ページ
-                document.getElementById('singleTitle').value = result.single_title || '';
-                document.getElementById('singleText').value = result.single_text || '';
+                document.getElementById('singleTitle').value = result.single_title || '大切な一枚';
+                document.getElementById('singleText').value = result.single_text || 'この写真は、人生の中で特別な意味を持つ一枚です。';
 
                 // 文字数カウント更新
-                document.getElementById('spreadTitleCount').textContent = result.spread_title?.length || 0;
-                document.getElementById('spreadTextCount').textContent = result.spread_text?.length || 0;
-                document.getElementById('singleTitleCount').textContent = result.single_title?.length || 0;
-                document.getElementById('singleTextCount').textContent = result.single_text?.length || 0;
+                document.getElementById('spreadTextCount').textContent = (result.spread_text || 'この瞬間は、心の財産として永遠に輝き続ける。').length;
+                document.getElementById('singleTitleCount').textContent = (result.single_title || '大切な一枚').length;
+                document.getElementById('singleTextCount').textContent = (result.single_text || 'この写真は、人生の中で特別な意味を持つ一枚です。').length;
 
                 // フォームを表示
                 document.getElementById('loading').style.display = 'none';
@@ -434,7 +423,6 @@
                 const data = {
                     title: document.getElementById('title').value,
                     author: document.getElementById('author').value,
-                    spread_title: document.getElementById('spreadTitle').value,
                     spread_text: document.getElementById('spreadText').value,
                     single_title: document.getElementById('singleTitle').value,
                     single_text: document.getElementById('singleText').value
@@ -478,18 +466,14 @@
             button.textContent = '生成中...';
 
             try {
-                const title = document.getElementById('spreadTitle').value || '思い出';
-                
                 const response = await fetch('/api/memoir/generate-text', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        type: 'spread_story',
-                        data: {
-                            title: title
-                        }
+                        type: 'spread_quote',
+                        data: {}
                     })
                 });
 

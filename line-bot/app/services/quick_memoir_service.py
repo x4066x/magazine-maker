@@ -41,6 +41,9 @@ class QuickMemoirSession:
     data: QuickMemoirData = None
     spread_image_url: Optional[str] = None  # 見開きページ用画像
     single_image_url: Optional[str] = None  # 単一ページ用画像
+    spread_text: str = "この瞬間は、心の財産として永遠に輝き続ける。"  # 見開きページのテキスト（格言）
+    single_title: str = "大切な一枚"  # 単一ページのタイトル
+    single_text: str = "この写真は、人生の中で特別な意味を持つ一枚です。何気ない日常の中にも、かけがえのない瞬間が隠れています。写真として残すことで、その瞬間は永遠に私たちの心に刻まれます。"  # 単一ページの説明文
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     
@@ -328,20 +331,14 @@ class QuickMemoirService:
                         "cover_image": session.data.cover_image_url
                     }
                 },
-                # ページ2-3: 見開き画像+縦書きテキスト
+                # ページ2-3: 見開き画像+縦書きテキスト（格言風・短文）
                 {
                     "page_type": "spread_image_text",
                     "page_number": 2,
                     "data": {
                         "image": session.spread_image_url,
-                        "story_title": "思い出のひととき",
-                        "story_text": (
-                            "この写真には、大切な思い出が詰まっています。時が経つにつれて、記憶は少しずつ色褪せていくかもしれません。"
-                            "しかし、この一枚の写真が、あの日の感動や喜びを鮮やかに蘇らせてくれます。"
-                            "人生の旅路において、このような瞬間を大切に残しておくことは、とても意味のあることです。"
-                            "写真を見るたびに、当時の気持ちや周囲の雰囲気が心に蘇ってきます。"
-                            "それは単なる記録ではなく、心の財産として、これからも大切に保管していきたいと思います。"
-                        )
+                        "story_title": "",  # タイトルは空（格言のみ表示）
+                        "story_text": session.spread_text  # セッションから取得
                     }
                 },
                 # ページ4: 単一ページ画像+テキスト
@@ -350,12 +347,8 @@ class QuickMemoirService:
                     "page_number": 4,
                     "data": {
                         "image": session.single_image_url,
-                        "section_title": "大切な一枚",
-                        "description": (
-                            "この写真は、人生の中で特別な意味を持つ一枚です。"
-                            "何気ない日常の中にも、かけがえのない瞬間が隠れています。"
-                            "写真として残すことで、その瞬間は永遠に私たちの心に刻まれます。"
-                        )
+                        "section_title": session.single_title,  # セッションから取得
+                        "description": session.single_text  # セッションから取得
                     }
                 }
             ]
