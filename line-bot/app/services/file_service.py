@@ -215,4 +215,5 @@ class FileService:
         return files
 
 # グローバルインスタンス
-file_service = FileService() 
+file_service = FileService()
+

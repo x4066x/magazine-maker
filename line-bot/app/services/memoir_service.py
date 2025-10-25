@@ -1,16 +1,8 @@
-import os
-import json
 import requests
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, asdict
-from dotenv import load_dotenv
-
-# 環境変数を読み込む
-load_dotenv()
-
-# auto-designer API設定
-AUTO_DESIGNER_URL = os.environ.get('AUTO_DESIGNER_URL', 'http://localhost:3000')
+from ..config import settings
 
 @dataclass
 class MemoirData:
@@ -285,7 +277,7 @@ class MemoirService:
             memoir_data = self._prepare_memoir_data(session.data)
             
             response = requests.post(
-                f"{AUTO_DESIGNER_URL}/v2/pdf",
+                f"{settings.AUTO_DESIGNER_URL}/v2/pdf",
                 json={
                     "template": "memoir",
                     "data": memoir_data,
@@ -391,4 +383,5 @@ class MemoirService:
         return True
 
 # グローバルインスタンス
-memoir_service = MemoirService() 
+memoir_service = MemoirService()
+

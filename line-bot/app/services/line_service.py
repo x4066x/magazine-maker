@@ -19,28 +19,16 @@ from linebot.v3.webhooks import (
     AudioMessageContent,
     FileMessageContent
 )
-import os
-from dotenv import load_dotenv
-from openai_service import get_chatgpt_response
-from file_service import file_service
-from memoir_service import memoir_service
 from typing import Dict, Any
 from pathlib import Path
-import json
-import requests
-from datetime import datetime
-
-# 環境変数を読み込む
-load_dotenv()
-
-# LINE Botの設定
-CHANNEL_ACCESS_TOKEN = os.environ.get('CHANNEL_ACCESS_TOKEN', 'your_channel_access_token')
-CHANNEL_SECRET = os.environ.get('CHANNEL_SECRET', 'your_channel_secret')
-BASE_URL = os.environ.get('BASE_URL', 'https://your-domain.com')  # 公開URL
+from ..config import settings
+from .file_service import file_service
+from .memoir_service import memoir_service
+from .openai_service import get_chatgpt_response
 
 # LINE Bot API設定
-configuration = Configuration(access_token=CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(CHANNEL_SECRET)
+configuration = Configuration(access_token=settings.CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(settings.CHANNEL_SECRET)
 
 def download_file_from_line(message_id: str) -> bytes:
     """LINE Platform APIからファイルをダウンロード"""
@@ -63,7 +51,7 @@ def download_file_from_line(message_id: str) -> bytes:
 
 def create_message_by_type(message_type: str, file_metadata: Dict[str, Any]) -> Any:
     """メッセージタイプに応じたメッセージオブジェクトを作成"""
-    file_url = file_service.get_file_url(file_metadata['file_id'], BASE_URL)
+    file_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
     
     if message_type == 'image':
         return ImageMessage(
@@ -245,7 +233,7 @@ def handle_text_message(event: MessageEvent):
                             f"自分史PDFが完成しました！\n"
                             f"ファイル名：{pdf_result['filename']}\n"
                             f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
-                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], BASE_URL)}"
+                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)}"
                         )
                         send_push_message(user_id, success_message)
                         
@@ -296,7 +284,7 @@ def handle_text_message(event: MessageEvent):
                             f"自分史PDFが完成しました！\n"
                             f"ファイル名：{pdf_result['filename']}\n"
                             f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
-                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], BASE_URL)}"
+                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)}"
                         )
                         send_push_message(user_id, success_message)
                         
@@ -331,7 +319,7 @@ def handle_sample_command(reply_token: str):
     """サンプルPDFファイル一覧を返信"""
     try:
         # samplesディレクトリのパス
-        samples_dir = Path("samples")
+        samples_dir = settings.SAMPLES_DIR
         
         if not samples_dir.exists():
             send_text_message(reply_token, "サンプルファイルディレクトリが見つかりません。")
@@ -348,7 +336,7 @@ def handle_sample_command(reply_token: str):
         response_text = "サンプルPDFファイル一覧：\n\n"
         for pdf_file in pdf_files:
             file_size = pdf_file.stat().st_size
-            file_url = f"{BASE_URL}/samples/{pdf_file.name}"
+            file_url = f"{settings.BASE_URL}/samples/{pdf_file.name}"
             response_text += (
                 f"📄 {pdf_file.name}\n"
                 f"📦 サイズ: {file_size:,} bytes\n"
@@ -381,7 +369,7 @@ def handle_image_message(event: MessageEvent):
         # 画像のURLを生成
         file_url = file_service.get_file_url(
             file_metadata['file_id'],
-            BASE_URL,
+            settings.BASE_URL,
             file_metadata['message_type']
         )
         
@@ -436,7 +424,7 @@ def handle_video_message(event: MessageEvent):
         # 動画のURLを生成
         file_url = file_service.get_file_url(
             file_metadata['file_id'],
-            BASE_URL,
+            settings.BASE_URL,
             file_metadata['message_type']
         )
         
@@ -472,7 +460,7 @@ def handle_audio_message(event: MessageEvent):
         # 音声のURLを生成
         file_url = file_service.get_file_url(
             file_metadata['file_id'],
-            BASE_URL,
+            settings.BASE_URL,
             file_metadata['message_type']
         )
         
@@ -528,7 +516,7 @@ def handle_file_list_command(reply_token: str):
         # ファイル一覧をテキストで表示
         file_list_text = "保存されているファイル:\n\n"
         for file_info in files[:10]:  # 最大10件まで表示
-            file_url = file_service.get_file_url(file_info['file_id'], BASE_URL, file_info['message_type'])
+            file_url = file_service.get_file_url(file_info['file_id'], settings.BASE_URL, file_info['message_type'])
             file_list_text += (
                 f"{file_info['filename']} ({file_info['message_type']})\n"
                 f"URL: {file_url}\n\n"
@@ -553,3 +541,4 @@ def handle_chatgpt_response(event: MessageEvent):
     except Exception as e:
         print(f'Error handling ChatGPT response: {e}')
         send_text_message(event.reply_token, f"エラーが発生しました: {str(e)}")
+

@@ -1,20 +1,11 @@
 from openai import OpenAI
-import os
-from dotenv import load_dotenv
 from typing import Dict, Any, Optional
-from file_service import file_service
+from .file_service import file_service
+from ..config import settings
 import json
 
-# 環境変数を読み込む
-load_dotenv()
-
-# OpenAI APIの設定
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'your_openai_api_key')
-
-BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')
-
 # OpenAI クライアント設定
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+openai_client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 def get_chatgpt_response(user_message: str) -> str:
     """ユーザーのメッセージをChatGPTに送信し、短文レスポンスを取得"""
@@ -83,7 +74,7 @@ def handle_report_generation(message: str) -> str:
             "text/plain"
         )
         
-        file_url = file_service.get_file_url(file_metadata['file_id'], BASE_URL)
+        file_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
         
         return f"レポートを生成しました！\nファイルURL: {file_url}"
         
@@ -126,7 +117,7 @@ def handle_json_generation(message: str) -> str:
             "application/json"
         )
         
-        file_url = file_service.get_file_url(file_metadata['file_id'], BASE_URL)
+        file_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
         
         return f"JSONファイルを生成しました！\nファイルURL: {file_url}"
         
@@ -169,7 +160,7 @@ def handle_text_file_generation(message: str) -> str:
             "text/plain"
         )
         
-        file_url = file_service.get_file_url(file_metadata['file_id'], BASE_URL)
+        file_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
         
         return f"テキストファイルを生成しました！\nファイルURL: {file_url}"
         
@@ -197,4 +188,5 @@ def generate_text_content(message: str) -> str:
         
     except Exception as e:
         print(f'Error generating text content: {e}')
-        return f"テキスト内容生成エラー: {str(e)}" 
+        return f"テキスト内容生成エラー: {str(e)}"
+
