@@ -558,5 +558,45 @@
     "file_size": 935872,
     "upload_time": "2025-10-25T18:52:15.675905",
     "message_type": "file"
+  },
+  "c132ce33-0690-49c1-9599-ee2d2211b17c": {
+    "file_id": "c132ce33-0690-49c1-9599-ee2d2211b17c",
+    "original_filename": "received_image_584790211541336474.jpg",
+    "stored_filename": "c132ce33-0690-49c1-9599-ee2d2211b17c.jpg",
+    "file_path": "uploads/c132ce33-0690-49c1-9599-ee2d2211b17c.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 273785,
+    "upload_time": "2025-10-25T20:57:14.765104",
+    "message_type": "image"
+  },
+  "3a0235fd-fb31-47d1-8412-bd1ea7a73eb0": {
+    "file_id": "3a0235fd-fb31-47d1-8412-bd1ea7a73eb0",
+    "original_filename": "received_image_584791420188491811.jpg",
+    "stored_filename": "3a0235fd-fb31-47d1-8412-bd1ea7a73eb0.jpg",
+    "file_path": "uploads/3a0235fd-fb31-47d1-8412-bd1ea7a73eb0.jpg",
+    "content_type": "image/jpeg",
+    "file_size": 426862,
+    "upload_time": "2025-10-25T21:09:15.644030",
+    "message_type": "image"
+  },
+  "36a686f4-505e-483e-b5dc-1168414704ec": {
+    "file_id": "36a686f4-505e-483e-b5dc-1168414704ec",
+    "original_filename": "memoir_鈴木一郎_20251025_210915.pdf",
+    "stored_filename": "36a686f4-505e-483e-b5dc-1168414704ec.pdf",
+    "file_path": "uploads/36a686f4-505e-483e-b5dc-1168414704ec.pdf",
+    "content_type": "application/pdf",
+    "file_size": 1284735,
+    "upload_time": "2025-10-25T21:09:18.208414",
+    "message_type": "file"
+  },
+  "a5ec170c-7fe3-406a-94a5-73e5a990b078": {
+    "file_id": "a5ec170c-7fe3-406a-94a5-73e5a990b078",
+    "original_filename": "memoir_鈴木一郎_20251025_211004.pdf",
+    "stored_filename": "a5ec170c-7fe3-406a-94a5-73e5a990b078.pdf",
+    "file_path": "uploads/a5ec170c-7fe3-406a-94a5-73e5a990b078.pdf",
+    "content_type": "application/pdf",
+    "file_size": 1344461,
+    "upload_time": "2025-10-25T21:10:06.922867",
+    "message_type": "file"
   }
 }

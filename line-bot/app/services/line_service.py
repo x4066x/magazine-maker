@@ -7,8 +7,6 @@ from linebot.v3.messaging import (
     PushMessageRequest,
     TextMessage,
     ImageMessage,
-    VideoMessage,
-    AudioMessage,
     FlexMessage,
     FlexBubble,
     FlexBox,
@@ -20,10 +18,7 @@ from linebot.v3.webhook import WebhookHandler
 from linebot.v3.webhooks import (
     MessageEvent, 
     TextMessageContent,
-    ImageMessageContent,
-    VideoMessageContent,
-    AudioMessageContent,
-    FileMessageContent
+    ImageMessageContent
 )
 from typing import Dict, Any
 from pathlib import Path
@@ -66,22 +61,9 @@ def create_message_by_type(message_type: str, file_metadata: Dict[str, Any]) -> 
             original_content_url=file_url,
             preview_image_url=file_url  # プレビュー画像も同じURLを使用
         )
-    elif message_type == 'video':
-        return VideoMessage(
-            original_content_url=file_url,
-            preview_image_url=file_url  # サムネイル画像
-        )
-    elif message_type == 'audio':
-        return AudioMessage(
-            original_content_url=file_url,
-            duration=5000  # デフォルト5秒（実際の長さが分かる場合は正確な値を設定）
-        )
-    elif message_type == 'file':
-        # FileMessage は SDK v3 では利用できないため、テキストメッセージで代替
-        return TextMessage(text=f"ファイルをダウンロード: {file_metadata.get('original_filename', 'file')}\n{file_url}")
     else:
-        # デフォルトはテキストメッセージ
-        return TextMessage(text=f"ファイルを受信しました: {file_metadata.get('original_filename', 'unknown')}")
+        # その他のファイルタイプはテキストメッセージで代替
+        return TextMessage(text=f"ファイル: {file_metadata.get('original_filename', 'file')}\n{file_url}")
 
 def send_file_message(reply_token: str, file_metadata: Dict[str, Any]) -> None:
     """ファイルメッセージを送信"""
@@ -417,17 +399,6 @@ def handle_text_message(event: MessageEvent):
     # 写真フロー: セッションを確認（最優先）
     photo_session = photo_memoir_service.get_session_by_user(user_id)
     
-    # 写真フロー: トリガーワード
-    if photo_memoir_service.is_photo_memoir_request(user_message):
-        try:
-            session, response = photo_memoir_service.start_photo_memoir(user_id)
-            send_text_message_with_fallback(event.reply_token, user_id, response)
-            return
-        except Exception as e:
-            error_message = f"エラーが発生しました: {str(e)}"
-            send_text_message_with_fallback(event.reply_token, user_id, error_message)
-            return
-    
     # 写真フロー: 写真収集中に「完了」
     if photo_session and photo_session.state == "collecting_photos" and ("完了" in user_message or "おわり" in user_message or "終わり" in user_message):
         try:
@@ -568,113 +539,8 @@ def handle_text_message(event: MessageEvent):
             send_text_message_with_fallback(event.reply_token, user_id, error_message)
             return
     
-    # 自分史セッションの状態を確認（既存フロー）
-    session = memoir_service.get_or_create_session(user_id)
-    
-    # 自分史作成リクエストかどうかを判定
-    if memoir_service.is_memoir_request(user_message):
-        try:
-            # 自分史作成処理
-            response = memoir_service.process_message(user_id, user_message)
-            send_text_message_with_fallback(event.reply_token, user_id, response)
-            
-            # 生成状態の場合はPDF生成を実行
-            session = memoir_service.get_or_create_session(user_id)
-            if session.state == "generating":
-                # 非同期でPDF生成を実行
-                import threading
-                
-                def generate_pdf_async():
-                    try:
-                        # PDF生成
-                        pdf_result = memoir_service.generate_memoir_pdf(user_id)
-                        
-                        # PDFファイルを保存
-                        file_metadata = file_service.save_file(
-                            pdf_result["pdf_buffer"],
-                            pdf_result["filename"],
-                            "application/pdf"
-                        )
-                        
-                        # 成功メッセージとファイルURLを送信
-                        success_message = (
-                            f"自分史PDFが完成しました！\n"
-                            f"ファイル名：{pdf_result['filename']}\n"
-                            f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
-                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)}"
-                        )
-                        send_push_message(user_id, success_message)
-                        
-                        # セッションをクリア
-                        memoir_service.cancel_session(user_id)
-                        
-                    except Exception as e:
-                        error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
-                        send_push_message(user_id, error_message)
-                        memoir_service.cancel_session(user_id)
-                
-                # 非同期スレッドを開始
-                pdf_thread = threading.Thread(target=generate_pdf_async)
-                pdf_thread.start()
-            
-        except Exception as e:
-            error_message = f"自分史作成中にエラーが発生しました: {str(e)}"
-            send_text_message_with_fallback(event.reply_token, user_id, error_message)
-            memoir_service.cancel_session(user_id)
-    
-    # 自分史セッション中の場合、すべてのメッセージを自分史作成処理に回す
-    elif session.state != "idle":
-        try:
-            # 自分史作成処理
-            response = memoir_service.process_message(user_id, user_message)
-            send_text_message_with_fallback(event.reply_token, user_id, response)
-            
-            # 生成状態の場合はPDF生成を実行
-            session = memoir_service.get_or_create_session(user_id)
-            if session.state == "generating":
-                # 非同期でPDF生成を実行
-                import threading
-                
-                def generate_pdf_async():
-                    try:
-                        # PDF生成
-                        pdf_result = memoir_service.generate_memoir_pdf(user_id)
-                        
-                        # PDFファイルを保存
-                        file_metadata = file_service.save_file(
-                            pdf_result["pdf_buffer"],
-                            pdf_result["filename"],
-                            "application/pdf"
-                        )
-                        
-                        # 成功メッセージとファイルURLを送信
-                        success_message = (
-                            f"自分史PDFが完成しました！\n"
-                            f"ファイル名：{pdf_result['filename']}\n"
-                            f"ファイルサイズ：{pdf_result['size']:,} bytes\n"
-                            f"ファイルURL：{file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)}"
-                        )
-                        send_push_message(user_id, success_message)
-                        
-                        # セッションをクリア
-                        memoir_service.cancel_session(user_id)
-                        
-                    except Exception as e:
-                        error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
-                        send_push_message(user_id, error_message)
-                        memoir_service.cancel_session(user_id)
-                
-                # 非同期スレッドを開始
-                pdf_thread = threading.Thread(target=generate_pdf_async)
-                pdf_thread.start()
-            
-        except Exception as e:
-            error_message = f"自分史作成中にエラーが発生しました: {str(e)}"
-            send_text_message_with_fallback(event.reply_token, user_id, error_message)
-            memoir_service.cancel_session(user_id)
-    
     # 特定のコマンドでファイル一覧表示
-    elif user_message.lower().startswith('ファイル一覧') or user_message.lower().startswith('files'):
+    if user_message.lower().startswith('ファイル一覧') or user_message.lower().startswith('files'):
         handle_file_list_command(event.reply_token)
     # サンプル確認コマンド
     elif user_message.lower() == 'サンプル確認':
@@ -801,134 +667,13 @@ def handle_image_message(event: MessageEvent):
                 send_text_message_with_fallback(event.reply_token, user_id, error_message)
                 return
         
-        # 自分史作成中の場合、画像を年表に追加（既存フロー）
-        if memoir_service.get_or_create_session(user_id).state == "collecting_timeline":
-            success = memoir_service.add_image_to_timeline(user_id, file_url, "アップロードされた画像")
-            if success:
-                response_text = (
-                    f"画像を年表に追加しました！\n"
-                    f"次の出来事を教えてください。\n"
-                    f"（例：1991年：小学校入学）"
-                )
-            else:
-                response_text = (
-                    f"画像を受信しました！\n"
-                    f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
-                    f"画像URL: {file_url}"
-                )
-        else:
-            # 通常の画像受信処理
-            response_text = (
-                f"画像を受信しました！\n"
-                f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
-                f"画像URL: {file_url}"
-            )
-        
+        # セッション外での画像送信は無視
+        response_text = "画像を受信しました。自分史を作成する場合は「作成」と送信してください。"
         send_text_message(event.reply_token, response_text)
         
     except Exception as e:
         print(f'Error handling image message: {e}')
         send_text_message(event.reply_token, "画像の処理中にエラーが発生しました。")
-
-# 動画メッセージの処理
-@handler.add(MessageEvent, message=VideoMessageContent)
-def handle_video_message(event: MessageEvent):
-    """LINE 動画メッセージイベントを処理"""
-    print(f'Received video message event: {event}')
-    
-    try:
-        # LINE Platform APIから動画をダウンロード
-        video_data = download_file_from_line(event.message.id)
-        
-        # 動画ファイルを保存
-        file_metadata = file_service.save_file(
-            video_data,
-            f"received_video_{event.message.id}.mp4",
-            "video/mp4"
-        )
-        
-        # 動画のURLを生成
-        file_url = file_service.get_file_url(
-            file_metadata['file_id'],
-            settings.BASE_URL,
-            file_metadata['message_type']
-        )
-        
-        # レスポンスメッセージを送信
-        response_text = (
-            f"動画を受信しました！\n"
-            f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
-            f"動画URL: {file_url}"
-        )
-        send_text_message(event.reply_token, response_text)
-        
-    except Exception as e:
-        print(f'Error handling video message: {e}')
-        send_text_message(event.reply_token, "動画の処理中にエラーが発生しました。")
-
-# 音声メッセージの処理
-@handler.add(MessageEvent, message=AudioMessageContent)
-def handle_audio_message(event: MessageEvent):
-    """LINE 音声メッセージイベントを処理"""
-    print(f'Received audio message event: {event}')
-    
-    try:
-        # LINE Platform APIから音声をダウンロード
-        audio_data = download_file_from_line(event.message.id)
-        
-        # 音声ファイルを保存
-        file_metadata = file_service.save_file(
-            audio_data,
-            f"received_audio_{event.message.id}.m4a",
-            "audio/aac"
-        )
-        
-        # 音声のURLを生成
-        file_url = file_service.get_file_url(
-            file_metadata['file_id'],
-            settings.BASE_URL,
-            file_metadata['message_type']
-        )
-        
-        # レスポンスメッセージを送信
-        response_text = (
-            f"音声を受信しました！\n"
-            f"ファイルサイズ: {file_metadata['file_size']} bytes\n"
-            f"音声URL: {file_url}"
-        )
-        send_text_message(event.reply_token, response_text)
-        
-    except Exception as e:
-        print(f'Error handling audio message: {e}')
-        send_text_message(event.reply_token, "音声の処理中にエラーが発生しました。")
-
-# ファイルメッセージの処理
-@handler.add(MessageEvent, message=FileMessageContent)
-def handle_file_message(event: MessageEvent):
-    """LINE ファイルメッセージイベントを処理"""
-    print(f'Received file message event: {event}')
-    
-    try:
-        # LINE Platform APIからファイルをダウンロード
-        file_data = download_file_from_line(event.message.id)
-        
-        # ファイル名を取得（存在する場合）
-        filename = getattr(event.message, 'file_name', f"received_file_{event.message.id}")
-        
-        # ファイルを保存
-        file_metadata = file_service.save_file(
-            file_data,
-            filename,
-            None  # Content-Typeはファイル名から推測
-        )
-        
-        # レスポンスメッセージを送信
-        response_text = f"ファイルを受信しました！\nファイル名: {filename}\nファイルサイズ: {file_metadata['file_size']} bytes"
-        send_text_message(event.reply_token, response_text)
-        
-    except Exception as e:
-        print(f'Error handling file message: {e}')
-        send_text_message(event.reply_token, "ファイルの処理中にエラーが発生しました。")
 
 def handle_file_list_command(reply_token: str):
     """ファイル一覧表示コマンドを処理"""

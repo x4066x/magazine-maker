@@ -79,11 +79,6 @@ class PhotoMemoirService:
     def __init__(self):
         self.sessions: Dict[str, PhotoMemoirSession] = {}
     
-    def is_photo_memoir_request(self, message: str) -> bool:
-        """写真自分史作成リクエストかどうかを判定"""
-        # 既存の簡易フローと区別するため、異なるトリガーを使用
-        trigger_keywords = ['写真で作る', '写真自分史', 'フォト']
-        return any(keyword in message for keyword in trigger_keywords)
     
     def start_photo_memoir(self, user_id: str) -> Tuple[PhotoMemoirSession, str]:
         """写真自分史作成を開始"""
