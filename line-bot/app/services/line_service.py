@@ -8,7 +8,13 @@ from linebot.v3.messaging import (
     TextMessage,
     ImageMessage,
     VideoMessage,
-    AudioMessage
+    AudioMessage,
+    FlexMessage,
+    FlexBubble,
+    FlexBox,
+    FlexText,
+    FlexButton,
+    URIAction
 )
 from linebot.v3.webhook import WebhookHandler
 from linebot.v3.webhooks import (
@@ -24,6 +30,8 @@ from pathlib import Path
 from ..config import settings
 from .file_service import file_service
 from .memoir_service import memoir_service
+from .quick_memoir_service import quick_memoir_service
+from .photo_memoir_service import photo_memoir_service
 from .openai_service import get_chatgpt_response
 
 # LINE Bot API設定
@@ -186,6 +194,212 @@ def send_multiple_messages(reply_token: str, messages: list) -> None:
     except Exception as e:
         print(f'Error sending multiple messages: {e}')
 
+
+def send_memoir_complete_message(reply_token: str, user_id: str, pdf_url: str, edit_url: str) -> None:
+    """自分史完成メッセージ（Flex Message）を送信"""
+    try:
+        flex_message = FlexMessage(
+            alt_text="✨ 自分史が完成しました！",
+            contents=FlexBubble(
+                size="kilo",
+                header=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexText(
+                            text="✨ 自分史完成！",
+                            weight="bold",
+                            size="xl",
+                            color="#FFFFFF"
+                        )
+                    ],
+                    background_color="#6366F1",
+                    padding_all="20px"
+                ),
+                body=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexText(
+                            text="プレビューPDFを生成しました",
+                            size="md",
+                            color="#333333",
+                            margin="md"
+                        ),
+                        FlexText(
+                            text="下のボタンから内容を編集できます",
+                            size="sm",
+                            color="#999999",
+                            margin="md",
+                            wrap=True
+                        )
+                    ],
+                    spacing="md",
+                    padding_all="20px"
+                ),
+                footer=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexButton(
+                            action=URIAction(
+                                label="📄 PDFを見る",
+                                uri=pdf_url
+                            ),
+                            style="primary",
+                            color="#6366F1",
+                            height="sm"
+                        ),
+                        FlexButton(
+                            action=URIAction(
+                                label="✏️ 内容を編集",
+                                uri=edit_url
+                            ),
+                            style="primary",
+                            color="#10B981",
+                            height="sm",
+                            margin="md"
+                        )
+                    ],
+                    spacing="sm",
+                    padding_all="20px"
+                )
+            )
+        )
+        
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            
+            response = messaging_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=reply_token,
+                    messages=[flex_message]
+                )
+            )
+            
+            print(f'Flex message sent successfully: {response}')
+            
+    except Exception as e:
+        error_message = str(e)
+        if "Invalid reply token" in error_message or "400" in error_message:
+            print(f'Reply token expired, sending push message instead: {e}')
+            # Flex MessageはPush Messageとしても送信可能
+            try:
+                with ApiClient(configuration) as api_client:
+                    messaging_api = MessagingApi(api_client)
+                    messaging_api.push_message(
+                        PushMessageRequest(
+                            to=user_id,
+                            messages=[flex_message]
+                        )
+                    )
+            except Exception as push_error:
+                print(f'Error sending push message: {push_error}')
+                # フォールバック: 通常のテキストメッセージ
+                fallback_text = (
+                    f"✨ 自分史が完成しました！\n\n"
+                    f"📄 PDF: {pdf_url}\n"
+                    f"✏️ 編集: {edit_url}"
+                )
+                send_push_message(user_id, fallback_text)
+        else:
+            print(f'Error sending flex message: {e}')
+            # フォールバック: 通常のテキストメッセージ
+            fallback_text = (
+                f"✨ 自分史が完成しました！\n\n"
+                f"📄 PDF: {pdf_url}\n"
+                f"✏️ 編集: {edit_url}"
+            )
+            send_push_message(user_id, fallback_text)
+
+
+def send_memoir_updated_message(user_id: str, pdf_url: str, edit_url: str) -> None:
+    """自分史更新メッセージ（Flex Message）をプッシュ送信"""
+    try:
+        flex_message = FlexMessage(
+            alt_text="✨ 自分史を更新しました！",
+            contents=FlexBubble(
+                size="kilo",
+                header=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexText(
+                            text="✨ 更新完了！",
+                            weight="bold",
+                            size="xl",
+                            color="#FFFFFF"
+                        )
+                    ],
+                    background_color="#10B981",
+                    padding_all="20px"
+                ),
+                body=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexText(
+                            text="自分史を更新しました",
+                            size="md",
+                            color="#333333",
+                            margin="md"
+                        ),
+                        FlexText(
+                            text="更新したPDFをご確認ください",
+                            size="sm",
+                            color="#999999",
+                            margin="md",
+                            wrap=True
+                        )
+                    ],
+                    spacing="md",
+                    padding_all="20px"
+                ),
+                footer=FlexBox(
+                    layout="vertical",
+                    contents=[
+                        FlexButton(
+                            action=URIAction(
+                                label="📄 PDFを見る",
+                                uri=pdf_url
+                            ),
+                            style="primary",
+                            color="#10B981",
+                            height="sm"
+                        ),
+                        FlexButton(
+                            action=URIAction(
+                                label="✏️ さらに編集",
+                                uri=edit_url
+                            ),
+                            style="link",
+                            height="sm",
+                            margin="md"
+                        )
+                    ],
+                    spacing="sm",
+                    padding_all="20px"
+                )
+            )
+        )
+        
+        # Push Messageとして送信（reply_tokenなし）
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            messaging_api.push_message(
+                PushMessageRequest(
+                    to=user_id,
+                    messages=[flex_message]
+                )
+            )
+            print(f'Updated memoir flex message sent successfully to {user_id}')
+            
+    except Exception as e:
+        print(f'Error sending updated memoir flex message: {e}')
+        # フォールバック: 通常のテキストメッセージ
+        fallback_text = (
+            f"✨ 自分史を更新しました！\n\n"
+            f"📄 PDF: {pdf_url}\n"
+            f"✏️ さらに編集: {edit_url}"
+        )
+        send_push_message(user_id, fallback_text)
+
+
 # テキストメッセージの処理
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event: MessageEvent):
@@ -200,7 +414,161 @@ def handle_text_message(event: MessageEvent):
     user_message = event.message.text
     user_id = event.source.user_id
     
-    # 自分史セッションの状態を確認
+    # 写真フロー: セッションを確認（最優先）
+    photo_session = photo_memoir_service.get_session_by_user(user_id)
+    
+    # 写真フロー: トリガーワード
+    if photo_memoir_service.is_photo_memoir_request(user_message):
+        try:
+            session, response = photo_memoir_service.start_photo_memoir(user_id)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 写真フロー: 写真収集中に「完了」
+    if photo_session and photo_session.state == "collecting_photos" and ("完了" in user_message or "おわり" in user_message or "終わり" in user_message):
+        try:
+            success, response = photo_memoir_service.finish_photo_collection(photo_session)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            
+            if success:
+                # 最初の質問を送信
+                question_info = photo_memoir_service.get_current_question(photo_session)
+                if question_info:
+                    question, photo, q_num = question_info
+                    send_push_message(user_id, question)
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 写真フロー: 質問に対する回答
+    if photo_session and photo_session.state == "questioning":
+        try:
+            response_msg, needs_action = photo_memoir_service.process_answer(photo_session, user_message)
+            send_text_message_with_fallback(event.reply_token, user_id, response_msg)
+            
+            if needs_action:
+                # ストーリー生成が必要
+                import threading
+                
+                def generate_story_async():
+                    try:
+                        photo = photo_session.get_current_photo()
+                        if photo:
+                            # ストーリー生成
+                            story = photo_memoir_service.generate_story_for_photo(photo)
+                            photo.generated_story = story
+                            photo_session.state = "story_generated"
+                            
+                            # 承認メッセージを送信
+                            approval_msg = photo_memoir_service.get_story_approval_message(photo_session, story)
+                            send_push_message(user_id, approval_msg)
+                    except Exception as e:
+                        error_msg = f"ストーリー生成中にエラーが発生しました: {str(e)}"
+                        send_push_message(user_id, error_msg)
+                
+                story_thread = threading.Thread(target=generate_story_async)
+                story_thread.start()
+            
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 写真フロー: ストーリー承認・再生成
+    if photo_session and photo_session.state == "story_generated":
+        try:
+            response_msg, move_next = photo_memoir_service.handle_story_approval(photo_session, user_message)
+            send_text_message_with_fallback(event.reply_token, user_id, response_msg)
+            
+            if move_next:
+                import threading
+                
+                def handle_next_action():
+                    try:
+                        if photo_session.state == "completed":
+                            # 全写真完了 → PDF生成
+                            pdf_result = photo_memoir_service.generate_pdf(photo_session)
+                            
+                            # PDFファイルを保存
+                            file_metadata = file_service.save_file(
+                                pdf_result["pdf_buffer"],
+                                pdf_result["filename"],
+                                "application/pdf"
+                            )
+                            
+                            pdf_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
+                            
+                            success_message = (
+                                f"✨ 写真自分史が完成しました！\n\n"
+                                f"📄 PDF: {pdf_url}\n"
+                                f"ファイル名: {pdf_result['filename']}\n"
+                                f"サイズ: {pdf_result['size']:,} bytes"
+                            )
+                            send_push_message(user_id, success_message)
+                        
+                        elif "再生成" in response_msg:
+                            # 再生成
+                            photo = photo_session.get_current_photo()
+                            if photo:
+                                story = photo_memoir_service.generate_story_for_photo(photo)
+                                photo.generated_story = story
+                                
+                                approval_msg = photo_memoir_service.get_story_approval_message(photo_session, story)
+                                send_push_message(user_id, approval_msg)
+                        
+                        else:
+                            # 次の写真の最初の質問を送信
+                            question_info = photo_memoir_service.get_current_question(photo_session)
+                            if question_info:
+                                question, photo, q_num = question_info
+                                send_push_message(user_id, question)
+                    
+                    except Exception as e:
+                        error_msg = f"処理中にエラーが発生しました: {str(e)}"
+                        send_push_message(user_id, error_msg)
+                
+                action_thread = threading.Thread(target=handle_next_action)
+                action_thread.start()
+            
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 簡易フローのセッションを確認（優先）
+    quick_session = quick_memoir_service.get_session_by_user(user_id)
+    
+    # 簡易フロー: 「作る」などのトリガーワード
+    if quick_memoir_service.is_quick_create_request(user_message):
+        try:
+            session, response = quick_memoir_service.start_quick_create(user_id)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 簡易フロー: タイトル待ち
+    if quick_session and quick_session.state == "waiting_title":
+        try:
+            response = quick_memoir_service.process_title(quick_session, user_message)
+            send_text_message_with_fallback(event.reply_token, user_id, response)
+            return
+        except Exception as e:
+            error_message = f"エラーが発生しました: {str(e)}"
+            send_text_message_with_fallback(event.reply_token, user_id, error_message)
+            return
+    
+    # 自分史セッションの状態を確認（既存フロー）
     session = memoir_service.get_or_create_session(user_id)
     
     # 自分史作成リクエストかどうかを判定
@@ -375,7 +743,65 @@ def handle_image_message(event: MessageEvent):
         
         user_id = event.source.user_id
         
-        # 自分史作成中の場合、画像を年表に追加
+        # 写真フロー: 写真収集中（最優先）
+        photo_session = photo_memoir_service.get_session_by_user(user_id)
+        if photo_session and photo_session.state == "collecting_photos":
+            try:
+                response_text = photo_memoir_service.add_photo(photo_session, file_url)
+                send_text_message_with_fallback(event.reply_token, user_id, response_text)
+                return
+            except Exception as e:
+                error_message = f"写真の処理中にエラーが発生しました: {str(e)}"
+                send_text_message_with_fallback(event.reply_token, user_id, error_message)
+                return
+        
+        # 簡易フロー: カバー写真待ち（優先）
+        quick_session = quick_memoir_service.get_session_by_user(user_id)
+        if quick_session and quick_session.state == "waiting_cover":
+            try:
+                # カバー写真を設定
+                success, response_text = quick_memoir_service.process_cover_image(quick_session, file_url)
+                send_text_message_with_fallback(event.reply_token, user_id, response_text)
+                
+                # 非同期でPDF生成
+                if success:
+                    import threading
+                    
+                    def generate_quick_pdf_async():
+                        try:
+                            # PDF生成（async関数をスレッド内で実行）
+                            import asyncio
+                            pdf_result = asyncio.run(quick_memoir_service.generate_quick_pdf(quick_session))
+                            
+                            # PDFファイルを保存
+                            pdf_metadata = file_service.save_file(
+                                pdf_result["pdf_buffer"],
+                                pdf_result["filename"],
+                                "application/pdf"
+                            )
+                            
+                            # URLを生成
+                            pdf_url = file_service.get_file_url(pdf_metadata['file_id'], settings.BASE_URL)
+                            edit_url = f"{settings.BASE_URL}/liff/edit.html?session_id={quick_session.session_id}"
+                            
+                            # Flex Messageを送信（reply_tokenは期限切れなので、空文字でPush扱い）
+                            send_memoir_complete_message("", user_id, pdf_url, edit_url)
+                            
+                        except Exception as e:
+                            error_message = f"PDF生成中にエラーが発生しました: {str(e)}"
+                            send_push_message(user_id, error_message)
+                    
+                    # 非同期スレッドを開始
+                    pdf_thread = threading.Thread(target=generate_quick_pdf_async)
+                    pdf_thread.start()
+                
+                return
+            except Exception as e:
+                error_message = f"画像の処理中にエラーが発生しました: {str(e)}"
+                send_text_message_with_fallback(event.reply_token, user_id, error_message)
+                return
+        
+        # 自分史作成中の場合、画像を年表に追加（既存フロー）
         if memoir_service.get_or_create_session(user_id).state == "collecting_timeline":
             success = memoir_service.add_image_to_timeline(user_id, file_url, "アップロードされた画像")
             if success:

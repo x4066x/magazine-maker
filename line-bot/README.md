@@ -4,11 +4,13 @@ LINE BotとOpenAI ChatGPTを統合した対話型の自分史作成サービス�
 
 ## 主な機能
 
-- **対話型自分史作成**: ユーザーとの対話で基本情報と人生の年表を収集
-- **画像アップロード**: 年表の各出来事に画像を追加可能
-- **PDF生成**: auto-designer APIを使用した自分史PDFの自動生成
-- **AI会話**: ChatGPTによる自然な対話応答
-- **ファイル管理**: 画像・動画・音声・ファイルの受信・送信
+- **簡易フロー**: タイトル + カバー写真だけで即座にPDF生成
+- **Web編集画面**: ブラウザで自分史を編集（テキスト、画像、年表）
+- **AI文章生成**: プロフィールや年表説明文をAIが自動生成
+- **PDF生成**: Vivliostyleを使用した美しいPDF自動生成
+- **対話型自分史作成**: ユーザーとの対話で詳細情報を収集
+- **画像管理**: 画像のアップロード、ダウンロード、最適化
+- **柔軟なカスタマイズ**: 用紙サイズ、トンボ、裁ち落としなど印刷用設定
 
 ## クイックスタート
 
@@ -50,7 +52,32 @@ cloudflared tunnel --url localhost:8000
 
 ## 使い方
 
-### 自分史作成
+### 簡易フロー（おすすめ）
+
+**最速で自分史を作成！**
+
+```
+ユーザー: 作る
+ボット: ✨ 自分史を作成しましょう！
+       まず、タイトルを教えてください。
+
+ユーザー: 鈴木一郎
+ボット: タイトル：「鈴木一郎」
+       次に、カバー写真を送ってください。
+
+[写真を送信]
+ボット: カバー写真を受け取りました！
+       PDFを生成中です...⏳
+
+[数秒後]
+ボット: ✨ 自分史完成！
+       📄 PDFを見る
+       ✏️ 内容を編集
+```
+
+### 詳細フロー（従来）
+
+より詳しい情報を最初から入力したい場合：
 
 ```
 ユーザー: 自分史作成
@@ -67,39 +94,63 @@ cloudflared tunnel --url localhost:8000
 
 | コマンド | 機能 |
 |----------|------|
-| `自分史作成` / `memoir` | 自分史作成を開始 |
+| `作る` / `作成` / `つくる` | 簡易フロー開始（おすすめ） |
+| `自分史作成` / `memoir` | 詳細フロー開始 |
 | `キャンセル` | 作成をキャンセル |
 | `ファイル一覧` | 保存ファイルを表示 |
-| `レポート作成: [テーマ]` | AIレポート生成 |
-| `JSON生成: [内容]` | JSON生成 |
+| `サンプル確認` | サンプルPDFを表示 |
+| 通常のメッセージ | ChatGPTと会話 |
 
 ## プロジェクト構成
 
 ```
 line-bot/
-├── main.py                     # エントリーポイント
+├── main.py                            # エントリーポイント
 ├── app/
-│   ├── main.py                # FastAPI アプリ
-│   ├── config/settings.py     # 設定
-│   ├── api/routes.py          # API ルート
-│   ├── handlers/webhook_handler.py
+│   ├── main.py                       # FastAPI アプリ
+│   ├── config/settings.py            # 設定
+│   ├── api/routes.py                 # API ルート
+│   ├── handlers/webhook_handler.py   # Webhook ハンドラー
 │   └── services/
-│       ├── line_service.py
-│       ├── openai_service.py
-│       ├── file_service.py
-│       └── memoir_service.py
-├── uploads/                   # ファイル保存先
-└── docs/design.md             # 設計ドキュメント
+│       ├── line_service.py           # LINE連携
+│       ├── quick_memoir_service.py   # 簡易フロー ★NEW
+│       ├── vivliostyle_service.py    # PDF生成 ★NEW
+│       ├── openai_service.py         # AI文章生成
+│       ├── file_service.py           # ファイル管理
+│       └── memoir_service.py         # 詳細フロー
+├── templates/                         # テンプレート ★NEW
+│   └── memoir/
+│       └── template.html             # 自分史HTMLテンプレート
+├── liff/                              # Web編集画面 ★NEW
+│   └── edit.html                     # 編集画面
+├── uploads/                           # ファイル保存先
+└── docs/                              # ドキュメント ★拡充
+    ├── README.md                     # ドキュメント一覧
+    ├── design.md                     # 設計
+    ├── quick-flow-guide.md           # 簡易フローガイド
+    ├── vivliostyle-integration.md    # Vivliostyle統合
+    ├── vivliostyle-options.md        # オプション設定
+    └── troubleshooting-vivliostyle.md # トラブルシューティング
 ```
 
-## ドキュメント
+## 📚 ドキュメント
 
-詳細は [`docs/design.md`](docs/design.md) を参照してください：
-- アーキテクチャ設計
-- データフローと処理の詳細
-- 自分史作成機能の実装
-- トラブルシューティング
-- セキュリティ考慮事項
+詳細なドキュメントは [`docs/`](./docs/) ディレクトリを参照してください：
+
+### メインドキュメント
+- **[docs/README.md](./docs/README.md)** - 📖 ドキュメント一覧・ナビゲーション
+- **[docs/design.md](./docs/design.md)** - 🎯 設計・要求定義
+- **[docs/quick-flow-guide.md](./docs/quick-flow-guide.md)** - 🚀 簡易フロー実装ガイド
+
+### 技術ドキュメント
+- **[docs/vivliostyle-integration.md](./docs/vivliostyle-integration.md)** - 📄 Vivliostyle統合ガイド
+- **[docs/vivliostyle-options.md](./docs/vivliostyle-options.md)** - ⚙️ Vivliostyleオプション設定
+- **[docs/troubleshooting-vivliostyle.md](./docs/troubleshooting-vivliostyle.md)** - 🔧 トラブルシューティング
+
+### クイックリンク
+- 初めての方 → [docs/README.md - 読む順序](./docs/README.md#読む順序推奨)
+- トラブル発生時 → [docs/troubleshooting-vivliostyle.md](./docs/troubleshooting-vivliostyle.md)
+- PDF設定変更 → [docs/vivliostyle-options.md](./docs/vivliostyle-options.md)
 
 ## API Keys の取得
 

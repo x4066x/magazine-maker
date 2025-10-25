@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* 縦書き表紙テンプレート - modern-vertical-coverベース */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.8;
+            color: #1a202c;
+            background: #fff;
+        }
+
+        /* カバーページ */
+        .cover-page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+            background: #000;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .text-area {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100mm;
+            height: 100%;
+            z-index: 2;
+            padding: 20mm 10mm 0 0;
+            display: flex;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .author-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .author-name {
+            font-size: 120px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 30px;
+            text-shadow: 
+                1px 1px 0 #888888,
+                -1px 1px 0 #888888,
+                1px -1px 0 #888888,
+                -1px -1px 0 #888888,
+                0 1px 0 #888888,
+                0 -1px 0 #888888,
+                1px 0 0 #888888,
+                -1px 0 0 #888888;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        /* コンテンツページ - vertical-central-image-singleベース */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        .page-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 15mm;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 70%;
+            position: relative;
+            margin-bottom: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+        }
+
+        .text-container {
+            height: 30%;
+            padding-top: 4mm;
+            overflow: hidden;
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            padding-right: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2mm;
+            padding-bottom: 2mm;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .vertical-text .section-title {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            border-bottom: none;
+            border-left: 2px solid #e2e8f0;
+            padding-bottom: 0;
+            padding-left: 2mm;
+            margin-bottom: 0;
+            margin-left: 3mm;
+            margin-top: 0;
+            display: inline-block;
+        }
+
+        .description-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #4a5568;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        .vertical-text .description-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            text-align: left;
+            line-height: 2.0;
+            font-size: 13px;
+            display: inline-block;
+            margin-left: 3mm;
+        }
+
+        /* プロフィールページ専用 */
+        .profile-page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+            page-break-after: always;
+            padding: 20mm;
+        }
+
+        .profile-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            color: #2c3e50;
+        }
+
+        .profile-content {
+            font-size: 16px;
+            line-height: 2;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .profile-label {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .profile-value {
+            color: #2c3e50;
+        }
+
+        /* 年表ページ */
+        .timeline-year {
+            font-size: 42px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* フッター */
+        .page-footer {
+            position: absolute;
+            bottom: 10mm;
+            right: 15mm;
+            z-index: 10;
+        }
+
+        .page-number {
+            font-size: 12px;
+            color: #a0aec0;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* 印刷対応 */
+        @media print {
+            .cover-page, .page, .profile-page {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- カバーページ -->
+    <div class="cover-page">
+        {% if cover_image %}
+        <div class="background-image">
+            <img src="{{ cover_image }}" alt="Cover Image" class="cover-image">
+        </div>
+        {% endif %}
+        
+        <div class="text-area">
+            <div class="author-section">
+                <h1 class="author-name">{{ author }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- プロフィールページ -->
+    {% if profile and (profile.description or profile.birthDate or profile.birthPlace or profile.occupation or profile.hobbies) %}
+    <div class="profile-page">
+        <h2 class="profile-title">プロフィール</h2>
+        
+        {% if profile.description %}
+        <div class="profile-content">
+            {{ profile.description }}
+        </div>
+        {% endif %}
+
+        <div class="profile-info">
+            {% if profile.name %}
+            <div class="profile-label">名前</div>
+            <div class="profile-value">{{ profile.name }}</div>
+            {% endif %}
+
+            {% if profile.birthDate %}
+            <div class="profile-label">生年月日</div>
+            <div class="profile-value">{{ profile.birthDate }}</div>
+            {% endif %}
+
+            {% if profile.birthPlace %}
+            <div class="profile-label">出身地</div>
+            <div class="profile-value">{{ profile.birthPlace }}</div>
+            {% endif %}
+
+            {% if profile.occupation %}
+            <div class="profile-label">職業</div>
+            <div class="profile-value">{{ profile.occupation }}</div>
+            {% endif %}
+
+            {% if profile.hobbies %}
+            <div class="profile-label">趣味</div>
+            <div class="profile-value">{{ profile.hobbies|join('、') }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 年表ページ - 各出来事を1ページずつ -->
+    {% if timeline %}
+    {% for item in timeline %}
+    <div class="page">
+        <div class="page-content">
+            {% if item.image %}
+            <!-- 画像がある場合 -->
+            <div class="image-container">
+                <img src="{{ item.image }}" alt="{{ item.title }}" class="page-image">
+            </div>
+            
+            <div class="text-container vertical-text">
+                <h2 class="section-title">{{ item.year }}年</h2>
+                <div class="description-text">
+                    <strong>{{ item.title }}</strong><br>
+                    {% if item.description %}{{ item.description }}{% endif %}
+                </div>
+            </div>
+            {% else %}
+            <!-- 画像がない場合はテキストのみ -->
+            <div style="padding: 40mm 20mm;">
+                <div class="timeline-year">{{ item.year }}年</div>
+                <h3 class="timeline-title">{{ item.title }}</h3>
+                {% if item.description %}
+                <p class="timeline-description">{{ item.description }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <footer class="page-footer">
+            <p class="page-number">{{ loop.index + 1 }}</p>
+        </footer>
+    </div>
+    {% endfor %}
+    {% endif %}
+</body>
+</html>
+

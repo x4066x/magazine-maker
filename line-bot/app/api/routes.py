@@ -1,11 +1,24 @@
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
+from pydantic import BaseModel
+from typing import Dict, Any
 from ..handlers import handle_webhook
 from ..services import file_service
+from ..services.quick_memoir_service import quick_memoir_service
+from ..services.openai_service import openai_service
+from ..services.line_service import send_push_message
 from ..config import settings
 
 router = APIRouter()
+
+# リクエストモデル
+class MemoirSaveRequest(BaseModel):
+    data: Dict[str, Any]
+
+class TextGenerationRequest(BaseModel):
+    type: str  # "profile" | "timeline_description"
+    data: Dict[str, Any]
 
 @router.post('/callback')
 async def webhook(request: Request):
@@ -140,6 +153,100 @@ async def get_file_info(file_id: str):
         print(f'Error getting file info: {e}')
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@router.get("/api/memoir/edit/{session_id}")
+async def get_memoir_edit_data(session_id: str):
+    """編集データ取得API"""
+    try:
+        session = quick_memoir_service.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        return {
+            "session_id": session.session_id,
+            "user_id": session.user_id,
+            "data": {
+                "title": session.data.title,
+                "subtitle": session.data.subtitle,
+                "author": session.data.author,
+                "cover_image_url": session.data.cover_image_url,
+                "profile": session.data.profile,
+                "timeline": session.data.timeline,
+                "template": session.data.template
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f'Error getting memoir edit data: {e}')
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/memoir/save/{session_id}")
+async def save_memoir_data(session_id: str, request: MemoirSaveRequest):
+    """編集データ保存＆PDF再生成API"""
+    try:
+        # セッションを取得
+        session = quick_memoir_service.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        
+        # データを更新
+        success = quick_memoir_service.update_memoir_data(session_id, request.data)
+        if not success:
+            raise HTTPException(status_code=400, detail="Failed to update data")
+        
+        # PDF再生成
+        pdf_result = await quick_memoir_service.generate_quick_pdf(session)
+        
+        # PDFファイルを保存
+        file_metadata = file_service.save_file(
+            pdf_result["pdf_buffer"],
+            pdf_result["filename"],
+            "application/pdf"
+        )
+        
+        # PDFのURLを取得
+        pdf_url = file_service.get_file_url(file_metadata['file_id'], settings.BASE_URL)
+        edit_url = f"{settings.BASE_URL}/liff/edit.html?session_id={session_id}"
+        
+        # LINEにFlex Message（更新完了）を送信
+        from app.services.line_service import send_memoir_updated_message
+        send_memoir_updated_message(session.user_id, pdf_url, edit_url)
+        
+        return {
+            "success": True,
+            "pdf_url": pdf_url,
+            "message": "PDFを更新しました"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f'Error saving memoir data: {e}')
+        print(f'Full traceback:\n{error_trace}')
+        raise HTTPException(status_code=500, detail=f"PDF生成エラー: {str(e)}")
+
+
+@router.post("/api/memoir/generate-text")
+async def generate_memoir_text(request: TextGenerationRequest):
+    """LLM文章生成API"""
+    try:
+        from ..services.openai_service import generate_memoir_text
+        
+        generated_text = generate_memoir_text(request.type, request.data)
+        
+        return {
+            "success": True,
+            "generated_text": generated_text
+        }
+        
+    except Exception as e:
+        print(f'Error generating text: {e}')
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/")
 async def root():
     """APIドキュメント"""
@@ -151,7 +258,10 @@ async def root():
             "media_files": "GET /media/{media_type}/{file_id}",
             "files": "GET /files/{file_id}",
             "api_files": "GET /api/files",
-            "api_file_info": "GET /api/files/{file_id}"
+            "api_file_info": "GET /api/files/{file_id}",
+            "memoir_edit": "GET /api/memoir/edit/{session_id}",
+            "memoir_save": "POST /api/memoir/save/{session_id}",
+            "memoir_generate_text": "POST /api/memoir/generate-text"
         }
     }
 
