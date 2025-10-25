@@ -50,10 +50,6 @@ class MemoirService:
     def __init__(self):
         self.sessions: Dict[str, MemoirSession] = {}
     
-    def is_memoir_request(self, message: str) -> bool:
-        """自分史作成リクエストかどうかを判定"""
-        memoir_keywords = ['自分史作成', 'memoir', '自分史', '人生の歩み']
-        return any(keyword in message.lower() for keyword in memoir_keywords)
     
     def get_or_create_session(self, user_id: str) -> MemoirSession:
         """ユーザーセッションを取得または作成"""
